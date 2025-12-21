@@ -50,6 +50,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         error: job.error,
         videoUrl,
         videoSource,
-        events: events.map((e) => ({ at: e.createdAt, type: e.type, message: e.message })),
+        createdAt: job.createdAt,
     });
 }

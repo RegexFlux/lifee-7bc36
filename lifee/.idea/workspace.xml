@@ -6,13 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/data_source_mapping.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/s3.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/video/[id]/route.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/video/route.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/webhooks/replicate/route.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/AuthModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/AuthModal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/LandingPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/LandingPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/db/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/db/schema.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,7 +52,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "npm.Next.js: server-side.executor": "Debug",
+    "npm.Next.js: server-side.executor": "Run",
     "ts.external.directory.path": "/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/node_modules/typescript/lib",
     "vue.rearranger.settings.migration": "true"
   },
@@ -108,7 +107,7 @@
       <updated>1766155263293</updated>
       <workItem from="1766155264500" duration="3814000" />
       <workItem from="1766226805887" duration="619000" />
-      <workItem from="1766341899508" duration="10866000" />
+      <workItem from="1766341899508" duration="15182000" />
     </task>
     <servers />
   </component>

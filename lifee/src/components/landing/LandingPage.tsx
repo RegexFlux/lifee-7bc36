@@ -6,23 +6,12 @@ import FeaturesGrid from "./FeaturesGrid";
 import Footer from "./Footer";
 import AuthModal from "./AuthModal";
 import Animations from "./Animations";
+import {useRouter} from "next/router";
 
-type LandingPageProps = {
-    onAuthSuccess: (email: string) => void;
-};
 
-export default function LandingPage({ onAuthSuccess }: Readonly<LandingPageProps>) {
-    const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
-    const [userEmail, setUserEmail] = useState<string>("");
-
-    const handleDownloadClick = () => setShowAuthModal(true);
-
-    const handleAuthSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (!userEmail) return;
-        setShowAuthModal(false);
-        onAuthSuccess(userEmail);
-    };
+export default function LandingPage() {
+    const router = useRouter();
+    const showAuthModal = () => router.push({ query: { ...router.query, auth: "1" } }, undefined, { shallow: true });
 
     return (
         <div className="min-h-screen bg-slate-950 text-white selection:bg-indigo-500 selection:text-white font-sans overflow-x-hidden">
@@ -34,21 +23,15 @@ export default function LandingPage({ onAuthSuccess }: Readonly<LandingPageProps
 
             <BackgroundEffects />
 
-            <NavBar onLoginClick={() => setShowAuthModal(true)} />
+            <NavBar onLoginClick={() => showAuthModal()} />
 
-            <Hero onDownloadClick={handleDownloadClick} />
+            <Hero onDownloadClick={showAuthModal} />
 
             <FeaturesGrid />
 
             <Footer />
 
-            <AuthModal
-                isOpen={showAuthModal}
-                onClose={() => setShowAuthModal(false)}
-                userEmail={userEmail}
-                setUserEmail={setUserEmail}
-                onSubmit={handleAuthSubmit}
-            />
+            <AuthModal />
 
             <Animations />
         </div>

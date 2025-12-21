@@ -1,5 +1,62 @@
 import { pgTable, text, timestamp, real, integer, varchar, primaryKey, index, uniqueIndex } from "drizzle-orm/pg-core";
 
+// --- Users ---
+export const users = pgTable(
+    "users",
+    {
+        id: text("id").primaryKey(), // uuid
+        email: text("email").notNull(),
+        createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+        updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    },
+    (t) => ({
+        emailUq: uniqueIndex("users_email_uq").on(t.email),
+    })
+);
+
+// --- Sessions (cookie-based) ---
+export const sessions = pgTable(
+    "sessions",
+    {
+        id: text("id").primaryKey(), // uuid
+        userId: text("user_id").notNull(),
+        tokenHash: text("token_hash").notNull(), // sha256(token)
+        createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+        expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    },
+    (t) => ({
+        userIdx: index("sessions_user_idx").on(t.userId),
+        tokenIdx: uniqueIndex("sessions_token_uq").on(t.tokenHash),
+    })
+);
+
+// --- Email login codes (for existing users) ---
+export const emailLoginCodes = pgTable(
+    "email_login_codes",
+    {
+        id: text("id").primaryKey(), // uuid
+        email: text("email").notNull(),
+        codeHash: text("code_hash").notNull(), // sha256(email + code + secret)
+        createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+        expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+        usedAt: timestamp("used_at", { withTimezone: true }),
+        attempts: integer("attempts").notNull().default(0),
+    },
+    (t) => ({
+        emailIdx: index("email_login_codes_email_idx").on(t.email, t.createdAt),
+    })
+);
+
+// --- Generic rate limits (DB-based, no Redis needed) ---
+export const rateLimits = pgTable(
+    "rate_limits",
+    {
+        key: text("key").primaryKey(), // ex: "auth:start:ip:<hash>"
+        count: integer("count").notNull().default(0),
+        resetAt: timestamp("reset_at", { withTimezone: true }).notNull(),
+    }
+);
+
 export const lifeeJobs = pgTable(
     "lifee_jobs",
     {
@@ -69,3 +126,4 @@ export const lifeeDailyRuns = pgTable(
         count: integer("count").notNull().default(0),
     }
 );
+
