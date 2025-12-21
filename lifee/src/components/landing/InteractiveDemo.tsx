@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Album, Layers, Play, Upload, Wand2 } from "lucide-react";
+import { Layers, Play, Upload, Wand2 } from "lucide-react";
 
-type DemoState = "idle" | "analyzing" | "generating" | "success";
+type DemoState = "idle" | "analyzing" | "generating" | "success" | "failed";
 
 type Props = {
     onDownloadClick: () => void;
@@ -9,27 +9,98 @@ type Props = {
 
 export default function InteractiveDemo({ onDownloadClick }: Props) {
     const [demoState, setDemoState] = useState<DemoState>("idle");
-    const timeoutsRef = useRef<Array<ReturnType<typeof setTimeout>>>([]);
+    const [jobId, setJobId] = useState<string | null>(null);
+    const [videoUrl, setVideoUrl] = useState<string | null>(null);
+    const [shareUrl, setShareUrl] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
+
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     useEffect(() => {
         return () => {
-            timeoutsRef.current.forEach((t) => clearTimeout(t));
-            timeoutsRef.current = [];
+            if (pollRef.current) clearInterval(pollRef.current);
+            pollRef.current = null;
         };
     }, []);
 
-    const startDemo = () => {
-        timeoutsRef.current.forEach((t) => clearTimeout(t));
-        timeoutsRef.current = [];
-
-        setDemoState("analyzing");
-        timeoutsRef.current.push(setTimeout(() => setDemoState("generating"), 1500));
-        timeoutsRef.current.push(setTimeout(() => setDemoState("success"), 4500));
+    const stopPolling = () => {
+        if (pollRef.current) clearInterval(pollRef.current);
+        pollRef.current = null;
     };
 
-    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    const pollJob = (id: string) => {
+        stopPolling();
+        pollRef.current = setInterval(async () => {
+            try {
+                const r = await fetch(`/api/lifee/video/${encodeURIComponent(id)}`);
+                const data = await r.json();
+
+                if (!r.ok) throw new Error(data?.error || "Polling error");
+
+                if (data.status === "succeeded" && data.videoUrl) {
+                    setVideoUrl(data.videoUrl);
+                    setShareUrl(data.shareUrl);
+                    setDemoState("success");
+                    stopPolling();
+                } else if (data.status === "failed") {
+                    setError(data.error || "Generation failed");
+                    setDemoState("failed");
+                    stopPolling();
+                } else {
+                    setDemoState("generating");
+                }
+            } catch (e: any) {
+                // on n’échoue pas direct, on continue (réseau, cold start, etc.)
+            }
+        }, 1500);
+    };
+
+    const uploadAndGenerate = async (file: File) => {
+        setError(null);
+        setVideoUrl(null);
+        setShareUrl(null);
+        setJobId(null);
+
+        setDemoState("analyzing");
+
+        const fd = new FormData();
+        fd.append("file", file);
+        // fd.append("prompt", "…"); // optionnel si tu veux un prompt custom
+
+        const r = await fetch("/api/lifee/video", { method: "POST", body: fd });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data?.error || "Upload failed");
+
+        setJobId(data.jobId);
+        setShareUrl(data.shareUrl);
+        setDemoState("generating");
+        pollJob(data.jobId);
+    };
+
+    const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
-        startDemo();
+        const f = e.dataTransfer.files?.[0];
+        if (f) {
+            try {
+                await uploadAndGenerate(f);
+            } catch (err: any) {
+                setError(err?.message || "Error");
+                setDemoState("failed");
+            }
+        }
+    };
+
+    const handlePick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const f = e.target.files?.[0];
+        if (f) {
+            try {
+                await uploadAndGenerate(f);
+            } catch (err: any) {
+                setError(err?.message || "Error");
+                setDemoState("failed");
+            }
+        }
     };
 
     return (
@@ -97,8 +168,13 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
                 </div>
             </div>
 
-            {/* Glow */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000" />
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handlePick}
+            />
 
             <div
                 id="demo-area"
@@ -116,13 +192,14 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
                     className="flex-1 relative flex items-center justify-center"
                     onDragOver={(e) => e.preventDefault()}
                     onDrop={handleDrop}
-                    onClick={() => demoState === "idle" && startDemo()}
+                    onClick={() => {
+                        if (demoState === "idle" || demoState === "failed") fileInputRef.current?.click();
+                    }}
                 >
                     {demoState === "idle" && (
                         <div className="text-center space-y-4 cursor-pointer group/drop">
-                            <div className="w-20 h-20 mx-auto rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover/drop:scale-110 group-hover/drop:border-indigo-500/50 transition-all duration-300 relative">
-                                <Upload size={32} className="text-slate-400 group-hover/drop:text-indigo-400" />
-                                <div className="absolute inset-0 rounded-full border border-indigo-500/30 animate-ping opacity-0 group-hover/drop:opacity-100" />
+                            <div className="w-20 h-20 mx-auto rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-all duration-300 relative">
+                                <Upload size={32} className="text-slate-400" />
                             </div>
                             <div>
                                 <h3 className="text-lg font-medium text-white">Créer mon Album Vidéo</h3>
@@ -133,51 +210,59 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
 
                     {demoState === "analyzing" && (
                         <div className="absolute inset-0 bg-slate-950 flex flex-col items-center justify-center">
-                            <div className="relative w-64 h-48 bg-slate-800 rounded-lg overflow-hidden border border-white/10">
-                                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-500/50 to-transparent w-full h-2 animate-[scan_1.5s_infinite_linear]" />
-                                <div className="p-4 text-xs font-mono text-indigo-400 space-y-1 opacity-70">
-                                    <p>&gt; Identifying depth map...</p>
-                                    <p>&gt; Segmentation objects...</p>
-                                    <p>&gt; Calculating parallax...</p>
-                                </div>
-                            </div>
-                            <p className="mt-4 text-sm font-mono text-indigo-300 animate-pulse">Analyse de la scène...</p>
+                            <p className="text-sm font-mono text-indigo-300 animate-pulse">Upload & préparation…</p>
                         </div>
                     )}
 
                     {demoState === "generating" && (
                         <div className="absolute inset-0 bg-slate-950 flex flex-col items-center justify-center">
                             <div className="w-16 h-16 border-4 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin mb-4" />
-                            <p className="text-sm font-mono text-cyan-300">Rendu Neural 3D en cours...</p>
-                            <div className="w-48 h-1 bg-slate-800 rounded-full mt-4 overflow-hidden">
-                                <div className="h-full bg-cyan-500 animate-[progress_3s_ease-in-out]" />
-                            </div>
+                            <p className="text-sm font-mono text-cyan-300">Génération vidéo en cours…</p>
+                            {shareUrl && (
+                                <a className="mt-3 text-xs text-cyan-200/80 underline" href={shareUrl} target="_blank" rel="noreferrer">
+                                    Ouvrir le lien de partage
+                                </a>
+                            )}
+                        </div>
+                    )}
+
+                    {demoState === "failed" && (
+                        <div className="absolute inset-0 bg-slate-950 flex flex-col items-center justify-center text-center px-6">
+                            <p className="text-sm font-mono text-red-300">Erreur</p>
+                            <p className="text-xs text-slate-400 mt-2">{error || "Une erreur est survenue."}</p>
+                            <p className="text-xs text-slate-500 mt-3">Clique pour réessayer</p>
                         </div>
                     )}
 
                     {demoState === "success" && (
                         <div className="absolute inset-0 bg-black">
-                            <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 to-slate-900 flex items-center justify-center overflow-hidden">
-                                <div className="w-[120%] h-[120%] bg-[url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center animate-[zoom_10s_infinite_alternate]" />
-                                <div className="absolute inset-0 bg-black/20" />
-                                <Play
-                                    size={48}
-                                    className="text-white/80 drop-shadow-lg absolute opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
-                                />
-                                <div className="absolute top-4 left-4 flex items-center gap-2">
-                                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
-                                    <span className="text-xs font-mono text-white/80">REC • 00:04:12</span>
-                                </div>
+                            <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+                                {videoUrl ? (
+                                    <video
+                                        src={videoUrl}
+                                        playsInline
+                                        autoPlay
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="text-white/70">Chargement…</div>
+                                )}
                             </div>
 
                             <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent flex justify-between items-end">
                                 <div>
                                     <div className="text-xs font-bold text-white mb-1">Votre Souvenir est prêt</div>
-                                    <div className="text-[10px] text-slate-300 font-mono">1080p • 60fps • Cinematic</div>
+                                    {shareUrl && (
+                                        <a className="text-[10px] text-cyan-200 underline font-mono" href={shareUrl} target="_blank" rel="noreferrer">
+                                            Partager / Revisionner
+                                        </a>
+                                    )}
                                 </div>
                                 <button
-                                    onClick={onDownloadClick}
-                                    className="bg-white text-black text-xs font-bold px-4 py-2 rounded hover:bg-indigo-50 transition-colors shadow-lg shadow-white/20 animate-bounce-subtle"
+                                    onClick={() => {
+                                        onDownloadClick();
+                                    }}
+                                    className="bg-white text-black text-xs font-bold px-4 py-2 rounded hover:bg-indigo-50 transition-colors shadow-lg shadow-white/20"
                                 >
                                     Télécharger
                                 </button>
@@ -187,13 +272,13 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
                 </div>
             </div>
 
-            <div className="absolute -right-8 top-20 bg-slate-800/90 backdrop-blur border border-white/10 p-3 rounded-lg shadow-xl animate-[float_4s_infinite_ease-in-out] z-10">
+            <div className="absolute -right-8 top-20 bg-slate-800/90 backdrop-blur border border-white/10 p-3 rounded-lg shadow-xl z-10">
                 <Layers size={20} className="text-indigo-400 mb-2" />
                 <div className="w-12 h-1 bg-slate-600 rounded mb-1" />
                 <div className="w-8 h-1 bg-slate-600 rounded" />
             </div>
 
-            <div className="absolute -left-4 bottom-20 bg-slate-800/90 backdrop-blur border border-white/10 p-3 rounded-lg shadow-xl animate-[float_5s_infinite_ease-in-out_1s] z-10">
+            <div className="absolute -left-4 bottom-20 bg-slate-800/90 backdrop-blur border border-white/10 p-3 rounded-lg shadow-xl z-10">
                 <Wand2 size={20} className="text-cyan-400 mb-2" />
                 <div className="w-10 h-1 bg-slate-600 rounded" />
             </div>

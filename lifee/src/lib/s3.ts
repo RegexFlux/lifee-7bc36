@@ -1,79 +1,59 @@
-import { S3Client, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { Readable } from "node:stream";
 
-const region = process.env.AWS_REGION!;
-const bucket = process.env.S3_BUCKET!;
-const prefix = process.env.S3_PREFIX ?? "lifee";
+export const loadS3Env = () => {
+    const client = new S3Client({
+        credentials: {
+            accessKeyId: process.env.S3_ACCESS_KEY_ID as string,
+            secretAccessKey: process.env.S3_SECRET_ACCESS_KEY as string,
+        },
+        endpoint: process.env.S3_ENDPOINT as string,
+        forcePathStyle: true,
+        region: process.env.S3_REGION as string,
+    });
 
-export const s3 = new S3Client({
-    region,
-    // si tu es sur un environnement avec IAM role, tu peux enlever credentials
-    credentials: process.env.AWS_ACCESS_KEY_ID
-        ? {
-            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-        }
-        : undefined,
-});
-
-export const keys = {
-    job: (id: string) => `${prefix}/jobs/${id}.json`,
-    video: (id: string) => `${prefix}/videos/${id}.mp4`,
-    upload: (id: string) => `${prefix}/uploads/${id}`,
+    return {
+        bucket: process.env.S3_BUCKET_NAME as string,
+        client,
+        expiresIn: Number(process.env.S3_SIGN_EXPIRES || "600"),
+    };
 };
 
-async function streamToString(body: any): Promise<string> {
-    // Body est généralement un Readable (Node). On bufferise.
-    const chunks: Buffer[] = [];
-    for await (const chunk of body) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-    return Buffer.concat(chunks).toString("utf-8");
-}
-
-export async function putJson(key: string, value: unknown) {
-    await s3.send(
-        new PutObjectCommand({
-            Bucket: bucket,
-            Key: key,
-            Body: JSON.stringify(value),
-            ContentType: "application/json",
-            CacheControl: "no-store",
-        })
-    );
-}
-
-export async function getJson<T>(key: string): Promise<T | null> {
-    try {
-        const res = await s3.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
-        const text = await streamToString(res.Body);
-        return JSON.parse(text) as T;
-    } catch (e: any) {
-        // NoSuchKey / NotFound
-        return null;
-    }
-}
-
-export async function putBytes(params: {
-    key: string;
-    body: Buffer | Uint8Array | string | ReadableStream | any;
-    contentType: string;
-    cacheControl?: string;
-}) {
-    await s3.send(
+export async function putBufferToS3(params: { key: string; buffer: Buffer; contentType: string }) {
+    const { client, bucket } = loadS3Env();
+    await client.send(
         new PutObjectCommand({
             Bucket: bucket,
             Key: params.key,
-            Body: params.body,
+            Body: params.buffer,
             ContentType: params.contentType,
-            CacheControl: params.cacheControl,
         })
     );
 }
 
-export async function presignVideoUrl(id: string, opts?: { download?: boolean }) {
-    const cmd = new GetObjectCommand({
-        Bucket: bucket,
-        Key: keys.video(id),
-        ResponseContentDisposition: opts?.download ? `attachment; filename="lifee-${id}.mp4"` : undefined,
+export async function putRemoteUrlToS3(params: { key: string; url: string; contentType?: string }) {
+    const { client, bucket } = loadS3Env();
+
+    const res = await fetch(params.url);
+    if (!res.ok || !res.body) throw new Error(`Failed to fetch remote: ${res.status}`);
+
+    const ct = params.contentType || res.headers.get("content-type") || "application/octet-stream";
+    const bodyStream = Readable.fromWeb(res.body as any);
+
+    await client.send(
+        new PutObjectCommand({
+            Bucket: bucket,
+            Key: params.key,
+            Body: bodyStream,
+            ContentType: ct,
+        })
+    );
+}
+
+export async function presignGet(key: string, expiresIn?: number) {
+    const { client, bucket, expiresIn: envExp } = loadS3Env();
+    return getSignedUrl(client, new GetObjectCommand({ Bucket: bucket, Key: key }), {
+        expiresIn: expiresIn ?? envExp,
     });
-    return getSignedUrl(s3, cmd, { expiresIn: 60 * 30 }); // 30 min
 }
