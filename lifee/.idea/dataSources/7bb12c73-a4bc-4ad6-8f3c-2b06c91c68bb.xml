@@ -3,17 +3,9 @@
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.53">
     <root id="1">
       <DateStyle>mdy</DateStyle>
-      <Grants>1||-9223372036854775808|c|G
-1||10|c|G
-1||10|C|G
-1||10|T|G
-4||-9223372036854775808|c|G
-4||10|c|G
-4||10|C|G
-4||10|T|G</Grants>
-      <IntrospectionStateNumber>746</IntrospectionStateNumber>
+      <IntrospectionStateNumber>930</IntrospectionStateNumber>
       <ServerVersion>16.11</ServerVersion>
-      <StartupTime>1766349612</StartupTime>
+      <StartupTime>1766358811</StartupTime>
       <TimeZones>true ACDT
 true ACSST
 false ACST
@@ -701,13 +693,10 @@ false posixrules
       <Grants>11||10|C|G
 11||-9223372036854775808|U|G
 11||10|U|G
-2200||6171|C|G
-2200||-9223372036854775808|U|G
-2200||6171|U|G
 13276||10|C|G
 13276||-9223372036854775808|U|G
 13276||10|U|G</Grants>
-      <IntrospectionStateNumber>746</IntrospectionStateNumber>
+      <IntrospectionStateNumber>930</IntrospectionStateNumber>
       <ObjectId>16384</ObjectId>
       <OwnerName>lifee</OwnerName>
     </database>
@@ -4117,358 +4106,28 @@ false posixrules
       <ValidatorName>fmgr_sql_validator</ValidatorName>
       <ValidatorSchema>pg_catalog</ValidatorSchema>
     </language>
-    <schema id="262" parent="2" name="drizzle">
-      <ObjectId>16385</ObjectId>
-      <StateNumber>732</StateNumber>
-      <OwnerName>lifee</OwnerName>
-    </schema>
-    <schema id="263" parent="2" name="information_schema">
+    <schema id="262" parent="2" name="information_schema">
       <ObjectId>13276</ObjectId>
       <StateNumber>530</StateNumber>
       <OwnerName>lifee</OwnerName>
     </schema>
-    <schema id="264" parent="2" name="pg_catalog">
+    <schema id="263" parent="2" name="pg_catalog">
       <Comment>system catalog schema</Comment>
       <ObjectId>11</ObjectId>
       <StateNumber>524</StateNumber>
       <OwnerName>lifee</OwnerName>
     </schema>
-    <schema id="265" parent="2" name="public">
+    <schema id="264" parent="2" name="public">
       <AutoIntrospectionLevel>3</AutoIntrospectionLevel>
-      <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <LastIntrospectionL1Xid>746</LastIntrospectionL1Xid>
-      <LastIntrospectionL2Xid>746</LastIntrospectionL2Xid>
-      <LastIntrospectionL3Xid>746</LastIntrospectionL3Xid>
+      <LastIntrospectionL1Xid>930</LastIntrospectionL1Xid>
+      <LastIntrospectionL2Xid>930</LastIntrospectionL2Xid>
+      <LastIntrospectionL3Xid>930</LastIntrospectionL3Xid>
       <LastIntrospectionLevel>3</LastIntrospectionLevel>
-      <LastIntrospectionLocalTimestamp>2025-12-21.20:54:31</LastIntrospectionLocalTimestamp>
-      <ObjectId>2200</ObjectId>
-      <StateNumber>524</StateNumber>
-      <OwnerName>pg_database_owner</OwnerName>
+      <LastIntrospectionLocalTimestamp>2025-12-21.23:17:23</LastIntrospectionLocalTimestamp>
+      <ObjectId>16552</ObjectId>
+      <StateNumber>929</StateNumber>
+      <OwnerName>lifee</OwnerName>
     </schema>
-    <table id="266" parent="265" name="lifee_daily_runs">
-      <DetailsLevel>2</DetailsLevel>
-      <ObjectId>16395</ObjectId>
-      <StateNumber>734</StateNumber>
-      <AccessMethodId>2</AccessMethodId>
-      <OwnerName>lifee</OwnerName>
-    </table>
-    <table id="267" parent="265" name="lifee_ip_attempts">
-      <DetailsLevel>2</DetailsLevel>
-      <ObjectId>16403</ObjectId>
-      <StateNumber>734</StateNumber>
-      <AccessMethodId>2</AccessMethodId>
-      <OwnerName>lifee</OwnerName>
-    </table>
-    <table id="268" parent="265" name="lifee_job_events">
-      <DetailsLevel>2</DetailsLevel>
-      <ObjectId>16411</ObjectId>
-      <StateNumber>734</StateNumber>
-      <AccessMethodId>2</AccessMethodId>
-      <OwnerName>lifee</OwnerName>
-    </table>
-    <table id="269" parent="265" name="lifee_jobs">
-      <DetailsLevel>2</DetailsLevel>
-      <ObjectId>16419</ObjectId>
-      <StateNumber>734</StateNumber>
-      <AccessMethodId>2</AccessMethodId>
-      <OwnerName>lifee</OwnerName>
-    </table>
-    <column id="270" parent="266" name="day">
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
-    </column>
-    <column id="271" parent="266" name="count">
-      <DefaultExpression>0</DefaultExpression>
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>integer|0s</StoredType>
-      <TypeId>23</TypeId>
-    </column>
-    <index id="272" parent="266" name="lifee_daily_runs_pkey">
-      <ColNames>day</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <ObjectId>16401</ObjectId>
-      <Primary>1</Primary>
-      <StateNumber>734</StateNumber>
-      <Unique>1</Unique>
-      <AccessMethodId>403</AccessMethodId>
-      <CollationNames>default</CollationNames>
-      <CollationIds>100</CollationIds>
-      <CollationParentNames>pg_catalog</CollationParentNames>
-    </index>
-    <key id="273" parent="266" name="lifee_daily_runs_pkey">
-      <NameSurrogate>1</NameSurrogate>
-      <ObjectId>16402</ObjectId>
-      <Primary>1</Primary>
-      <StateNumber>734</StateNumber>
-      <UnderlyingIndexId>16401</UnderlyingIndexId>
-    </key>
-    <column id="274" parent="267" name="ip_hash">
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
-    </column>
-    <column id="275" parent="267" name="scope_key">
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
-    </column>
-    <column id="276" parent="267" name="created_at">
-      <DefaultExpression>now()</DefaultExpression>
-      <NotNull>1</NotNull>
-      <Position>3</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>timestamp with time zone|0s</StoredType>
-      <TypeId>1184</TypeId>
-    </column>
-    <column id="277" parent="267" name="job_id">
-      <NotNull>1</NotNull>
-      <Position>4</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
-    </column>
-    <index id="278" parent="267" name="lifee_ip_attempts_ip_hash_scope_key_pk">
-      <ColNames>ip_hash
-scope_key</ColNames>
-      <ObjectId>16409</ObjectId>
-      <Primary>1</Primary>
-      <StateNumber>734</StateNumber>
-      <Unique>1</Unique>
-      <AccessMethodId>403</AccessMethodId>
-      <CollationIds>100
-100</CollationIds>
-      <CollationNames>default
-default</CollationNames>
-      <CollationParentNames>pg_catalog
-pg_catalog</CollationParentNames>
-    </index>
-    <key id="279" parent="267" name="lifee_ip_attempts_ip_hash_scope_key_pk">
-      <ObjectId>16410</ObjectId>
-      <Primary>1</Primary>
-      <StateNumber>734</StateNumber>
-      <UnderlyingIndexId>16409</UnderlyingIndexId>
-    </key>
-    <column id="280" parent="268" name="id">
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
-    </column>
-    <column id="281" parent="268" name="job_id">
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
-    </column>
-    <column id="282" parent="268" name="created_at">
-      <DefaultExpression>now()</DefaultExpression>
-      <NotNull>1</NotNull>
-      <Position>3</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>timestamp with time zone|0s</StoredType>
-      <TypeId>1184</TypeId>
-    </column>
-    <column id="283" parent="268" name="type">
-      <NotNull>1</NotNull>
-      <Position>4</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
-    </column>
-    <column id="284" parent="268" name="message">
-      <NotNull>1</NotNull>
-      <Position>5</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
-    </column>
-    <index id="285" parent="268" name="lifee_job_events_pkey">
-      <ColNames>id</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <ObjectId>16417</ObjectId>
-      <Primary>1</Primary>
-      <StateNumber>734</StateNumber>
-      <Unique>1</Unique>
-      <AccessMethodId>403</AccessMethodId>
-      <CollationNames>default</CollationNames>
-      <CollationIds>100</CollationIds>
-      <CollationParentNames>pg_catalog</CollationParentNames>
-    </index>
-    <index id="286" parent="268" name="lifee_job_events_job_idx">
-      <ColNames>job_id
-created_at</ColNames>
-      <ObjectId>16428</ObjectId>
-      <StateNumber>734</StateNumber>
-      <AccessMethodId>403</AccessMethodId>
-      <CollationNames>default</CollationNames>
-      <CollationIds>100</CollationIds>
-      <CollationParentNames>pg_catalog</CollationParentNames>
-    </index>
-    <key id="287" parent="268" name="lifee_job_events_pkey">
-      <NameSurrogate>1</NameSurrogate>
-      <ObjectId>16418</ObjectId>
-      <Primary>1</Primary>
-      <StateNumber>734</StateNumber>
-      <UnderlyingIndexId>16417</UnderlyingIndexId>
-    </key>
-    <column id="288" parent="269" name="id">
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
-    </column>
-    <column id="289" parent="269" name="share_slug">
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>varchar(32)|0s</StoredType>
-      <TypeId>1043</TypeId>
-    </column>
-    <column id="290" parent="269" name="created_at">
-      <DefaultExpression>now()</DefaultExpression>
-      <NotNull>1</NotNull>
-      <Position>3</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>timestamp with time zone|0s</StoredType>
-      <TypeId>1184</TypeId>
-    </column>
-    <column id="291" parent="269" name="updated_at">
-      <DefaultExpression>now()</DefaultExpression>
-      <NotNull>1</NotNull>
-      <Position>4</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>timestamp with time zone|0s</StoredType>
-      <TypeId>1184</TypeId>
-    </column>
-    <column id="292" parent="269" name="status">
-      <NotNull>1</NotNull>
-      <Position>5</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
-    </column>
-    <column id="293" parent="269" name="progress">
-      <Position>6</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>real|0s</StoredType>
-      <TypeId>700</TypeId>
-    </column>
-    <column id="294" parent="269" name="progress_message">
-      <Position>7</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
-    </column>
-    <column id="295" parent="269" name="prompt">
-      <Position>8</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
-    </column>
-    <column id="296" parent="269" name="email">
-      <Position>9</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
-    </column>
-    <column id="297" parent="269" name="replicate_prediction_id">
-      <Position>10</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
-    </column>
-    <column id="298" parent="269" name="replicate_status">
-      <Position>11</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
-    </column>
-    <column id="299" parent="269" name="replicate_logs">
-      <Position>12</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
-    </column>
-    <column id="300" parent="269" name="replicate_output_url">
-      <Position>13</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
-    </column>
-    <column id="301" parent="269" name="image_key">
-      <Position>14</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
-    </column>
-    <column id="302" parent="269" name="video_key">
-      <Position>15</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
-    </column>
-    <column id="303" parent="269" name="error">
-      <Position>16</Position>
-      <StateNumber>734</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
-    </column>
-    <index id="304" parent="269" name="lifee_jobs_pkey">
-      <ColNames>id</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <ObjectId>16426</ObjectId>
-      <Primary>1</Primary>
-      <StateNumber>734</StateNumber>
-      <Unique>1</Unique>
-      <AccessMethodId>403</AccessMethodId>
-      <CollationNames>default</CollationNames>
-      <CollationIds>100</CollationIds>
-      <CollationParentNames>pg_catalog</CollationParentNames>
-    </index>
-    <index id="305" parent="269" name="lifee_jobs_share_slug_uq">
-      <ColNames>share_slug</ColNames>
-      <ObjectId>16429</ObjectId>
-      <StateNumber>734</StateNumber>
-      <Unique>1</Unique>
-      <AccessMethodId>403</AccessMethodId>
-      <CollationNames>default</CollationNames>
-      <CollationIds>100</CollationIds>
-      <CollationParentNames>pg_catalog</CollationParentNames>
-    </index>
-    <index id="306" parent="269" name="lifee_jobs_created_idx">
-      <ColNames>created_at</ColNames>
-      <ObjectId>16431</ObjectId>
-      <StateNumber>734</StateNumber>
-      <AccessMethodId>403</AccessMethodId>
-    </index>
-    <index id="307" parent="269" name="lifee_jobs_status_idx">
-      <ColNames>status</ColNames>
-      <ObjectId>16430</ObjectId>
-      <StateNumber>734</StateNumber>
-      <AccessMethodId>403</AccessMethodId>
-      <CollationNames>default</CollationNames>
-      <CollationIds>100</CollationIds>
-      <CollationParentNames>pg_catalog</CollationParentNames>
-    </index>
-    <key id="308" parent="269" name="lifee_jobs_pkey">
-      <NameSurrogate>1</NameSurrogate>
-      <ObjectId>16427</ObjectId>
-      <Primary>1</Primary>
-      <StateNumber>734</StateNumber>
-      <UnderlyingIndexId>16426</UnderlyingIndexId>
-    </key>
   </database-model>
 </dataSource>

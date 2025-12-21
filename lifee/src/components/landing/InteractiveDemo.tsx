@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Layers, Play, Upload, Wand2 } from "lucide-react";
+import {useRouter} from "next/router";
 
 type DemoState = "idle" | "analyzing" | "generating" | "success" | "failed";
 
@@ -9,13 +10,15 @@ type Props = {
 
 export default function InteractiveDemo({ onDownloadClick }: Props) {
     const [demoState, setDemoState] = useState<DemoState>("idle");
-    const [jobId, setJobId] = useState<string | null>(null);
     const [videoUrl, setVideoUrl] = useState<string | null>(null);
     const [shareUrl, setShareUrl] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+    const router = useRouter();
+    const setJobId = (jobId?: string) => router.push({ query: { ...router.query, jobId  } }, undefined, { shallow: true });
 
     useEffect(() => {
         return () => {
@@ -60,7 +63,7 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
         setError(null);
         setVideoUrl(null);
         setShareUrl(null);
-        setJobId(null);
+        await setJobId(undefined);
 
         setDemoState("analyzing");
 
@@ -72,7 +75,7 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
         const data = await r.json();
         if (!r.ok) throw new Error(data?.error || "Upload failed");
 
-        setJobId(data.jobId);
+        await setJobId(data.jobId);
         setShareUrl(data.shareUrl);
         setDemoState("generating");
         pollJob(data.jobId);

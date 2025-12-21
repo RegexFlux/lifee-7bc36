@@ -1,4 +1,14 @@
-import { pgTable, text, timestamp, real, integer, varchar, primaryKey, index, uniqueIndex } from "drizzle-orm/pg-core";
+import {
+    pgTable,
+    text,
+    timestamp,
+    real,
+    integer,
+    varchar,
+    primaryKey,
+    index,
+    uniqueIndex,
+} from "drizzle-orm/pg-core";
 
 // --- Users ---
 export const users = pgTable(
@@ -9,9 +19,9 @@ export const users = pgTable(
         createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
         updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
     },
-    (t) => ({
-        emailUq: uniqueIndex("users_email_uq").on(t.email),
-    })
+    (t) => [
+        uniqueIndex("users_email_uq").on(t.email),
+    ]
 );
 
 // --- Sessions (cookie-based) ---
@@ -24,10 +34,10 @@ export const sessions = pgTable(
         createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
         expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
     },
-    (t) => ({
-        userIdx: index("sessions_user_idx").on(t.userId),
-        tokenIdx: uniqueIndex("sessions_token_uq").on(t.tokenHash),
-    })
+    (t) => [
+        index("sessions_user_idx").on(t.userId),
+        uniqueIndex("sessions_token_uq").on(t.tokenHash),
+    ]
 );
 
 // --- Email login codes (for existing users) ---
@@ -42,20 +52,17 @@ export const emailLoginCodes = pgTable(
         usedAt: timestamp("used_at", { withTimezone: true }),
         attempts: integer("attempts").notNull().default(0),
     },
-    (t) => ({
-        emailIdx: index("email_login_codes_email_idx").on(t.email, t.createdAt),
-    })
+    (t) => [
+        index("email_login_codes_email_idx").on(t.email, t.createdAt),
+    ]
 );
 
 // --- Generic rate limits (DB-based, no Redis needed) ---
-export const rateLimits = pgTable(
-    "rate_limits",
-    {
-        key: text("key").primaryKey(), // ex: "auth:start:ip:<hash>"
-        count: integer("count").notNull().default(0),
-        resetAt: timestamp("reset_at", { withTimezone: true }).notNull(),
-    }
-);
+export const rateLimits = pgTable("rate_limits", {
+    key: text("key").primaryKey(), // ex: "auth:start:ip:<hash>"
+    count: integer("count").notNull().default(0),
+    resetAt: timestamp("reset_at", { withTimezone: true }).notNull(),
+});
 
 export const lifeeJobs = pgTable(
     "lifee_jobs",
@@ -67,7 +74,7 @@ export const lifeeJobs = pgTable(
         updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 
         status: text("status").notNull(), // uploading|queued|starting|processing|succeeded|failed
-        progress: real("progress"),       // 0..1
+        progress: real("progress"), // 0..1
         progressMessage: text("progress_message"),
 
         prompt: text("prompt"),
@@ -83,11 +90,11 @@ export const lifeeJobs = pgTable(
 
         error: text("error"),
     },
-    (t) => ({
-        shareSlugUq: uniqueIndex("lifee_jobs_share_slug_uq").on(t.shareSlug),
-        statusIdx: index("lifee_jobs_status_idx").on(t.status),
-        createdIdx: index("lifee_jobs_created_idx").on(t.createdAt),
-    })
+    (t) => [
+        uniqueIndex("lifee_jobs_share_slug_uq").on(t.shareSlug),
+        index("lifee_jobs_status_idx").on(t.status),
+        index("lifee_jobs_created_idx").on(t.createdAt),
+    ]
 );
 
 export const lifeeJobEvents = pgTable(
@@ -99,9 +106,9 @@ export const lifeeJobEvents = pgTable(
         type: text("type").notNull(), // info|warn|replicate
         message: text("message").notNull(),
     },
-    (t) => ({
-        jobIdx: index("lifee_job_events_job_idx").on(t.jobId, t.createdAt),
-    })
+    (t) => [
+        index("lifee_job_events_job_idx").on(t.jobId, t.createdAt),
+    ]
 );
 
 // 1 essai / IP : par jour (ou "forever" si tu veux)
@@ -113,17 +120,15 @@ export const lifeeIpAttempts = pgTable(
         createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
         jobId: text("job_id").notNull(),
     },
-    (t) => ({
-        pk: primaryKey({ columns: [t.ipHash, t.scopeKey] }),
-    })
+    (t) => [
+        primaryKey({ columns: [t.ipHash, t.scopeKey] }),
+        // or give it a custom name:
+        // primaryKey({ name: "lifee_ip_attempts_pk", columns: [t.ipHash, t.scopeKey] }),
+    ]
 );
 
 // Hard cap global/jour pour éviter explosion des coûts
-export const lifeeDailyRuns = pgTable(
-    "lifee_daily_runs",
-    {
-        day: text("day").primaryKey(), // "YYYY-MM-DD"
-        count: integer("count").notNull().default(0),
-    }
-);
-
+export const lifeeDailyRuns = pgTable("lifee_daily_runs", {
+    day: text("day").primaryKey(), // "YYYY-MM-DD"
+    count: integer("count").notNull().default(0),
+});

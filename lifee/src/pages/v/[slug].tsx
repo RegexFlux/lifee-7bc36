@@ -80,6 +80,21 @@ export default function SharedMemorySlugPage({
                                              }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 
     const router = useRouter();
+
+    React.useEffect(() => {
+        if (!router.isReady) return;
+
+        // évite de réécrire si déjà présent
+        if (router.query.jobId === jobId) return;
+
+        // ✅ replace = pas d’empilement dans l’historique
+        router.replace(
+            { pathname: router.pathname, query: { ...router.query, jobId } },
+            undefined,
+            { shallow: true }
+        );
+    }, [router.isReady, router.query, router.pathname, jobId, router]);
+
     const showAuthModal = () => router.push({ query: { ...router.query, auth: "1" } }, undefined, { shallow: true });
 
     const { videoUrl, statusLine, progress, shareUrl: shareUrlFromApi, createdAt } = useLifeeJobStatus(jobId);

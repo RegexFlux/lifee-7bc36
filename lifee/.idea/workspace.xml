@@ -6,12 +6,18 @@
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/data_source_mapping.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb/storage_v2/_src_/database/lifee_db.lCs6OQ/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb/storage_v2/_src_/database/lifee_db.lCs6OQ/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/AuthModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/AuthModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/LandingPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/LandingPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/drizzle/meta/_journal.json" beforeDir="false" afterPath="$PROJECT_DIR$/drizzle/meta/_journal.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ConversionCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ConversionCard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/auth/session.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/auth/session.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/auth/start.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/auth/start.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/auth/verify.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/auth/verify.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib/db/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/db/schema.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/emain/sendLoginCode.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/email/sendLoginCode.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/v/[slug].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/v/[slug].tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,11 +75,11 @@
       <recent name="$PROJECT_DIR$/public/examples/calm" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/pages/api" />
       <recent name="$PROJECT_DIR$/src/pages/api/webhooks" />
       <recent name="$PROJECT_DIR$/src/pages/api/" />
       <recent name="$PROJECT_DIR$/src/pages/api/lifee/video" />
       <recent name="$PROJECT_DIR$/src/pages/api/lifee" />
-      <recent name="$PROJECT_DIR$/src/pages/api/video" />
     </key>
   </component>
   <component name="RunManager" selected="npm.Next.js: server-side">
@@ -107,7 +113,7 @@
       <updated>1766155263293</updated>
       <workItem from="1766155264500" duration="3814000" />
       <workItem from="1766226805887" duration="619000" />
-      <workItem from="1766341899508" duration="15182000" />
+      <workItem from="1766341899508" duration="16370000" />
     </task>
     <servers />
   </component>

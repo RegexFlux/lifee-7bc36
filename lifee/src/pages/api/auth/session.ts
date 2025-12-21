@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import type { NextApiResponse } from "next";
-import { db } from "@/lib/db";
+import { db } from "@/lib/db/index";
 import { sessions } from "@/lib/db/schema";
 
 function sha256(s: string) {

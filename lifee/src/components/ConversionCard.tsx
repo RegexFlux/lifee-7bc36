@@ -12,7 +12,7 @@ export function ConversionCard(
         shareUrl: string;
         onUnlock: () => void;
         ctaLabel?: string;
-        createdAt?: string; // ISO string (ex: "2025-12-21T19:42:00.000Z")
+        createdAt?: string | null; // ISO string (ex: "2025-12-21T19:42:00.000Z")
     }>
 ) {
     const pct = Math.round(props.progress * 100);

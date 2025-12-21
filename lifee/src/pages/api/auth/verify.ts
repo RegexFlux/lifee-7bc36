@@ -2,11 +2,11 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import crypto from "node:crypto";
 import { and, desc, eq, isNull, gt } from "drizzle-orm";
 
-import { db } from "@/lib/db";
+import { db } from "@/lib/db/index";
 import { users, emailLoginCodes, lifeeJobs, lifeeJobEvents } from "@/lib/db/schema";
 import { getClientIp, hashIp } from "@/lib/security/ip";
 import { consumeRateLimitOrThrow } from "@/lib/security/rateLimit";
-import { createSessionAndSetCookie } from "@/lib/auth/session";
+import { createSessionAndSetCookie } from "@/pages/api/auth/session";
 
 function normEmail(s: string) {
     return String(s || "").trim().toLowerCase();
