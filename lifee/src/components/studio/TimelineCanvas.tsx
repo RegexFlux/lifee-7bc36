@@ -98,6 +98,7 @@ export function TimelineCanvas(props: {
 
     const [isDraggingOver, setIsDraggingOver] = useState(false);
     const [previewIndex, setPreviewIndex] = useState<number | null>(null);
+    const [previewX, setPreviewX] = useState<number | null>(null);
 
     // Panning / inertie
     const [isPanning, setIsPanning] = useState(false);
@@ -250,21 +251,57 @@ export function TimelineCanvas(props: {
         e.dataTransfer.dropEffect = "move";
         setIsDraggingOver(true);
 
-        if (!containerRef.current) return;
-        const rect = containerRef.current.getBoundingClientRect();
-        const { x, scale } = transformRef.current;
+        const wr = wrapperRef.current?.getBoundingClientRect();
+        const container = containerRef.current;
+        if (!wr || !container) return;
 
-        const xInsideCanvas = (e.clientX - rect.left - x) / scale;
-        const relativeX = xInsideCanvas - PADDING_LEFT;
+        const t = transformRef.current;
 
-        let idx = Math.round(relativeX / ITEM_SLOT_WIDTH);
-        idx = Math.max(0, Math.min(idx, props.timeline.length));
+        // x dans l’espace "container" (avant scale), stable et sans double-subtract
+        const x = (e.clientX - wr.left - t.x) / t.scale;
+
+        const els = Array.from(
+            container.querySelectorAll('[data-timeline-item="1"]')
+        ) as HTMLElement[];
+
+        // Timeline vide
+        if (els.length === 0) {
+            setPreviewIndex(0);
+            setPreviewX(PADDING_LEFT); // le début du flux dans ton container (padding)
+            return;
+        }
+
+        // Centres réels des items (offsetLeft est en coords non-transformées -> parfait)
+        const centers = els.map((el) => ({
+            left: el.offsetLeft,
+            width: el.offsetWidth,
+            center: el.offsetLeft + el.offsetWidth / 2,
+        }));
+
+        // Index d’insertion : premier centre > x
+        let idx = 0;
+        while (idx < centers.length && x > centers[idx].center) idx++;
+
+        // Position réelle du "trait" d’insertion (entre deux items)
+        let boundaryX: number;
+        if (idx === 0) {
+            boundaryX = centers[0].left;
+        } else if (idx === centers.length) {
+            const last = centers[centers.length - 1];
+            boundaryX = last.left + last.width;
+        } else {
+            boundaryX = (centers[idx - 1].center + centers[idx].center) / 2;
+        }
+
         setPreviewIndex(idx);
+        setPreviewX(boundaryX);
     };
+
 
     const handleDragLeave = () => {
         setIsDraggingOver(false);
         setPreviewIndex(null);
+        setPreviewX(null);
     };
 
     const handleDrop = (e: React.DragEvent) => {
@@ -272,7 +309,9 @@ export function TimelineCanvas(props: {
         setIsDraggingOver(false);
 
         const idx = previewIndex ?? props.timeline.length;
+
         setPreviewIndex(null);
+        setPreviewX(null);
 
         try {
             const data = JSON.parse(e.dataTransfer.getData("application/json")) as DragPayload;
@@ -281,6 +320,7 @@ export function TimelineCanvas(props: {
             // ignore
         }
     };
+
 
     const isPanBlocked = (target: HTMLElement) =>
         !!(
@@ -479,16 +519,25 @@ export function TimelineCanvas(props: {
                 )}
 
                 {/* Drop preview (option: utiliser le gradient local si tu veux) */}
-                {previewIndex !== null && (
-                    <div className="absolute z-0 flex items-center justify-center pointer-events-none" style={{ left: `${previewIndex * ITEM_SLOT_WIDTH}px`, top: "50%", transform: "translateY(-50%)", width: "140px", height: "220px" }}>
-                        <div className="relative h-full">
-                            <div className="absolute left-1/2 -translate-x-1/2 w-[3px] h-full rounded-full" style={{ backgroundImage: axisGradient, boxShadow: "0 0 0 6px rgba(244,63,94,0.12)" }} />
-                            <div className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full bg-slate-900 text-white text-[10px] px-3 py-1 shadow-lg">
-                                Déposer ici
+                    {previewIndex !== null && previewX !== null && (
+                        <div
+                            className="absolute z-0 flex items-center justify-center pointer-events-none"
+                            style={{
+                                left: `${previewX}px`,
+                                top: "50%",
+                                transform: "translate(-50%, -50%)",
+                                width: "140px",
+                                height: "220px",
+                            }}
+                        >
+                            <div className="relative h-full">
+                                <div className="absolute left-1/2 -translate-x-1/2 w-[3px] h-full rounded-full bg-slate-900/70" />
+                                <div className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full bg-slate-900 text-white text-[10px] px-3 py-1 shadow-lg">
+                                    Déposer ici
+                                </div>
                             </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
                 {/* Items */}
                 {props.timeline.map((item, index) => {
@@ -511,6 +560,7 @@ export function TimelineCanvas(props: {
                             draggable
                             onDragStart={(e) => props.onDragStartTimeline(e, item)}
                             className={itemClass}
+                            data-timeline-item="1"
                             style={{ minWidth: "160px" }}
                         >
                             {/* Connector teinté par l'item */}

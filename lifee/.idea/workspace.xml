@@ -6,14 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/LandingPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/LandingPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/Sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/Sidebar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/LibraryItemCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/LibraryItemCard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/LibraryList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/LibraryList.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/studio/TimelineCanvas.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/TimelineCanvas.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/Toolbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/Toolbar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/export/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/export/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/library/[id].ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/library/[id].ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/timeline/clips/[clipId].ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/timeline/clips/[clipId].ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/timeline/reorder.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/timeline/reorder.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/studioApi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/studioApi.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -112,7 +108,7 @@
       <updated>1766155263293</updated>
       <workItem from="1766155264500" duration="3814000" />
       <workItem from="1766226805887" duration="619000" />
-      <workItem from="1766341899508" duration="31039000" />
+      <workItem from="1766341899508" duration="31947000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />

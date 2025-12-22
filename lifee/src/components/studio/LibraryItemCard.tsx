@@ -1,7 +1,21 @@
-// src/components/studio/LibraryItemCard.tsx
-import React from "react";
-import { GripHorizontal, Image as ImageIcon, Plus, Trash2, Video } from "lucide-react";
+import React, { useMemo } from "react";
+import {
+    GripHorizontal,
+    Image as ImageIcon,
+    Plus,
+    Trash2,
+    Video,
+    Play,
+    Wand2,
+} from "lucide-react";
 import type { Asset } from "@/types/studio";
+
+function formatMeta(item: Asset) {
+    const parts: string[] = [];
+    if (item.date) parts.push(item.date);
+    if (item.type === "video" && item.duration) parts.push(item.duration);
+    return parts.join(" • ");
+}
 
 export function LibraryItemCard(props: Readonly<{
     item: Asset;
@@ -11,42 +25,179 @@ export function LibraryItemCard(props: Readonly<{
 }>) {
     const { item } = props;
 
+    const meta = useMemo(() => formatMeta(item), [item]);
+    const isVideo = item.type === "video";
+    const isPhoto = item.type === "image";
+
+    const onKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            props.onAdd(item);
+        }
+    };
+
     return (
         <div
-            draggable
-            onDragStart={(e) => props.onDragStart(e, item)}
+            role="button"
+            tabIndex={0}
+            aria-label={isPhoto ? `Générer une vidéo depuis ${item.title}` : `Ajouter ${item.title} à la timeline`}
+            onKeyDown={onKeyDown}
             onClick={() => props.onAdd(item)}
-            className="w-full relative group bg-white rounded-xl active:scale-95 transition-all border border-gray-100 shadow-sm flex items-center p-3 cursor-pointer hover:bg-indigo-50"
+            className={[
+                "group relative w-full rounded-2xl border border-slate-200 bg-white/90 backdrop-blur",
+                "shadow-[0_14px_45px_-35px_rgba(2,6,23,0.35)]",
+                "transition-all duration-200",
+                "hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_60px_-40px_rgba(2,6,23,0.45)]",
+                "active:translate-y-0 active:scale-[0.99]",
+                "focus:outline-none focus:ring-2 focus:ring-rose-200",
+                "cursor-pointer",
+            ].join(" ")}
         >
-            <div className="w-12 h-12 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 mr-3 shrink-0">
-                {item.thumbnailUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={item.thumbnailUrl} alt={item.title} className="w-full h-full object-cover" />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center text-slate-400">
-                        {item.type === "video" ? <Video size={18} /> : <ImageIcon size={18} />}
+            {/* Glow subtil */}
+            <div
+                className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                style={{
+                    background:
+                        "radial-gradient(1200px 220px at 10% 0%, rgba(244,63,94,0.12), transparent 55%), radial-gradient(900px 220px at 90% 100%, rgba(245,158,11,0.10), transparent 55%)",
+                }}
+                aria-hidden="true"
+            />
+
+            <div className="relative flex items-center gap-3 p-3">
+                {/* THUMB */}
+                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                    {item.thumbnailUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                            src={item.thumbnailUrl}
+                            alt={item.title}
+                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.05]"
+                            draggable={false}
+                        />
+                    ) : (
+                        <div className="h-full w-full grid place-items-center text-slate-400">
+                            {isVideo ? <Video size={18} /> : <ImageIcon size={18} />}
+                        </div>
+                    )}
+
+
+                    {/* Overlay play si vidéo */}
+                    {isVideo && (
+                        <div className="absolute inset-0 grid place-items-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                            <div className="rounded-full border border-white/40 bg-black/35 p-1.5 text-white backdrop-blur">
+                                <Play size={14} className="fill-white" />
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* TEXT */}
+                <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-2">
+                        <h4 className="truncate text-sm font-semibold text-slate-800">{item.title}</h4>
+
+                        {/* Indicateur mobile */}
+                        <div className="md:hidden text-slate-300 group-hover:text-rose-500 transition-colors">
+                            <Plus size={16} />
+                        </div>
                     </div>
+
+                    <div className="mt-1 flex flex-wrap items-center gap-2">
+            <span
+                className={[
+                    "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium",
+                    isVideo
+                        ? "border-indigo-200 bg-indigo-50 text-indigo-700"
+                        : "border-rose-200 bg-rose-50 text-rose-700",
+                ].join(" ")}
+            >
+              {isVideo ? <Video size={14} /> : <ImageIcon size={14} />}
+                {isVideo ? "Vidéo" : "Photo"}
+            </span>
+
+                        {meta ? (
+                            <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500">
+                {meta}
+              </span>
+                        ) : null}
+                    </div>
+
+                    {/* Hint desktop */}
+                    <div className="mt-1 hidden md:block text-[11px] text-slate-400">
+                        {isPhoto ? "Cliquez ou générez → vidéo • Glissez via la poignée" : "Cliquez pour ajouter • Glissez via la poignée"}
+                    </div>
+                </div>
+
+                {/* ACTIONS */}
+                {isPhoto && (
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            props.onAdd(item); // ton flow IA (modal prompt/durée) se déclenche ici
+                        }}
+                        className={[
+                            "absolute top-4 right-4 inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold",
+                            "border border-rose-200 bg-rose-50 text-rose-700",
+                            "hover:bg-rose-100 hover:border-rose-300 transition-colors",
+                            "shadow-sm",
+                            "focus:outline-none focus:ring-2 focus:ring-rose-200",
+                        ].join(" ")}
+                        aria-label={`Générer une vidéo depuis ${item.title}`}
+                        title="Générer une vidéo"
+                    >
+                        <Wand2 size={14} />
+                        Générer
+                    </button>
                 )}
-            </div>
+                <div className="flex items-center gap-1.5">
+                    {/* ✅ Bouton Générer pour les photos */}
 
-            <div className="flex-1 min-w-0">
-                <h4 className="font-semibold text-slate-700 text-sm truncate">{item.title}</h4>
-                <span className="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded mt-1 inline-block">
-          {item.date}{item.duration ? ` • ${item.duration}` : ""}
-        </span>
-            </div>
+                    {/* Delete */}
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            props.onRequestDelete(item);
+                        }}
+                        className={[
+                            "opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity",
+                            "p-2 rounded-xl border border-transparent",
+                            "hover:border-slate-200 hover:bg-white",
+                            "text-slate-400 hover:text-rose-600",
+                            "focus:outline-none focus:ring-2 focus:ring-rose-200",
+                        ].join(" ")}
+                        title="Supprimer"
+                        aria-label={`Supprimer ${item.title}`}
+                    >
+                        <Trash2 size={16} />
+                    </button>
 
-            <div className="flex items-center gap-2">
-                <button
-                    onClick={(e) => { e.stopPropagation(); props.onRequestDelete(item); }}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-lg hover:bg-white border border-transparent hover:border-slate-200"
-                    title="Supprimer"
-                >
-                    <Trash2 size={16} className="text-red-500" />
-                </button>
-
-                <GripHorizontal size={16} className="text-gray-300 md:block hidden mr-1 group-hover:text-indigo-400" />
-                <Plus size={16} className="text-gray-300 md:hidden" />
+                    {/* Drag handle (desktop) */}
+                    <div className="hidden md:flex items-center">
+                        <div
+                            draggable
+                            onDragStart={(e) => {
+                                e.stopPropagation();
+                                props.onDragStart(e, item);
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            className={[
+                                "p-2 rounded-xl border border-transparent",
+                                "text-slate-300 group-hover:text-slate-600",
+                                "hover:bg-white hover:border-slate-200",
+                                "cursor-grab active:cursor-grabbing",
+                                "transition-colors",
+                            ].join(" ")}
+                            title="Glisser"
+                            aria-label={`Glisser ${item.title}`}
+                            role="button"
+                            tabIndex={-1}
+                        >
+                            <GripHorizontal size={16} />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

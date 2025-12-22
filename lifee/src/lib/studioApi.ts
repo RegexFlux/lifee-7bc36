@@ -42,11 +42,7 @@ export const studioApi = {
     deleteClip: (clipId: string) =>
         request<{ ok: true }>(`/api/studio/timeline/clips/${clipId}`, { method: "DELETE" }),
 
-    reorderClips: (orderedClipIds: string[]) =>
-        request<{ ok: true }>("/api/studio/timeline/reorder", {
-            method: "PUT",
-            body: JSON.stringify({ orderedClipIds }),
-        }),
+    reorderClips: (orderedClipIds: string[]) => {},
 
     // AI
     generateVideoFromImage: (payload: { sourceAssetId: string; durationSec: number; prompt: string }) =>
