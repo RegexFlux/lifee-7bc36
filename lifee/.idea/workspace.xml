@@ -6,23 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/Sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/Sidebar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/StudioApp.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/StudioApp.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/TimelineCanvas.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/TimelineCanvas.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/TimelineCanvasItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/TimelineCanvasItem.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/TimelineCanvasView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/TimelineCanvasView.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/Toolbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/Toolbar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/modals/AIGenModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/modals/AIGenModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/modals/ExportModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/modals/ExportModal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/VideoPlayer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/VideoPlayer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/Footer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/Footer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/LandingPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/LandingPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/SocialProof.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/SocialProof.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/StudioShowcase.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/StudioShowcase.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/studio/modals/MusicModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/modals/MusicModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ui/ConfirmDialog.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/ConfirmDialog.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/useTimelineItemActions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useTimelineItemActions.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/studioApi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/studioApi.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/_store.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/_store.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/bootstrap.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/bootstrap.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/timeline/clips/[clipId].ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/timeline/clips/[clipId]/get.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/timeline/clips/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/timeline/clips/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/studio.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/studio.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/_app.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/_app.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,46 +38,46 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
-    "git-widget-placeholder": "main",
-    "js.debugger.nextJs.config.created.client": "true",
-    "js.debugger.nextJs.config.created.server": "true",
-    "last_opened_file_path": "/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/src/pages/api/studio/timeline/clips/[clipId]",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "npm.Next.js: server-side.executor": "Run",
-    "ts.external.directory.path": "/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/node_modules/typescript/lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;js.debugger.nextJs.config.created.client&quot;: &quot;true&quot;,
+    &quot;js.debugger.nextJs.config.created.server&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/public/audio&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;npm.Next.js: server-side.executor&quot;: &quot;Run&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "postgresql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/public/audio" />
       <recent name="$PROJECT_DIR$/src/pages/api/studio/timeline/clips/[clipId]" />
       <recent name="$PROJECT_DIR$/public/examples/showcase" />
       <recent name="$PROJECT_DIR$/public/examples" />
       <recent name="$PROJECT_DIR$/src/components/studio/modals" />
-      <recent name="$PROJECT_DIR$/public/examples/demo1" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/public/examples/studio" />
       <recent name="$PROJECT_DIR$/src/pages/api/studio/timeline/clips/[clipId]" />
       <recent name="$PROJECT_DIR$/src/pages/api/studio/timeline/clips/get" />
       <recent name="$PROJECT_DIR$/src/lib/studio" />
       <recent name="$PROJECT_DIR$/public/examples/showcase" />
-      <recent name="$PROJECT_DIR$/src/pages/api/studio/timeline" />
     </key>
   </component>
   <component name="RunManager" selected="npm.Next.js: server-side">
@@ -122,7 +112,8 @@
       <workItem from="1766155264500" duration="3814000" />
       <workItem from="1766226805887" duration="619000" />
       <workItem from="1766341899508" duration="36454000" />
-      <workItem from="1766379281655" duration="11714000" />
+      <workItem from="1766379281655" duration="15475000" />
+      <workItem from="1766416741486" duration="2358000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
@@ -160,6 +151,12 @@
           <url>file://$PROJECT_DIR$/src/pages/api/lifee/video.ts</url>
           <line>32</line>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/components/landing/SocialProof.tsx</url>
+          <line>536</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

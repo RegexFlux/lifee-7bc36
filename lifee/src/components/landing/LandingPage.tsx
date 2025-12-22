@@ -13,6 +13,7 @@ import Bonus from "@/components/landing/Bonus";
 import {navigate} from "next/dist/client/components/segment-cache/navigation";
 import ShowCase from "@/components/landing/Showcase";
 import StudioShowcase from "@/components/landing/StudioShowcase";
+import GoFurther from "@/components/landing/GoFurther";
 
 
 export default function LandingPage() {
@@ -33,11 +34,12 @@ export default function LandingPage() {
 
             <Hero onDownloadClick={showAuthModal} />
             <ShowCase />
-            <StudioShowcase screenshotSrc="/images/studio/screenshot.png"
+            <StudioShowcase screenshotSrc="/examples/studio/dashboard.png"
                             onPrimaryCta={() => showAuthModal()} />
 
             <Solution />
             <HowItWorks />
+            <GoFurther />
             <SocialProof />
 
             <Footer />

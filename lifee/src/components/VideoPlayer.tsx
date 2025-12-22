@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Play, Pause } from "lucide-react";
 
-export function VideoPlayer({ videoUrl }: { videoUrl: string | null }) {
+export function VideoPlayer({ videoUrl, showControls = true }: { videoUrl: string | null, showControls?: boolean }) {
     const ref = useRef<HTMLVideoElement | null>(null);
 
     const [ready, setReady] = useState(false);
@@ -154,7 +154,7 @@ export function VideoPlayer({ videoUrl }: { videoUrl: string | null }) {
                         <div className="absolute inset-0 bg-black/25" />
 
                         {/* centre: bouton play/pause */}
-                        <div className="absolute inset-0 flex items-center justify-center">
+                        {showControls && <div className="absolute inset-0 flex items-center justify-center">
                             <div
                                 className={[
                                     "grid place-items-center rounded-full w-20 h-20",
@@ -171,7 +171,7 @@ export function VideoPlayer({ videoUrl }: { videoUrl: string | null }) {
                                     <Play size={32} className="fill-white text-white ml-1" />
                                 )}
                             </div>
-                        </div>
+                        </div>}
 
                         {/* petit hint bas gauche */}
                         <div className="absolute left-4 bottom-4 text-[11px] font-mono text-white/80">

@@ -9,11 +9,17 @@ import {
     ShieldCheck,
     LayoutGrid,
     SlidersHorizontal,
+    UploadCloud,
+    CalendarClock,
+    HeartHandshake,
 } from "lucide-react";
 
 type Props = {
-    screenshotSrc?: string; // ex: "/images/studio/screenshot.png"
-    onPrimaryCta?: () => void; // ex: open AuthModal
+    screenshotSrc?: string; // grande capture
+    step1ScreenshotSrc?: string; // Déposez vos photos
+    step2ScreenshotSrc?: string; // Organiser l'histoire
+    step3ScreenshotSrc?: string; // Partagez en famille
+    onPrimaryCta?: () => void;
 };
 
 const FEATURES = [
@@ -30,12 +36,12 @@ const FEATURES = [
     {
         icon: <Wand2 size={16} />,
         title: "Génération IA guidée",
-        desc: "Ajoutez du mouvement, de la profondeur et une ambiance cinématique à partir d’une seule photo.",
+        desc: "Ajoutez du mouvement et une ambiance cinématique à partir d’une seule photo.",
     },
     {
         icon: <Music size={16} />,
         title: "Musique & rythme",
-        desc: "Choisissez une bande-son (pré-sélectionnée) et donnez immédiatement du souffle à l’émotion.",
+        desc: "Choisissez une bande-son et donnez immédiatement du souffle à l’émotion.",
     },
     {
         icon: <Download size={16} />,
@@ -44,10 +50,72 @@ const FEATURES = [
     },
 ];
 
+const STEPS = [
+    {
+        k: "1",
+        icon: <UploadCloud size={16} />,
+        title: "Déposez vos photos",
+        desc: "Import instantané. Vos souvenirs se rangent automatiquement.",
+        badge: "Upload",
+        tone: "rose" as const,
+        screenshotKey: "step1" as const,
+    },
+    {
+        k: "2",
+        icon: <CalendarClock size={16} />,
+        title: "Organisez l’histoire de votre proche",
+        desc: "Glissez-déposez. Le film se construit comme un récit, sans effort.",
+        badge: "Timeline",
+        tone: "amber" as const,
+        screenshotKey: "step2" as const,
+    },
+    {
+        k: "3",
+        icon: <HeartHandshake size={16} />,
+        title: "Partagez des émotions en famille",
+        desc: "Un export propre, prêt à envoyer. Un moment à revivre ensemble.",
+        badge: "Partage",
+        tone: "emerald" as const,
+        screenshotKey: "step3" as const,
+    },
+];
+
+function toneClasses(tone: "rose" | "amber" | "emerald") {
+    if (tone === "rose")
+        return {
+            iconWrap: "bg-rose-50 text-rose-600 border-rose-100",
+            badge: "bg-rose-600",
+            glow: "from-rose-200/55 to-amber-200/20",
+            ring: "ring-rose-200/50",
+        };
+    if (tone === "amber")
+        return {
+            iconWrap: "bg-amber-50 text-amber-700 border-amber-100",
+            badge: "bg-amber-600",
+            glow: "from-amber-200/55 to-rose-200/20",
+            ring: "ring-amber-200/50",
+        };
+    return {
+        iconWrap: "bg-emerald-50 text-emerald-700 border-emerald-100",
+        badge: "bg-emerald-600",
+        glow: "from-emerald-200/55 to-amber-200/20",
+        ring: "ring-emerald-200/50",
+    };
+}
+
 export default function StudioShowcase({
-                                                    screenshotSrc = "/examples/studio/screenshot.png",
-                                                    onPrimaryCta,
-                                                }: Readonly<Props>) {
+                                           screenshotSrc = "/examples/studio/dashboard.png",
+                                           step1ScreenshotSrc = "/examples/studio/step-upload.png",
+                                           step2ScreenshotSrc = "/examples/studio/step-timeline.png",
+                                           step3ScreenshotSrc = "/examples/studio/step-export.png",
+                                           onPrimaryCta,
+                                       }: Readonly<Props>) {
+    const stepScreens = {
+        step1: step1ScreenshotSrc,
+        step2: step2ScreenshotSrc,
+        step3: step3ScreenshotSrc,
+    };
+
     return (
         <section className="relative overflow-hidden border-t border-stone-200 bg-gradient-to-b from-stone-50 via-white to-stone-50 py-24">
             {/* Background decor */}
@@ -75,6 +143,8 @@ export default function StudioShowcase({
 
                     <p className="mt-4 text-stone-600 text-lg leading-relaxed">
                         Importez → organisez → animez → ajoutez la musique → exportez.
+                        <br/>
+                        <br/>
                         <span className="text-stone-500"> Tout est guidé, tout est fluide.</span>
                     </p>
 
@@ -147,15 +217,13 @@ export default function StudioShowcase({
                         </div>
                     </div>
 
-                    {/* Right: big screenshot */}
-                    <div className="lg:col-span-8">
+                    {/* Right: big screenshot + steps cards */}
+                    <div className="lg:col-span-8 space-y-8">
+                        {/* Big screenshot */}
                         <div className="relative">
-                            {/* Glow */}
                             <div className="absolute -inset-6 bg-gradient-to-tr from-rose-200/50 to-amber-200/50 blur-3xl opacity-50 rounded-[2.5rem]" />
 
-                            {/* Frame */}
-                            <div className="relative rounded-[2rem] border border-stone-200 bg-white shadow-2xl overflow-hidden">
-                                {/* Fake top bar */}
+                            <div className="relative rounded-[2rem] border border-stone-200 bg-white shadow-2xl">
                                 <div className="h-11 bg-gradient-to-b from-stone-50 to-white border-b border-stone-100 flex items-center px-4 gap-2">
                                     <div className="w-2.5 h-2.5 rounded-full bg-rose-300" />
                                     <div className="w-2.5 h-2.5 rounded-full bg-amber-300" />
@@ -164,7 +232,6 @@ export default function StudioShowcase({
                                     <div className="ml-auto text-[11px] text-stone-500 font-mono">Studio</div>
                                 </div>
 
-                                {/* Screenshot */}
                                 <div className="relative">
                                     <img
                                         src={screenshotSrc}
@@ -174,24 +241,31 @@ export default function StudioShowcase({
                                     />
 
                                     {/* Overlays (hotspots on large screens) */}
-                                    <div className="hidden md:block pointer-events-none absolute inset-0">
+                                    <div className="hidden md:block pointer-events-none absolute left-0 top-0 w-full h-full">
                                         <Hotspot
-                                            className="left-[10%] top-[22%]"
+                                            className="left-[21%] top-[21.5%]"
                                             title="Bibliothèque"
                                             desc="Thumbnails + recherche"
                                         />
                                         <Hotspot
-                                            className="left-[52%] top-[18%]"
+                                            className="left-[23%] top-[70%]"
                                             title="IA Vidéo"
                                             desc="Prompt + durée"
                                         />
                                         <Hotspot
-                                            className="left-[22%] bottom-[18%]"
+                                            className="left-[50%] top-[50%]"
                                             title="Timeline"
                                             desc="Drag & drop"
                                         />
                                         <Hotspot
-                                            className="right-[10%] bottom-[22%]"
+                                            className="right-[5%] top-[7.5%]"
+                                            title="Musique"
+                                            desc="Sélectionner votre musique"
+                                            align="right"
+                                            position="top-right"
+                                        />
+                                        <Hotspot
+                                            className="-right-[11%] top-[7.5%] z-1000"
                                             title="Export"
                                             desc="HD en 1 clic"
                                             align="right"
@@ -200,7 +274,6 @@ export default function StudioShowcase({
                                 </div>
                             </div>
 
-                            {/* Bottom mini CTA / reassurance */}
                             <div className="mt-6 flex flex-col md:flex-row items-center justify-between gap-4">
                                 <div className="text-sm text-stone-600">
                                     <span className="font-bold text-stone-900">Astuce :</span> commencez avec une photo,
@@ -215,30 +288,97 @@ export default function StudioShowcase({
                                 </button>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                {/* Mobile fallback: hotspots list */}
-                <div className="mt-10 md:hidden rounded-2xl border border-stone-200 bg-white/70 backdrop-blur p-5">
-                    <div className="text-sm font-bold text-stone-900 mb-3">Ce que vous voyez sur l’écran</div>
-                    <ul className="space-y-2 text-sm text-stone-600">
-                        <li className="flex items-start gap-2">
-                            <span className="mt-2 inline-block h-1.5 w-1.5 rounded-full bg-rose-400" />
-                            Bibliothèque avec thumbnails + recherche.
-                        </li>
-                        <li className="flex items-start gap-2">
-                            <span className="mt-2 inline-block h-1.5 w-1.5 rounded-full bg-amber-400" />
-                            IA : prompt + durée pour animer une photo.
-                        </li>
-                        <li className="flex items-start gap-2">
-                            <span className="mt-2 inline-block h-1.5 w-1.5 rounded-full bg-rose-400" />
-                            Timeline drag & drop pour composer le film.
-                        </li>
-                        <li className="flex items-start gap-2">
-                            <span className="mt-2 inline-block h-1.5 w-1.5 rounded-full bg-amber-400" />
-                            Musique + export HD.
-                        </li>
-                    </ul>
+                        {/* 3 Steps with screenshots */}
+                        <div className="grid md:grid-cols-3 gap-4">
+                            {STEPS.map((s) => {
+                                const tone = toneClasses(s.tone);
+                                const stepShot =
+                                    s.screenshotKey === "step1"
+                                        ? stepScreens.step1
+                                        : s.screenshotKey === "step2"
+                                            ? stepScreens.step2
+                                            : stepScreens.step3;
+
+                                return (
+                                    <div
+                                        key={s.k}
+                                        className="group relative rounded-2xl border border-stone-200 bg-white shadow-sm overflow-hidden hover:-translate-y-0.5 transition-all"
+                                    >
+                                        {/* soft glow */}
+                                        <div
+                                            className={[
+                                                "pointer-events-none absolute -inset-10 opacity-0 group-hover:opacity-100 transition-opacity blur-3xl",
+                                                `bg-gradient-to-tr ${tone.glow}`,
+                                            ].join(" ")}
+                                        />
+
+                                        {/* screenshot */}
+                                        <div className="relative">
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent" />
+                                            <img
+                                                src={stepShot}
+                                                alt={`${s.title} - capture`}
+                                                className="w-full h-[170px] object-cover"
+                                                loading="lazy"
+                                            />
+                                            <div className="absolute left-3 top-3 inline-flex items-center gap-2 rounded-full border border-white/25 bg-slate-700/50 px-3 py-1 text-[11px] font-semibold text-white backdrop-blur">
+                                                <span className={`h-2 w-2 rounded-full ${tone.badge}`} />
+                                                Étape {s.k} • {s.badge}
+                                            </div>
+                                        </div>
+
+                                        {/* content */}
+                                        <div className="relative p-4">
+                                            <div className="flex items-start gap-3">
+                                                <div
+                                                    className={[
+                                                        "mt-0.5 w-10 h-10 rounded-xl flex items-center justify-center border",
+                                                        tone.iconWrap,
+                                                    ].join(" ")}
+                                                >
+                                                    {s.icon}
+                                                </div>
+
+                                                <div className="min-w-0">
+                                                    <div className="font-bold text-stone-900 text-sm leading-snug">{s.title}</div>
+                                                    <div className="text-stone-600 text-sm leading-snug mt-1">{s.desc}</div>
+                                                </div>
+                                            </div>
+
+                                            {/* micro reassurance */}
+                                            <div className="mt-4 flex items-center justify-between">
+                                                <div className="text-[11px] text-stone-500">
+                                                    Simple • Guidé •{" "}
+                                                    <span className="text-stone-700 font-semibold">impact émotion</span>
+                                                </div>
+                                                <div className={["h-7 w-7 rounded-xl ring-2 bg-white/80 border border-stone-200", tone.ring].join(" ")} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {/* Mobile: tiny helper text */}
+                        <div className="md:hidden rounded-2xl border border-stone-200 bg-white/70 backdrop-blur p-5">
+                            <div className="text-sm font-bold text-stone-900 mb-2">Le parcours en 3 étapes</div>
+                            <ul className="space-y-2 text-sm text-stone-600">
+                                <li className="flex items-start gap-2">
+                                    <span className="mt-2 inline-block h-1.5 w-1.5 rounded-full bg-rose-400" />
+                                    Déposez vos photos et laissez l’album se structurer.
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="mt-2 inline-block h-1.5 w-1.5 rounded-full bg-amber-400" />
+                                    Organisez le récit avec une timeline ultra intuitive.
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="mt-2 inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                                    Partagez en famille : un film qui rassemble.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -250,16 +390,18 @@ function Hotspot({
                      title,
                      desc,
                      align = "left",
+    position = "top-left"
                  }: {
     className: string;
     title: string;
     desc: string;
     align?: "left" | "right";
+    position?: "top-right" | "top-left"
 }) {
     return (
         <div className={`absolute ${className}`}>
             <div className={`relative ${align === "right" ? "text-right" : "text-left"}`}>
-                <div className="absolute -left-2 -top-2 h-3 w-3 rounded-full bg-rose-500 shadow-[0_0_0_6px_rgba(244,63,94,0.18)]" />
+                <div className={"absolute  h-3 w-3 rounded-full bg-rose-500 shadow-[0_0_0_6px_rgba(244,63,94,0.18)] " + (position === 'top-left' ? '-left-2 -top-2' : '-right-2 -top-2')} />
                 <div className="ml-4 rounded-xl border border-stone-200 bg-white/85 backdrop-blur px-3 py-2 shadow-md max-w-[180px]">
                     <div className="text-[11px] font-bold text-stone-900">{title}</div>
                     <div className="text-[11px] text-stone-600">{desc}</div>

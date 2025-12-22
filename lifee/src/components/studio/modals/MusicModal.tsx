@@ -13,6 +13,8 @@ import {
     Tag,
     Timer,
     Music,
+    Sparkles,
+    ArrowUpRight,
 } from "lucide-react";
 import type { MusicTrack } from "@/types/studio";
 
@@ -24,18 +26,27 @@ export type CustomTrack = {
     previewUrl?: string; // optionnel
 };
 
-export function MusicModal(props: Readonly<{
-    open: boolean;
-    tracks: MusicTrack[];
-    selectedId: string | null; // presets (null => sans musique)
-    selectedCustom?: CustomTrack | null;
+function clamp(n: number, min: number, max: number) {
+    return Math.max(min, Math.min(max, n));
+}
+function cls(...a: Array<string | false | null | undefined>) {
+    return a.filter(Boolean).join(" ");
+}
 
-    onSelect: (track: MusicTrack | null) => void; // presets / null
-    onSelectCustom?: (track: CustomTrack | null) => void;
+export function MusicModal(
+    props: Readonly<{
+        open: boolean;
+        tracks: MusicTrack[];
+        selectedId: string | null; // presets (null => sans musique)
+        selectedCustom?: CustomTrack | null;
 
-    onUploadCustom?: (file: File) => Promise<CustomTrack>; // API upload
-    onClose: () => void;
-}>) {
+        onSelect: (track: MusicTrack | null) => void; // presets / null
+        onSelectCustom?: (track: CustomTrack | null) => void;
+
+        onUploadCustom?: (file: File) => Promise<CustomTrack>; // API upload
+        onClose: () => void;
+    }>
+) {
     const [mounted, setMounted] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
 
@@ -58,6 +69,12 @@ export function MusicModal(props: Readonly<{
     const [dragY, setDragY] = useState(0);
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+    // autoplay hint
+    const [autoplayBlocked, setAutoplayBlocked] = useState(false);
+    const [autoplayTried, setAutoplayTried] = useState(false);
+
+    const showCustom = !!props.onUploadCustom && !!props.onSelectCustom;
 
     const selectedTrack = useMemo(() => {
         if (!props.selectedId) return null;
@@ -92,39 +109,50 @@ export function MusicModal(props: Readonly<{
         const dur = a.duration || 0;
         const cur = a.currentTime || 0;
         const ratio = dur > 0 ? cur / dur : 0;
-        setProgress((p) => ({ ...p, [id]: ratio }));
 
+        setProgress((p) => ({ ...p, [id]: ratio }));
         rafRef.current = requestAnimationFrame(() => tickProgress(id));
     };
 
-    const playUrl = (id: string, url: string) => {
+    const playUrl = async (id: string, url: string) => {
         stop();
+        setAutoplayBlocked(false);
+
         const a = new Audio(url);
         a.preload = "auto";
         audioRef.current = a;
 
-        a.play().catch(() => {});
-        setPlayingId(id);
-        tickProgress(id);
+        try {
+            await a.play(); // ✅ allow us to detect autoplay block
+            setPlayingId(id);
+            tickProgress(id);
 
-        a.onended = () => {
-            if (rafRef.current) cancelAnimationFrame(rafRef.current);
-            rafRef.current = null;
+            a.onended = () => {
+                if (rafRef.current) cancelAnimationFrame(rafRef.current);
+                rafRef.current = null;
+                setPlayingId(null);
+                setProgress((p) => ({ ...p, [id]: 0 }));
+            };
+            return true;
+        } catch {
+            // Autoplay blocked (most likely). We keep the UI hint.
+            audioRef.current = null;
             setPlayingId(null);
-            setProgress((p) => ({ ...p, [id]: 0 }));
-        };
+            setAutoplayBlocked(true);
+            return false;
+        }
     };
 
-    const togglePreviewPreset = (t: MusicTrack) => {
+    const togglePreviewPreset = async (t: MusicTrack) => {
         if (!t.previewUrl) return;
         if (playingId === t.id) {
             stop();
             return;
         }
-        playUrl(t.id, t.previewUrl);
+        await playUrl(t.id, t.previewUrl);
     };
 
-    const togglePreviewCustom = () => {
+    const togglePreviewCustom = async () => {
         const ct = props.selectedCustom;
         if (!ct) return;
         const url = ct.previewUrl || ct.url;
@@ -134,7 +162,7 @@ export function MusicModal(props: Readonly<{
             stop();
             return;
         }
-        playUrl(ct.id, url);
+        await playUrl(ct.id, url);
     };
 
     // detect mobile
@@ -172,6 +200,8 @@ export function MusicModal(props: Readonly<{
             setDragY(0);
             setUploadErr(null);
             setDragOver(false);
+            setAutoplayBlocked(false);
+            setAutoplayTried(false);
             return;
         }
 
@@ -181,7 +211,6 @@ export function MusicModal(props: Readonly<{
                 props.onClose();
             }
         };
-
         window.addEventListener("keydown", onKey);
 
         const t = window.setTimeout(() => {
@@ -200,11 +229,47 @@ export function MusicModal(props: Readonly<{
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.open]);
 
+    // ✅ Autoplay on open (best-effort)
+    useEffect(() => {
+        if (!props.open) return;
+        if (autoplayTried) return;
+
+        const run = async () => {
+            setAutoplayTried(true);
+
+            // priority: selected custom -> selected preset -> first filtered with previewUrl
+            if (props.selectedCustom?.previewUrl || props.selectedCustom?.url) {
+                const url = props.selectedCustom.previewUrl || props.selectedCustom.url!;
+                await playUrl(props.selectedCustom.id, url);
+                return;
+            }
+
+            if (selectedTrack?.previewUrl) {
+                await playUrl(selectedTrack.id, selectedTrack.previewUrl);
+                return;
+            }
+
+            const first = filtered.find((t) => !!t.previewUrl);
+            if (first?.previewUrl) {
+                await playUrl(first.id, first.previewUrl);
+            }
+        };
+
+        // small delay feels nicer + avoids racing layout
+        const tt = window.setTimeout(() => {
+            run().catch(() => {});
+        }, 180);
+
+        return () => window.clearTimeout(tt);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [props.open, autoplayTried, selectedTrack?.id, filtered.length, props.selectedCustom?.id]);
+
     const close = () => {
         stop();
         props.onClose();
     };
 
+    // mobile drag-to-close
     const onPointerDown = (e: React.PointerEvent) => {
         if (!isMobile) return;
         dragRef.current = { y0: e.clientY, dy: 0, dragging: true };
@@ -234,8 +299,6 @@ export function MusicModal(props: Readonly<{
         }
         setDragY(0);
     };
-
-    const showCustom = !!props.onUploadCustom && !!props.onSelectCustom;
 
     const handlePickFile = () => {
         setUploadErr(null);
@@ -284,16 +347,33 @@ export function MusicModal(props: Readonly<{
         handleUpload(file);
     };
 
+    const currentSelectedLabel =
+        props.selectedCustom?.title || selectedTrack?.title || (props.selectedId === null ? "Sans musique" : "—");
+
+    const quickStart = async () => {
+        // user gesture => always allowed
+        if (props.selectedCustom?.previewUrl || props.selectedCustom?.url) {
+            await togglePreviewCustom();
+            return;
+        }
+        if (selectedTrack?.previewUrl) {
+            await togglePreviewPreset(selectedTrack);
+            return;
+        }
+        const first = filtered.find((t) => !!t.previewUrl);
+        if (first) await togglePreviewPreset(first);
+    };
+
     if (!props.open) return null;
 
     return (
         <div className="fixed inset-0 z-[65]">
             {/* Backdrop */}
             <div
-                className={[
+                className={cls(
                     "absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity",
-                    mounted ? "opacity-100" : "opacity-0",
-                ].join(" ")}
+                    mounted ? "opacity-100" : "opacity-0"
+                )}
                 onClick={close}
             />
 
@@ -304,16 +384,23 @@ export function MusicModal(props: Readonly<{
                     role="dialog"
                     aria-modal="true"
                     aria-label="Choisir une musique"
-                    className={[
+                    className={cls(
                         "relative w-full sm:max-w-lg",
                         "rounded-t-3xl sm:rounded-3xl overflow-hidden",
                         "bg-white border border-slate-200 shadow-2xl",
-                        isMobile ? "animate-in slide-in-from-bottom-8 duration-200" : "animate-in zoom-in-95 duration-200",
-                    ].join(" ")}
+                        isMobile ? "animate-in slide-in-from-bottom-8 duration-200" : "animate-in zoom-in-95 duration-200"
+                    )}
                     style={{ transform: isMobile ? `translateY(${dragY}px)` : undefined }}
                 >
+                    {/* subtle ambient */}
+                    <div className="pointer-events-none absolute inset-0">
+                        <div className="absolute -top-24 -left-24 h-64 w-64 rounded-full bg-rose-200/35 blur-3xl" />
+                        <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-amber-200/35 blur-3xl" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/[0.02] via-transparent to-white/[0.04]" />
+                    </div>
+
                     {/* Drag handle (mobile) */}
-                    <div className="sm:hidden px-4 pt-3">
+                    <div className="relative sm:hidden px-4 pt-3">
                         <div
                             className="mx-auto h-1.5 w-12 rounded-full bg-slate-200 cursor-grab active:cursor-grabbing"
                             onPointerDown={onPointerDown}
@@ -324,48 +411,56 @@ export function MusicModal(props: Readonly<{
                     </div>
 
                     {/* Header */}
-                    <div className="p-4 sm:p-5 border-b border-slate-100 bg-slate-50">
+                    <div className="relative p-4 sm:p-5 border-b border-slate-100 bg-slate-50">
                         <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0">
-                                <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-700">
-                                    <Music2 size={12} className="text-rose-600" />
-                                    Bande-son • preview instantanée
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-700">
+                                        <Music2 size={12} className="text-rose-600" />
+                                        Bande-son • preview instantanée
+                                    </div>
+
+                                    {autoplayBlocked ? (
+                                        <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-semibold text-amber-800">
+                                            <Sparkles size={12} className="text-amber-600" />
+                                            Appuyez pour écouter
+                                        </div>
+                                    ) : playingId ? (
+                                        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-semibold text-emerald-800">
+                                            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                                            Lecture…
+                                        </div>
+                                    ) : (
+                                        <div className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-3 py-1 text-[11px] font-semibold text-stone-700">
+                                            <ArrowUpRight size={12} className="text-stone-500" />
+                                            Tap pour preview
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="mt-3 text-sm font-black text-slate-900">Choisir une musique</div>
 
                                 <div className="mt-1 text-xs text-slate-500">
-                                    {props.selectedCustom ? (
-                                        <span className="inline-flex items-center gap-1.5">
-                      <CheckCircle2 size={14} className="text-emerald-600" />
-                      Sélection :{" "}
-                                            <span className="font-semibold text-slate-800 truncate">{props.selectedCustom.title}</span>
-                    </span>
-                                    ) : selectedTrack ? (
-                                        <span className="inline-flex items-center gap-1.5">
-                      <CheckCircle2 size={14} className="text-emerald-600" />
-                      Sélection : <span className="font-semibold text-slate-800 truncate">{selectedTrack.title}</span>
-                    </span>
-                                    ) : (
-                                        "Aucune musique sélectionnée"
-                                    )}
+                  <span className="inline-flex items-center gap-1.5">
+                    <CheckCircle2 size={14} className="text-emerald-600" />
+                    Sélection : <span className="font-semibold text-slate-800 truncate">{currentSelectedLabel}</span>
+                  </span>
                                 </div>
                             </div>
 
                             <button
                                 onClick={close}
-                                className="shrink-0 p-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200"
+                                className="relative shrink-0 p-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200"
                                 aria-label="Fermer"
                             >
                                 <X size={18} className="text-slate-600" />
                             </button>
                         </div>
 
-                        {/* Search + Dropzone */}
+                        {/* Search + Quick preview */}
                         <div className="mt-4 grid grid-cols-1 gap-2">
-                            {/* Search */}
                             <div className="relative">
-                                <Search className="absolute left-3 top-1/3 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                 <input
                                     value={q}
                                     onChange={(e) => setQ(e.target.value)}
@@ -374,16 +469,29 @@ export function MusicModal(props: Readonly<{
                                 />
                             </div>
 
+                            <button
+                                onClick={quickStart}
+                                className={cls(
+                                    "w-full rounded-xl border px-3 py-2.5 text-sm font-bold transition flex items-center justify-center gap-2",
+                                    autoplayBlocked
+                                        ? "border-amber-200 bg-amber-50 text-amber-900 hover:bg-amber-100"
+                                        : "border-slate-200 bg-white text-slate-900 hover:bg-slate-50"
+                                )}
+                            >
+                                {playingId ? <Pause size={16} /> : <Play size={16} />}
+                                {playingId ? "Stopper la preview" : autoplayBlocked ? "Lancer la preview (tap)" : "Lancer une preview"}
+                            </button>
+
                             {/* Dropzone */}
                             {showCustom ? (
                                 <div
                                     onDragOver={onDropZoneDragOver}
                                     onDragLeave={onDropZoneDragLeave}
                                     onDrop={onDropZoneDrop}
-                                    className={[
-                                        "rounded-xl border-2 border-dashed px-3 py-2.5 text-sm",
-                                        dragOver ? "border-rose-300 bg-rose-50" : "border-slate-200 bg-white",
-                                    ].join(" ")}
+                                    className={cls(
+                                        "rounded-xl border-2 border-dashed px-3 py-2.5 text-sm bg-white",
+                                        dragOver ? "border-rose-300 bg-rose-50" : "border-slate-200"
+                                    )}
                                 >
                                     <input
                                         ref={fileInputRef}
@@ -400,10 +508,10 @@ export function MusicModal(props: Readonly<{
                                             </div>
                                             <div className="min-w-0">
                                                 <div className="text-xs font-bold text-slate-900 truncate">
-                                                    {uploading ? "Import en cours…" : "Glissez votre piste ici"}
+                                                    {uploading ? "Import en cours…" : "Votre musique"}
                                                 </div>
                                                 <div className="text-[11px] text-slate-500 truncate">
-                                                    mp3, wav, m4a… (ou appuyez sur Importer)
+                                                    Glissez un fichier audio ici, ou cliquez sur Importer
                                                 </div>
                                             </div>
                                         </div>
@@ -420,17 +528,13 @@ export function MusicModal(props: Readonly<{
 
                                     {uploadErr && <div className="mt-2 text-[11px] text-rose-600">{uploadErr}</div>}
                                 </div>
-                            ) : (
-                                <div className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-[11px] text-slate-500 flex items-center">
-                                    Upload perso désactivé (branche `onUploadCustom`).
-                                </div>
-                            )}
+                            ) : null}
                         </div>
                     </div>
 
-                    {/* Body list */}
-                    <div className="p-4 sm:p-5">
-                        <div className="space-y-2 max-h-[56vh] sm:max-h-[440px] overflow-auto pr-1">
+                    {/* Body */}
+                    <div className="relative p-4 sm:p-5">
+                        <div className="space-y-3 max-h-[56vh] sm:max-h-[440px] overflow-auto pr-1">
                             {/* None */}
                             <button
                                 onClick={() => {
@@ -438,10 +542,12 @@ export function MusicModal(props: Readonly<{
                                     props.onSelectCustom?.(null);
                                     props.onSelect(null);
                                 }}
-                                className={[
-                                    "w-full text-left p-4 rounded-2xl border transition",
-                                    props.selectedId === null && !props.selectedCustom ? "border-rose-200 bg-rose-50" : "border-slate-200 hover:bg-slate-50 bg-white",
-                                ].join(" ")}
+                                className={cls(
+                                    "w-full text-left p-4 rounded-2xl border transition bg-white",
+                                    props.selectedId === null && !props.selectedCustom
+                                        ? "border-rose-200 bg-rose-50"
+                                        : "border-slate-200 hover:bg-slate-50"
+                                )}
                             >
                                 <div className="flex items-start justify-between gap-3">
                                     <div className="min-w-0">
@@ -456,7 +562,7 @@ export function MusicModal(props: Readonly<{
 
                             {/* Custom selected */}
                             {props.selectedCustom && (
-                                <div className="w-full p-4 rounded-2xl border border-rose-200 bg-rose-50/50 transition">
+                                <div className="w-full p-4 rounded-2xl border border-rose-200 bg-rose-50/60">
                                     <div className="flex items-start justify-between gap-3">
                                         <button
                                             onClick={() => {
@@ -471,7 +577,9 @@ export function MusicModal(props: Readonly<{
                                                     <Music2 size={16} className="text-rose-600" />
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <div className="text-sm font-bold text-slate-900 truncate">{props.selectedCustom.title}</div>
+                                                    <div className="text-sm font-bold text-slate-900 truncate">
+                                                        {props.selectedCustom.title}
+                                                    </div>
                                                     <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-slate-600">
                             <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5">
                               <Tag size={12} className="text-amber-600" />
@@ -491,12 +599,12 @@ export function MusicModal(props: Readonly<{
                                         <button
                                             onClick={togglePreviewCustom}
                                             disabled={!(props.selectedCustom.previewUrl || props.selectedCustom.url)}
-                                            className={[
+                                            className={cls(
                                                 "p-2 rounded-xl border",
                                                 props.selectedCustom.previewUrl || props.selectedCustom.url
-                                                    ? "border-slate-200 hover:bg-white"
-                                                    : "border-slate-100 text-slate-300 cursor-not-allowed bg-slate-50",
-                                            ].join(" ")}
+                                                    ? "border-slate-200 hover:bg-white bg-white"
+                                                    : "border-slate-100 text-slate-300 cursor-not-allowed bg-slate-50"
+                                            )}
                                             aria-label="Preview custom"
                                             title="Écouter un extrait"
                                         >
@@ -509,13 +617,24 @@ export function MusicModal(props: Readonly<{
                                             className="h-full rounded-full transition-all duration-150"
                                             style={{
                                                 width: `${Math.max(0, Math.min(1, progress[props.selectedCustom.id] ?? 0)) * 100}%`,
-                                                backgroundImage: "linear-gradient(90deg, rgba(251,113,133,0.95), rgba(245,158,11,0.95))",
+                                                backgroundImage:
+                                                    "linear-gradient(90deg, rgba(251,113,133,0.95), rgba(245,158,11,0.95))",
                                                 opacity: playingId === props.selectedCustom.id ? 1 : 0.35,
                                             }}
                                         />
                                     </div>
                                 </div>
                             )}
+
+                            {/* Presets header */}
+                            <div className="pt-1">
+                                <div className="text-[11px] font-black text-slate-700 uppercase tracking-wider">
+                                    Presets
+                                </div>
+                                <div className="text-[11px] text-slate-500 mt-0.5">
+                                    Astuce : privilégiez une musique douce pour un rendu “cinéma”.
+                                </div>
+                            </div>
 
                             {/* Presets */}
                             {filtered.map((t) => {
@@ -526,10 +645,10 @@ export function MusicModal(props: Readonly<{
                                 return (
                                     <div
                                         key={t.id}
-                                        className={[
+                                        className={cls(
                                             "w-full p-4 rounded-2xl border transition bg-white",
-                                            active ? "border-rose-200 bg-rose-50" : "border-slate-200 hover:bg-slate-50",
-                                        ].join(" ")}
+                                            active ? "border-rose-200 bg-rose-50" : "border-slate-200 hover:bg-slate-50"
+                                        )}
                                     >
                                         <div className="flex items-start justify-between gap-3">
                                             <button
@@ -542,10 +661,10 @@ export function MusicModal(props: Readonly<{
                                             >
                                                 <div className="flex items-center gap-2">
                                                     <div
-                                                        className={[
+                                                        className={cls(
                                                             "h-10 w-10 rounded-xl border flex items-center justify-center",
-                                                            active ? "border-rose-200 bg-rose-50" : "border-slate-200 bg-slate-50",
-                                                        ].join(" ")}
+                                                            active ? "border-rose-200 bg-rose-50" : "border-slate-200 bg-slate-50"
+                                                        )}
                                                     >
                                                         <Music2 size={16} className={active ? "text-rose-600" : "text-slate-500"} />
                                                     </div>
@@ -569,10 +688,12 @@ export function MusicModal(props: Readonly<{
                                             <button
                                                 onClick={() => togglePreviewPreset(t)}
                                                 disabled={!t.previewUrl}
-                                                className={[
+                                                className={cls(
                                                     "p-2 rounded-xl border",
-                                                    t.previewUrl ? "border-slate-200 hover:bg-white" : "border-slate-100 text-slate-300 cursor-not-allowed bg-slate-50",
-                                                ].join(" ")}
+                                                    t.previewUrl
+                                                        ? "border-slate-200 hover:bg-white bg-white"
+                                                        : "border-slate-100 text-slate-300 cursor-not-allowed bg-slate-50"
+                                                )}
                                                 aria-label="Preview"
                                                 title={t.previewUrl ? "Écouter un extrait" : "Pas de preview"}
                                             >
@@ -585,7 +706,8 @@ export function MusicModal(props: Readonly<{
                                                 className="h-full rounded-full transition-all duration-150"
                                                 style={{
                                                     width: `${Math.max(0, Math.min(1, pr)) * 100}%`,
-                                                    backgroundImage: "linear-gradient(90deg, rgba(251,113,133,0.95), rgba(245,158,11,0.95))",
+                                                    backgroundImage:
+                                                        "linear-gradient(90deg, rgba(251,113,133,0.95), rgba(245,158,11,0.95))",
                                                     opacity: isPlaying ? 1 : 0.35,
                                                 }}
                                             />
@@ -605,12 +727,21 @@ export function MusicModal(props: Readonly<{
                                     </div>
                                 );
                             })}
+
+                            {filtered.length === 0 && (
+                                <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center">
+                                    <div className="text-sm font-bold text-slate-900">Aucun résultat</div>
+                                    <div className="text-xs text-slate-500 mt-1">Essayez un autre mot-clé.</div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
                     {/* Footer */}
-                    <div className="p-4 sm:p-5 border-t border-slate-100 bg-slate-50 flex items-center justify-between gap-2">
-                        <div className="text-[11px] text-slate-500">Astuce : une musique douce rend le montage plus “cinéma”.</div>
+                    <div className="relative p-4 sm:p-5 border-t border-slate-100 bg-slate-50 flex items-center justify-between gap-2">
+                        <div className="text-[11px] text-slate-500">
+                            Conseil : si l’autoplay est bloqué, cliquez “Lancer la preview”.
+                        </div>
                         <button
                             onClick={close}
                             className="px-3 py-2 rounded-xl bg-slate-900 text-white text-sm font-bold hover:bg-slate-800"
