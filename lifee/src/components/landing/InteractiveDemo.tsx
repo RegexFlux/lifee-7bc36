@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Layers, Play, Upload, Wand2 } from "lucide-react";
+import { Layers, X, Upload, Wand2 } from "lucide-react";
 import {useRouter} from "next/router";
+import {StarDust} from "@/components/landing/StarDust";
 
 type DemoState = "idle" | "analyzing" | "generating" | "success" | "failed";
 
@@ -181,18 +182,19 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
 
             <div
                 id="demo-area"
-                className="relative bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-2xl p-2 shadow-2xl overflow-hidden aspect-[4/3] flex flex-col z-10"
+                className="relative bg-slate-800 backdrop-blur-xl border border-white/10 rounded-2xl pt-2 shadow-2xl overflow-hidden aspect-[4/3] flex flex-col z-10"
             >
-                <div className="h-10 border-b border-white/5 flex items-center px-4 gap-2">
+                <div className="h-10 border-b border-white/5  flex items-center px-4 gap-2 justify-between">
                     <div className="flex gap-1.5">
                         <div className="w-3 h-3 rounded-full bg-red-500/20" />
                         <div className="w-3 h-3 rounded-full bg-yellow-500/20" />
                         <div className="w-3 h-3 rounded-full bg-green-500/20" />
                     </div>
+                    <p className="text-sm text-slate-500"><X size={12} /></p>
                 </div>
 
                 <div
-                    className="flex-1 relative flex items-center justify-center"
+                    className="flex-1 relative flex items-center justify-center h-96"
                     onDragOver={(e) => e.preventDefault()}
                     onDrop={handleDrop}
                     onClick={() => {
@@ -285,6 +287,7 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
                 <Wand2 size={20} className="text-cyan-400 mb-2" />
                 <div className="w-10 h-1 bg-slate-600 rounded" />
             </div>
+
         </div>
     );
 }

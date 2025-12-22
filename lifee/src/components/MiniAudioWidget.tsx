@@ -24,7 +24,7 @@ export function MiniAudioWidget({
                                     position = "br",
                                     remember = true,
                                     autoplay = "try",
-                                    nudgeDurationMs = 4500,
+                                    nudgeDurationMs = 30000,
                                 }: Props) {
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const storageKey = useMemo(() => `mini-audio:${src}`, [src]);
@@ -270,11 +270,11 @@ export function MiniAudioWidget({
 
                     {/* Hint bubble (mobile + desktop) */}
                     {hint && (
-                        <div className="absolute bottom-0 translate-y-[calc(100%+10px)] right-0 sm:right-auto sm:left-0">
+                        <div className="absolute -top-16 -right-0">
                             <div className="rounded-2xl border border-stone-200 bg-white/90 backdrop-blur px-3 py-2 shadow-md">
                                 <div className="text-[11px] font-semibold text-stone-800">{hint}</div>
                                 <div className="mt-0.5 text-[11px] text-stone-500">
-                                    Astuce : ça démarre après un tap (règles mobile).
+                                    Il vous suffit de cliquer sur l'écran
                                 </div>
                             </div>
                         </div>

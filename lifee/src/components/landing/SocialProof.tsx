@@ -12,6 +12,7 @@ import {
     MapPin,
     Flag,
 } from "lucide-react";
+import {StarDust} from "@/components/landing/StarDust";
 
 type Testimonial = {
     id: string;
