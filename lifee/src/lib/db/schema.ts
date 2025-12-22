@@ -19,7 +19,7 @@ export const sessions = pgTable(
     "sessions",
     {
         id: text("id").primaryKey(), // uuid
-        userId: text("user_id").notNull(),
+        userId: uuid("user_id").notNull(),
         tokenHash: text("token_hash").notNull(), // sha256(token)
         createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
         expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),

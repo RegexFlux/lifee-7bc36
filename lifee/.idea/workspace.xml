@@ -6,25 +6,22 @@
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb/storage_v2/_src_/database/lifee_db.lCs6OQ/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb/storage_v2/_src_/database/lifee_db.lCs6OQ/schema/public.abK9xQ.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/data_source_mapping.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/data_source_mapping.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/drizzle.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/drizzle.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/drizzle/0000_fast_the_twelve.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/drizzle/meta/0000_snapshot.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/drizzle/meta/_journal.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/landing/AuthModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/AuthModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/StudioApp.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/StudioApp.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/db/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/db/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/db/schema.studio.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/db/schema.studio.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib/db/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/db/schema.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib/studioApi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/studioApi.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/auth/session.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/auth/session.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/api/auth/start.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/auth/start.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/auth/verify.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/auth/verify.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/_auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/_auth.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/bootstrap.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/bootstrap.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/credits/purchase.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/credits/purchase.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/export/[jobId].ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/export/[jobId].ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/export/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/export/index.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/api/studio/generate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/generate.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/library/[id].ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/library/[id].ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/api/studio/library/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/library/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/timeline.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/timeline/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/studio.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/studio.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -121,7 +118,7 @@
       <updated>1766155263293</updated>
       <workItem from="1766155264500" duration="3814000" />
       <workItem from="1766226805887" duration="619000" />
-      <workItem from="1766341899508" duration="22291000" />
+      <workItem from="1766341899508" duration="23560000" />
     </task>
     <servers />
   </component>

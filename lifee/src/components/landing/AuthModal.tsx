@@ -178,6 +178,7 @@ export default function AuthModal({ onAuthed }: Props) {
                             {loading ? "Chargement..." : "Accéder au téléchargement"} <ArrowRight size={18} />
                         </button>
 
+
                         <p className="text-center text-xs text-slate-600 pt-2">
                             Gratuit et sans engagement.
                         </p>
@@ -218,17 +219,6 @@ export default function AuthModal({ onAuthed }: Props) {
                     </form>
                 )}
             </div>
-            <button
-                type="button"
-                onClick={() => {
-                    const jid = jobId ? `?jobId=${encodeURIComponent(String(jobId))}` : "";
-                    window.location.href = `/api/auth/google/start${jid}`;
-                }}
-                disabled={loading}
-                className="w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold py-3 rounded-lg transition-all"
-            >
-                Continuer avec Google
-            </button>
 
         </div>
     );

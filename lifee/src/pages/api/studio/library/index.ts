@@ -1,9 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { eq } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { requireUserId } from "../_auth";
-import { users, studioAssets } from "@/lib/db/schema";
+import {studioAssets} from "@/lib/db/schema.studio";
 
 function parseMMYYYY(date: string) {
     const [mm, yyyy] = date.split("/");

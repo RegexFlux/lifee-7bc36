@@ -30,10 +30,10 @@ export const studioApi = {
         duration?: string;
         thumbnailUrl?: string;
         fileUrl?: string;
-    }) => request<Asset>("/api/library", { method: "POST", body: JSON.stringify(payload) }),
+    }) => request<Asset>("/api/studio/library", { method: "POST", body: JSON.stringify(payload) }),
 
     deleteAsset: (id: string) =>
-        request<{ ok: true }>(`/api/library/${id}`, { method: "DELETE" }),
+        request<{ ok: true }>(`/api/studio/library/${id}`, { method: "DELETE" }),
 
     // Timeline (✅ DB-driven)
     createClip: (payload: { assetId: string; position?: number | null }) =>
@@ -50,7 +50,7 @@ export const studioApi = {
 
     // AI
     generateVideoFromImage: (payload: { sourceAssetId: string; durationSec: number; prompt: string }) =>
-        request<Asset>("/api/generate", { method: "POST", body: JSON.stringify(payload) }),
+        request<Asset>("/api/studio/generate", { method: "POST", body: JSON.stringify(payload) }),
 
     // Music / Credits
     listMusicPresets: () => request<MusicTrack[]>("/api/music"),

@@ -1,6 +1,8 @@
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
 import * as schema from "./schema";
+import * as auth from './schema.auth';
+import * as studio from './schema.studio';
 
 declare global {
     // eslint-disable-next-line no-var
@@ -16,4 +18,6 @@ const sql =
 
 if (process.env.NODE_ENV !== "production") global.__lifeeSql = sql;
 
-export const db = drizzle(sql, { schema });
+const mergedSchema = { ...schema, ...auth, ...studio };
+
+export const db = drizzle(sql, { schema: mergedSchema });
