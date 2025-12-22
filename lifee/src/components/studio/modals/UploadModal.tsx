@@ -4,19 +4,24 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Check, Upload, X, Image as ImageIcon, Video, Clock, Sparkles } from "lucide-react";
 import type { AssetType } from "@/types/studio";
 
+import { captureVideoThumbnailFile, getVideoDurationSeconds, secondsToShortLabel } from "@/lib/studio/mediaClient";
+
 const MONTHS = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"];
-const YEARS = Array.from({ length: 50 }, (_, i) => new Date().getFullYear() - i);
+const YEARS = Array.from({ length: 1000 }, (_, i) => new Date().getFullYear() - i);
 
 export type UploadDraft = {
     title: string;
     type: AssetType;
-    month: number; // 0..11
+    month: number;
     year: number;
-    duration: string; // pour video
+    duration: string;
     file: File | null;
-    thumbnailUrl?: string;
+
+    thumbnailUrl?: string;  // preview UI
+    thumbnailFile?: File | null; // ✅ pour envoyer au serveur
     fileUrl?: string;
 };
+
 
 function getBaseName(filename: string) {
     const base = filename.split(".").slice(0, -1).join(".") || filename;
@@ -46,6 +51,7 @@ export function UploadModal(props: {
     const [dragOver, setDragOver] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const fileTokenRef = useRef<string>("");
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -75,12 +81,30 @@ export function UploadModal(props: {
         const type: AssetType = file.type.startsWith("video") ? "video" : "image";
         const name = getBaseName(file.name);
 
-        setDraft((d) => ({
-            ...d,
-            file,
-            type,
-            title: d.title || name,
-        }));
+        const token = Math.random().toString(36).slice(2);
+        fileTokenRef.current = token;
+
+        setDraft((d) => ({ ...d, file, type, title: d.title || name, thumbnailFile: null }));
+
+        if (type === "video") {
+            (async () => {
+                try {
+                    const dur = await getVideoDurationSeconds(file);
+                    const thumb = await captureVideoThumbnailFile(file, { atSeconds: 0.1, width: 420 });
+
+                    // ignore si user a re-upload entre temps
+                    if (fileTokenRef.current !== token) return;
+
+                    setDraft((d) => ({
+                        ...d,
+                        duration: d.duration || secondsToShortLabel(dur) || "5s",
+                        thumbnailFile: thumb,
+                    }));
+                } catch {
+                    // silence (pas bloquant)
+                }
+            })();
+        }
     };
 
     const canSubmit = draft.title.trim().length > 0 && !!draft.file;

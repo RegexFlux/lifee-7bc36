@@ -471,24 +471,6 @@ export function TimelineCanvas(props: {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/[0.04] via-transparent to-white/[0.02]" />
             </div>
 
-            {/* Controls */}
-            <div className="absolute top-4 left-4 z-30 pointer-events-none">
-                <div className="pointer-events-auto inline-flex items-center gap-1 rounded-2xl border border-slate-200 bg-white/80 backdrop-blur shadow-sm p-1">
-                    <button type="button" onClick={zoomOut} className="p-2 rounded-xl hover:bg-slate-100 text-slate-700" aria-label="Zoom out">
-                        <ZoomOut size={16} />
-                    </button>
-                    <button type="button" onClick={zoomIn} className="p-2 rounded-xl hover:bg-slate-100 text-slate-700" aria-label="Zoom in">
-                        <ZoomIn size={16} />
-                    </button>
-                    <div className="w-px h-6 bg-slate-200 mx-1" />
-                    <button type="button" onClick={resetView} className="p-2 rounded-xl hover:bg-slate-100 text-slate-700" aria-label="Reset view">
-                        <RotateCcw size={16} />
-                    </button>
-                </div>
-                <div className="mt-2 hidden md:block text-[11px] text-slate-500 bg-white/70 backdrop-blur rounded-xl border border-slate-200 px-3 py-1 shadow-sm">
-                    Astuces : molette = déplacer • Ctrl/⌘ + molette = zoom • Pinch = zoom (mobile)
-                </div>
-            </div>
 
             {/* Content */}
             <div

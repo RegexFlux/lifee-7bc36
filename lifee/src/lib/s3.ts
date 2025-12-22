@@ -1,6 +1,8 @@
+// lib/s3.ts
 import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Readable } from "node:stream";
+import fs from "node:fs";
 
 export const loadS3Env = () => {
     const client = new S3Client({
@@ -27,6 +29,20 @@ export async function putBufferToS3(params: { key: string; buffer: Buffer; conte
             Bucket: bucket,
             Key: params.key,
             Body: params.buffer,
+            ContentType: params.contentType,
+        })
+    );
+}
+
+/** ✅ NEW: upload depuis un fichier (stream) → évite de charger les vidéos en mémoire */
+export async function putFileToS3(params: { key: string; filePath: string; contentType: string }) {
+    if (!params.filePath) throw new Error("putFileToS3: filePath is empty");
+    const { client, bucket } = loadS3Env();
+    await client.send(
+        new PutObjectCommand({
+            Bucket: bucket,
+            Key: params.key,
+            Body: fs.createReadStream(params.filePath),
             ContentType: params.contentType,
         })
     );

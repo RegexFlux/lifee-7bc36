@@ -42,6 +42,32 @@ export function Toolbar(props: {
                     </button>
                 )}
 
+                {props.showZoomControls && (
+                    <div className="hidden md:flex gap-1 bg-white p-1 rounded-lg shadow-md border border-gray-200">
+                        <button
+                            onClick={props.onZoomIn}
+                            className="p-1.5 hover:bg-gray-100 rounded"
+                            aria-label="Zoom in"
+                        >
+                            <ZoomIn size={18} />
+                        </button>
+                        <button
+                            onClick={props.onZoomOut}
+                            className="p-1.5 hover:bg-gray-100 rounded"
+                            aria-label="Zoom out"
+                        >
+                            <ZoomOut size={18} />
+                        </button>
+                        <button
+                            onClick={props.onResetView}
+                            className="p-1.5 hover:bg-gray-100 rounded"
+                            aria-label="Reset view"
+                        >
+                            <RotateCcw size={18} />
+                        </button>
+                    </div>
+                )}
+
             </div>
 
             <div className="flex flex-col gap-2 items-end pointer-events-auto">

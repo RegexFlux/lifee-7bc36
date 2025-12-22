@@ -1,4 +1,4 @@
-import type { Asset, MusicTrack, StudioBootstrap, TimelineItem } from "@/types/studio";
+import type {Asset, MusicTrack, StudioBootstrap, TimelineItem} from "@/types/studio";
 
 async function safeJson<T>(res: Response): Promise<T> {
     const text = await res.text();
@@ -11,58 +11,96 @@ async function safeJson<T>(res: Response): Promise<T> {
 
 async function request<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
     const res = await fetch(input, {
-        credentials: "include", // ✅ important pour cookie session
-        headers: { "Content-Type": "application/json", ...(init?.headers || {}) },
+        credentials: "include",
+        headers: {"Content-Type": "application/json", ...(init?.headers || {})},
         ...init,
     });
     if (!res.ok) throw new Error(await res.text());
     return safeJson<T>(res);
 }
 
+// ✅ Nouveau: FormData (NE PAS mettre Content-Type)
+async function requestForm<T>(input: RequestInfo, form: FormData): Promise<T> {
+    const res = await fetch(input, {
+        method: "POST",
+        credentials: "include",
+        body: form,
+    });
+    if (!res.ok) throw new Error(await res.text());
+    return safeJson<T>(res);
+}
+
 export const studioApi = {
-    bootstrap: () => request<StudioBootstrap>("/api/studio/bootstrap"),
+        bootstrap: () => request<StudioBootstrap>("/api/studio/bootstrap"),
 
-    // Library
-    createAsset: (payload: {
-        title: string;
-        type: "image" | "video";
-        date: string; // "MM/YYYY"
-        duration?: string;
-        thumbnailUrl?: string;
-        fileUrl?: string;
-    }) => request<Asset>("/api/studio/library", { method: "POST", body: JSON.stringify(payload) }),
+        uploadMedia: async (payload: { file: File; thumbnail?: File | null }) => {
+            const fd = new FormData();
+            fd.append("file", payload.file);
+            if (payload.thumbnail) fd.append("thumbnail", payload.thumbnail);
 
-    deleteAsset: (id: string) =>
-        request<{ ok: true }>(`/api/studio/library/${id}`, { method: "DELETE" }),
+            const res = await fetch("/api/studio/library/upload", {
+                method: "POST",
+                credentials: "include",
+                body: fd,
+            });
 
-    // Timeline (✅ DB-driven)
-    createClip: (payload: { assetId: string; position?: number | null }) =>
-        request<TimelineItem>("/api/studio/timeline/clips", { method: "POST", body: JSON.stringify(payload) }),
+            if (!res.ok) throw new Error(await res.text());
+            return res.json() as Promise<{ fileUrl: string; thumbnailUrl?: string; key: string; thumbnailKey?: string }>;
+        },
+        // Library
+        createAsset: (payload: {
+            title: string;
+            type: "image" | "video";
+            date: string; // "MM/YYYY"
+            duration?: string;
+            thumbnailUrl?: string;
+            fileUrl?: string;
+        }) => request<Asset>
+        ("/api/studio/library", {method: "POST", body: JSON.stringify(payload)}),
 
-    deleteClip: (clipId: string) =>
-        request<{ ok: true }>(`/api/studio/timeline/clips/${clipId}`, { method: "DELETE" }),
+        deleteAsset:
+            (id: string) => request<{ ok: true }>(`/api/studio/library/${id}`, {method: "DELETE"}),
 
-    reorderClips: (orderedClipIds: string[]) => {},
+        // Timeline (DB-driven)
+        createClip:
+            (payload: { assetId: string; position?: number | null }) =>
+                request<TimelineItem>("/api/studio/timeline/clips", {method: "POST", body: JSON.stringify(payload)}),
 
-    // AI
-    generateVideoFromImage: (payload: { sourceAssetId: string; durationSec: number; prompt: string }) =>
-        request<Asset>("/api/studio/generate", { method: "POST", body: JSON.stringify(payload) }),
+        deleteClip:
+            (clipId: string) =>
+                request<{ ok: true }>(`/api/studio/timeline/clips/${clipId}`, {method: "DELETE"}),
 
-    // Music / Credits
-    listMusicPresets: () => request<MusicTrack[]>("/api/music"),
+        reorderClips:
+            (orderedClipIds: string[]) =>
+                request<{ ok: true }>("/api/studio/timeline/clips/reorder", {
+                    method: "POST",
+                    body: JSON.stringify({orderedClipIds}),
+                }),
 
-    purchaseCredits: (amount: number) =>
-        request<{ credits: number }>("/api/credits/purchase", {
-            method: "POST",
-            body: JSON.stringify({ amount }),
-        }),
+        // AI
+        generateVideoFromImage:
+            (payload: { sourceAssetId: string; durationSec: number; prompt: string }) =>
+                request<Asset>("/api/studio/generate", {method: "POST", body: JSON.stringify(payload)}),
 
-    // Export
-    startExport: (payload: { timelineClipIds: string[]; musicId?: string | null }) =>
-        request<{ jobId: string }>("/api/export", { method: "POST", body: JSON.stringify(payload) }),
+        // Music / Credits
+        listMusicPresets:
+            () => request<MusicTrack[]>("/api/music"),
 
-    exportStatus: (jobId: string) =>
-        request<{ status: "queued" | "rendering" | "done" | "error"; progress: number; url?: string }>(
-            `/api/export/${jobId}`
-        ),
-};
+        purchaseCredits:
+            (amount: number) =>
+                request<{ credits: number }>("/api/credits/purchase", {method: "POST", body: JSON.stringify({amount})}),
+
+        // Export
+        startExport:
+            (payload: { timelineClipIds: string[]; musicId?: string | null }) =>
+                request<{ jobId: string }>("/api/export", {method: "POST", body: JSON.stringify(payload)}),
+
+        exportStatus:
+            (jobId: string) =>
+                request<{
+                    status: "queued" | "rendering" | "done" | "error";
+                    progress: number;
+                    url?: string
+                }>(`/api/export/${jobId}`),
+    }
+;

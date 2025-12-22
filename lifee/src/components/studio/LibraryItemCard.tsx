@@ -96,10 +96,28 @@ export function LibraryItemCard(props: Readonly<{
                     <div className="flex items-start justify-between gap-2">
                         <h4 className="truncate text-sm font-semibold text-slate-800">{item.title}</h4>
 
-                        {/* Indicateur mobile */}
-                        <div className="md:hidden text-slate-300 group-hover:text-rose-500 transition-colors">
-                            <Plus size={16} />
-                        </div>
+                        {/* ACTIONS */}
+                        {isPhoto && (
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    props.onAdd(item); // ton flow IA (modal prompt/durée) se déclenche ici
+                                }}
+                                className={[
+                                    "absolute right-13 bottom-5 inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold",
+                                    "border border-rose-200 bg-rose-50 text-rose-700",
+                                    "hover:bg-rose-100 hover:border-rose-300 transition-colors",
+                                    "shadow-sm",
+                                    "focus:outline-none focus:ring-2 focus:ring-rose-200",
+                                ].join(" ")}
+                                aria-label={`Générer une vidéo depuis ${item.title}`}
+                                title="Générer une vidéo"
+                            >
+                                <Wand2 size={14} />
+                                Générer
+                            </button>
+                        )}
                     </div>
 
                     <div className="mt-1 flex flex-wrap items-center gap-2">
@@ -127,29 +145,6 @@ export function LibraryItemCard(props: Readonly<{
                         {isPhoto ? "Cliquez ou générez → vidéo • Glissez via la poignée" : "Cliquez pour ajouter • Glissez via la poignée"}
                     </div>
                 </div>
-
-                {/* ACTIONS */}
-                {isPhoto && (
-                    <button
-                        type="button"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            props.onAdd(item); // ton flow IA (modal prompt/durée) se déclenche ici
-                        }}
-                        className={[
-                            "absolute top-4 right-4 inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold",
-                            "border border-rose-200 bg-rose-50 text-rose-700",
-                            "hover:bg-rose-100 hover:border-rose-300 transition-colors",
-                            "shadow-sm",
-                            "focus:outline-none focus:ring-2 focus:ring-rose-200",
-                        ].join(" ")}
-                        aria-label={`Générer une vidéo depuis ${item.title}`}
-                        title="Générer une vidéo"
-                    >
-                        <Wand2 size={14} />
-                        Générer
-                    </button>
-                )}
                 <div className="flex items-center gap-1.5">
                     {/* ✅ Bouton Générer pour les photos */}
 

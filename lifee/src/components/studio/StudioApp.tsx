@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
-import type { Asset, MusicTrack, TimelineItem } from "@/types/studio";
-import { studioApi } from "@/lib/studioApi";
-import { useToast } from "@/components/ui/ToastProvider";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import React, {useEffect, useMemo, useState} from "react";
+import type {Asset, MusicTrack, TimelineItem} from "@/types/studio";
+import {studioApi} from "@/lib/studioApi";
+import {useToast} from "@/components/ui/ToastProvider";
+import {ConfirmDialog} from "@/components/ui/ConfirmDialog";
 
-import { Sidebar } from "./Sidebar";
-import { Toolbar } from "./Toolbar";
-import { TimelineCanvas } from "./TimelineCanvas";
+import {Sidebar} from "./Sidebar";
+import {Toolbar} from "./Toolbar";
+import {TimelineCanvas} from "./TimelineCanvas";
 import {UploadDraft, UploadModal} from "@/components/studio/modals/UploadModal";
 import {MusicModal} from "@/components/studio/modals/MusicModal";
 import {AIGenModal} from "@/components/studio/modals/AIGenModal";
@@ -21,13 +21,14 @@ type DragPayload = { item: any; source: "library" | "timeline" };
 function clamp(n: number, min: number, max: number) {
     return Math.max(min, Math.min(max, n));
 }
+
 function formatMMYYYY(monthIndex0: number, year: number) {
     const mm = String(monthIndex0 + 1).padStart(2, "0");
     return `${mm}/${year}`;
 }
 
 export default function StudioApp() {
-    const { push } = useToast();
+    const {push} = useToast();
 
     const [library, setLibrary] = useState<Asset[]>([]);
     const [timeline, setTimeline] = useState<TimelineItem[]>([]);
@@ -41,7 +42,7 @@ export default function StudioApp() {
     const [filterType, setFilterType] = useState<"all" | "video" | "image">("all");
 
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
-    const [transform, setTransform] = useState({ x: 0, y: 0, scale: 0.8 });
+    const [transform, setTransform] = useState({x: 0, y: 0, scale: 0.8});
 
     const [isUploadOpen, setIsUploadOpen] = useState(false);
 
@@ -75,13 +76,13 @@ export default function StudioApp() {
     useEffect(() => {
         if (typeof window !== "undefined" && window.innerWidth < 768) {
             setIsSidebarOpen(false);
-            setTransform((t) => ({ ...t, scale: 0.6 }));
+            setTransform((t) => ({...t, scale: 0.6}));
         }
     }, []);
 
     useEffect(() => {
         refresh().catch((e: any) => {
-            push({ title: "Erreur chargement", message: e?.message || "Bootstrap failed", variant: "error" });
+            push({title: "Erreur chargement", message: e?.message || "Bootstrap failed", variant: "error"});
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -97,21 +98,21 @@ export default function StudioApp() {
 
     // Drag writer
     const handleDragStart = (e: React.DragEvent, item: any, source: "library" | "timeline") => {
-        e.dataTransfer.setData("application/json", JSON.stringify({ item, source }));
+        e.dataTransfer.setData("application/json", JSON.stringify({item, source}));
         e.dataTransfer.effectAllowed = "move";
     };
 
     // Timeline actions (DB)
     const addAssetToTimeline = async (asset: Asset, index?: number) => {
         const position = typeof index === "number" ? index : null;
-        const clip = await studioApi.createClip({ assetId: asset.id, position });
+        const clip = await studioApi.createClip({assetId: asset.id, position});
         setTimeline((prev) => {
             const next = [...prev];
             if (typeof index === "number") next.splice(index, 0, clip);
             else next.push(clip);
             return next;
         });
-        push({ title: "Ajouté à la timeline", message: asset.title, variant: "success" });
+        push({title: "Ajouté à la timeline", message: asset.title, variant: "success"});
     };
 
     const deleteTimelineItem = async (clipId: string) => {
@@ -120,10 +121,10 @@ export default function StudioApp() {
         setTimeline((t) => t.filter((x) => x.uniqueId !== clipId));
         try {
             await studioApi.deleteClip(clipId);
-            push({ title: "Supprimé de la timeline", variant: "success" });
+            push({title: "Supprimé de la timeline", variant: "success"});
         } catch (e: any) {
             setTimeline(prev);
-            push({ title: "Suppression échouée", message: e?.message || "", variant: "error" });
+            push({title: "Suppression échouée", message: e?.message || "", variant: "error"});
         }
     };
 
@@ -139,9 +140,8 @@ export default function StudioApp() {
         setTimeline(next);
 
         try {
-            await studioApi.reorderClips(next.map((x) => x.uniqueId));
         } catch (e: any) {
-            push({ title: "Réorganisation échouée", message: e?.message || "", variant: "error" });
+            push({title: "Réorganisation échouée", message: e?.message || "", variant: "error"});
             await refresh();
         }
     };
@@ -159,9 +159,8 @@ export default function StudioApp() {
         setTimeline(next);
 
         try {
-            await studioApi.reorderClips(next.map((x) => x.uniqueId));
         } catch (e: any) {
-            push({ title: "Réorganisation échouée", message: e?.message || "", variant: "error" });
+            push({title: "Réorganisation échouée", message: e?.message || "", variant: "error"});
             await refresh();
         }
     };
@@ -209,38 +208,69 @@ export default function StudioApp() {
         try {
             await studioApi.deleteAsset(deleteTarget.id);
             setLibrary((prev) => prev.filter((x) => x.id !== deleteTarget.id));
-            push({ title: "Supprimé", message: deleteTarget.title, variant: "success" });
+            push({title: "Supprimé", message: deleteTarget.title, variant: "success"});
             setDeleteTarget(null);
             await refresh(); // pour nettoyer la timeline si besoin
         } catch (e: any) {
-            push({ title: "Suppression échouée", message: e?.message || "", variant: "error" });
+            push({title: "Suppression échouée", message: e?.message || "", variant: "error"});
         } finally {
             setDeleting(false);
         }
     };
-
     // Upload create asset (metadata only)
     const handleUploadSubmit = async (draft: UploadDraft) => {
+        push({title: "Enregistrement dans la bibliothèque..", message: "", variant: "info"});
         try {
-            const date = formatMMYYYY(draft.month, draft.year);
-            const thumb =
-                draft.file && draft.type === "image" ? URL.createObjectURL(draft.file) : draft.thumbnailUrl;
+            if (!draft.file) throw new Error("Fichier manquant");
+
+            const {fileUrl, thumbnailUrl} = await studioApi.uploadMedia({
+                file: draft.file,
+                thumbnail: draft.thumbnailFile ?? null,
+            });
+
+            const date = `${String(draft.month + 1).padStart(2, "0")}/${draft.year}`;
 
             const asset = await studioApi.createAsset({
                 title: draft.title,
                 type: draft.type,
                 date,
                 duration: draft.type === "video" ? draft.duration : undefined,
-                thumbnailUrl: thumb,
+                fileUrl,
+                thumbnailUrl,
             });
 
             setLibrary((prev) => [asset, ...prev]);
+            push({title: "Ajouté à la bibliothèque", message: asset.title, variant: "success"});
             setIsUploadOpen(false);
-            push({ title: "Ajouté", message: asset.title, variant: "success" });
         } catch (e: any) {
-            push({ title: "Upload échoué", message: e?.message || "", variant: "error" });
+            push({title: "Upload échoué", message: e?.message || "", variant: "error"});
         }
     };
+    // const handleUploadSubmit = async (draft: UploadDraft) => {
+    //     push({title: "Enregistrement dans la bibliothèque..", message: "", variant: "info"});
+    //     try {
+    //         if (!draft.file) throw new Error("Fichier manquant");
+    //
+    //         const date = formatMMYYYY(draft.month, draft.year);
+    //         const thumb =
+    //             draft.file && draft.type === "image" ? URL.createObjectURL(draft.file) : draft.thumbnailUrl;
+    //
+    //         const asset = await studioApi.createAsset({
+    //             title: draft.title,
+    //             type: draft.type,
+    //             date,
+    //             duration: draft.type === "video" ? draft.duration : undefined,
+    //             thumbnailUrl: thumb,
+    //         });
+    //
+    //         setLibrary((prev) => [asset, ...prev]);
+    //         setIsUploadOpen(false);
+    //         push({ title: "Ajouté à la bibliothèque", message: asset.title, variant: "success" });
+    //     } catch (e: any) {
+    //         push({title: "Upload échoué", message: e?.message || "", variant: "error"});
+    //     }
+    // };
+
 
     // AI generate -> returns Asset, then create clip
     const handleGenerateAI = async () => {
@@ -251,7 +281,7 @@ export default function StudioApp() {
             return;
         }
         try {
-            push({ title: "Génération IA", message: "Demande envoyée…", variant: "info" });
+            push({title: "Génération IA", message: "Demande envoyée…", variant: "info"});
             const gen = await studioApi.generateVideoFromImage({
                 sourceAssetId: pendingAsset.id,
                 durationSec: genDurationSec,
@@ -271,9 +301,9 @@ export default function StudioApp() {
             setPendingAsset(null);
             setPendingIndex(null);
 
-            push({ title: "Vidéo IA créée", message: gen.title, variant: "success" });
+            push({title: "Vidéo générée et ajoutée", message: gen.title, variant: "success"});
         } catch (e: any) {
-            push({ title: "Génération échouée", message: e?.message || "", variant: "error" });
+            push({title: "Génération échouée", message: e?.message || "", variant: "error"});
         }
     };
 
@@ -283,10 +313,10 @@ export default function StudioApp() {
         try {
             const r = await studioApi.purchaseCredits(amount);
             setCredits(r.credits);
-            push({ title: "Crédits ajoutés", message: `+${amount}`, variant: "success" });
+            push({title: "Crédits ajoutés", message: `+${amount}`, variant: "success"});
             setIsCreditModalOpen(false);
         } catch (e: any) {
-            push({ title: "Achat échoué", message: e?.message || "", variant: "error" });
+            push({title: "Achat échoué", message: e?.message || "", variant: "error"});
         } finally {
             setPurchasing(false);
         }
@@ -299,7 +329,7 @@ export default function StudioApp() {
             setMusicPresets(list);
             setIsMusicOpen(true);
         } catch (e: any) {
-            push({ title: "Musique indisponible", message: e?.message || "", variant: "error" });
+            push({title: "Musique indisponible", message: e?.message || "", variant: "error"});
         }
     };
 
@@ -313,7 +343,7 @@ export default function StudioApp() {
         setExportUrl(null);
 
         try {
-            const { jobId } = await studioApi.startExport({
+            const {jobId} = await studioApi.startExport({
                 timelineClipIds: timeline.map((t) => t.uniqueId),
                 musicId: audioTrack?.id ?? null,
             });
@@ -327,18 +357,18 @@ export default function StudioApp() {
                     done = true;
                     setRenderStep("done");
                     setExportUrl(s.url ?? null);
-                    push({ title: "Export prêt", variant: "success" });
+                    push({title: "Export prêt", variant: "success"});
                 } else if (s.status === "error") {
                     done = true;
                     setRenderStep("error");
-                    push({ title: "Export échoué", variant: "error" });
+                    push({title: "Export échoué", variant: "error"});
                 } else {
                     await new Promise((r) => setTimeout(r, 800));
                 }
             }
         } catch (e: any) {
             setRenderStep("error");
-            push({ title: "Export impossible", message: e?.message || "", variant: "error" });
+            push({title: "Export impossible", message: e?.message || "", variant: "error"});
         }
     };
 
@@ -353,17 +383,18 @@ export default function StudioApp() {
             // @ts-expect-error
             if (navigator.share) {
                 // @ts-expect-error
-                await navigator.share({ title: "Mon film", url: exportUrl });
+                await navigator.share({title: "Mon film", url: exportUrl});
             } else {
                 await navigator.clipboard.writeText(exportUrl);
-                push({ title: "Lien copié", message: "Coller pour partager.", variant: "success" });
+                push({title: "Lien copié", message: "Coller pour partager.", variant: "success"});
             }
-        } catch {}
+        } catch {
+        }
     };
 
-    const zoomIn = () => setTransform((t) => ({ ...t, scale: clamp(t.scale + 0.1, 0.2, 2) }));
-    const zoomOut = () => setTransform((t) => ({ ...t, scale: clamp(t.scale - 0.1, 0.2, 2) }));
-    const resetView = () => setTransform({ x: 0, y: 0, scale: 0.8 });
+    const zoomIn = () => setTransform((t) => ({...t, scale: clamp(t.scale + 0.1, 0.2, 2)}));
+    const zoomOut = () => setTransform((t) => ({...t, scale: clamp(t.scale - 0.1, 0.2, 2)}));
+    const resetView = () => setTransform({x: 0, y: 0, scale: 0.8});
 
     return (
         <div className="flex h-screen bg-gray-50 font-sans overflow-hidden text-slate-800 select-none relative">
@@ -381,7 +412,8 @@ export default function StudioApp() {
                 onRequestDelete={(asset) => setDeleteTarget(asset)}
             />
 
-            <div className="flex-1 relative bg-slate-100 overflow-hidden flex flex-col transition-all duration-300 w-full">
+            <div
+                className="flex-1 relative bg-slate-100 overflow-hidden flex flex-col transition-all duration-300 w-full">
                 <Toolbar
                     isSidebarOpen={isSidebarOpen}
                     onOpenSidebar={() => setIsSidebarOpen(true)}
@@ -411,7 +443,7 @@ export default function StudioApp() {
             </div>
 
             {/* Modals */}
-            <UploadModal open={isUploadOpen} onClose={() => setIsUploadOpen(false)} onSubmit={handleUploadSubmit} />
+            <UploadModal open={isUploadOpen} onClose={() => setIsUploadOpen(false)} onSubmit={handleUploadSubmit}/>
 
             <MusicModal
                 open={isMusicOpen}
@@ -419,7 +451,11 @@ export default function StudioApp() {
                 selectedId={audioTrack?.id ?? null}
                 onSelect={(t) => {
                     setAudioTrack(t);
-                    push({ title: "Musique", message: t ? `Sélectionnée: ${t.title}` : "Sans musique", variant: "success" });
+                    push({
+                        title: "Musique",
+                        message: t ? `Sélectionnée: ${t.title}` : "Sans musique",
+                        variant: "success"
+                    });
                 }}
                 onClose={() => setIsMusicOpen(false)}
             />

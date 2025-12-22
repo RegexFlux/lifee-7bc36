@@ -30,6 +30,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (!body?.title || !body?.type || !body?.date) return res.status(400).send("Missing fields");
 
+    if (!body.fileUrl) return res.status(400).send("Missing fileUrl");
+
+    const thumbnailUrl = body.thumbnailUrl ?? (body.type === "image" ? body.fileUrl : undefined);
+
     const { month, year } = parseMMYYYY(body.date);
     const durationSec = body.type === "video" && body.duration ? Number(body.duration.replace("s", "")) : null;
 
@@ -42,7 +46,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             month,
             year,
             durationSec: durationSec && Number.isFinite(durationSec) ? durationSec : null,
-            thumbnailUrl: body.thumbnailUrl ?? null,
+            thumbnailUrl: thumbnailUrl,
             fileUrl: body.fileUrl ?? null,
             isGenerated: false,
         })
@@ -55,5 +59,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         date: body.date,
         duration: created.durationSec ? `${created.durationSec}s` : undefined,
         thumbnailUrl: created.thumbnailUrl ?? undefined,
+        fileUrl: created.fileUrl ?? undefined, // ✅ important
+        isGenerated: created.isGenerated ?? false,
     });
+
 }
