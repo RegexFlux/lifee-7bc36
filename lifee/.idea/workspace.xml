@@ -7,6 +7,15 @@
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/StudioApp.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/StudioApp.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/TimelineCanvas.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/TimelineCanvas.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/db/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/db/schema.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/studioApi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/studioApi.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/_app.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/_app.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/music/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/music/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/bootstrap.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/bootstrap.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/library/[id].ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/library/[id].ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types/studio.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/studio.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,11 +74,11 @@
       <recent name="$PROJECT_DIR$/public/examples/calm" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/pages/api/studio" />
       <recent name="$PROJECT_DIR$/src/pages/api" />
       <recent name="$PROJECT_DIR$/src/pages/api/webhooks" />
       <recent name="$PROJECT_DIR$/src/pages/api/" />
       <recent name="$PROJECT_DIR$/src/pages/api/lifee/video" />
-      <recent name="$PROJECT_DIR$/src/pages/api/lifee" />
     </key>
   </component>
   <component name="RunManager" selected="npm.Next.js: server-side">
@@ -103,7 +112,7 @@
       <updated>1766155263293</updated>
       <workItem from="1766155264500" duration="3814000" />
       <workItem from="1766226805887" duration="619000" />
-      <workItem from="1766341899508" duration="17990000" />
+      <workItem from="1766341899508" duration="19191000" />
     </task>
     <servers />
   </component>

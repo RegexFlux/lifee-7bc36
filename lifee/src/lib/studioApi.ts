@@ -30,29 +30,35 @@ export const studioApi = {
         // si upload fichier: passe plutôt par FormData côté route, ici on reste JSON
         fileUrl?: string; // optionnel si déjà upload ailleurs
         thumbnailUrl?: string;
-    }) => request<Asset>("/api/library", { method: "POST", body: JSON.stringify(payload) }),
+    }) => request<Asset>("/api/studio/library", { method: "POST", body: JSON.stringify(payload) }),
 
     deleteAsset: (id: number) => request<{ ok: true }>(`/api/library/${id}`, { method: "DELETE" }),
 
     saveTimeline: (timeline: TimelineItem[]) =>
-        request<{ ok: true }>("/api/timeline", { method: "PUT", body: JSON.stringify({ timeline }) }),
+        request<{ ok: true }>("/api/studio/timeline", { method: "PUT", body: JSON.stringify({ timeline }) }),
 
     generateVideoFromImage: (payload: {
         sourceAssetId: number;
         durationSec: number;
         prompt: string;
     }) => request<Asset & { context: string; isGenerated: true }>(
-        "/api/generate",
+        "/api/studio/generate",
         { method: "POST", body: JSON.stringify(payload) }
     ),
 
-    listMusicPresets: () => request<MusicTrack[]>("/api/music"),
+    listMusicPresets: () => request<MusicTrack[]>("/api/studio/music"),
 
     startExport: (payload: { timeline: TimelineItem[]; musicId?: string | null }) =>
-        request<{ jobId: string }>("/api/export", { method: "POST", body: JSON.stringify(payload) }),
+        request<{ jobId: string }>("/api/studio/export", { method: "POST", body: JSON.stringify(payload) }),
 
     exportStatus: (jobId: string) =>
         request<{ status: "queued" | "rendering" | "done" | "error"; progress: number; url?: string }>(
-            `/api/export/${jobId}`
+            `/api/studio/export/${jobId}`
         ),
+
+    purchaseCredits: (amount: number) =>
+        request<{ credits: number }>("/api/studio/credits/purchase", {
+            method: "POST",
+            body: JSON.stringify({ amount }),
+        }),
 };

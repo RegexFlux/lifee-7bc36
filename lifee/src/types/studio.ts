@@ -5,10 +5,13 @@ export type Asset = {
     id: number;
     type: AssetType;
     title: string;
-    date: string; // "MM/YYYY"
-    duration?: string; // "5s" pour vidéo
-    thumbnailUrl?: string; // URL fournie par le serveur
+    date: string;
+    duration?: string;
+    thumbnailUrl?: string;
+    isGenerated?: boolean;
+    context?: string;
 };
+
 
 export type TimelineItem = Asset & {
     uniqueId: string; // distinct de id (ré-usage d’un asset plusieurs fois)

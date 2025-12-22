@@ -360,4 +360,25 @@ export function TimelineCanvas(props: {
                                         bottom: isEven ? "auto" : "-7px",
                                         borderTop: isEven ? undefined : "0",
                                         borderLeft: isEven ? undefined : "0",
-                                        borderBotto
+                                        borderBottom: isEven ? "0" : undefined,
+                                        borderRight: isEven ? "0" : undefined,
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+
+            {props.timeline.length === 0 && !isDraggingOver && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none px-10 text-center">
+                    <div className="bg-white/80 p-6 rounded-2xl border-2 border-dashed border-gray-300 backdrop-blur-sm">
+                        <Film className="w-10 h-10 mx-auto mb-2 opacity-30 text-gray-400" />
+                        <p className="text-gray-500 text-sm">Timeline vide</p>
+                        <p className="text-xs text-gray-400 mt-1">Glissez des médias ou cliquez</p>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}

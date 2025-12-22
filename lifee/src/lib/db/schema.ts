@@ -8,7 +8,10 @@ import {
     primaryKey,
     index,
     uniqueIndex,
+    uuid,
+    boolean,
 } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 // --- Users ---
 export const users = pgTable(
@@ -16,6 +19,7 @@ export const users = pgTable(
     {
         id: text("id").primaryKey(), // uuid
         email: text("email").notNull(),
+        credits: number("credits").default(0),
         createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
         updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
     },
@@ -132,3 +136,87 @@ export const lifeeDailyRuns = pgTable("lifee_daily_runs", {
     day: text("day").primaryKey(), // "YYYY-MM-DD"
     count: integer("count").notNull().default(0),
 });
+
+
+export const studioAssets = pgTable(
+    "studio_assets",
+    {
+        id: uuid("id").primaryKey().defaultRandom(),
+        userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+
+        type: text("type").notNull(), // "image" | "video"
+        title: text("title").notNull(),
+
+        // stocke proprement : 1er jour du mois (ou month/year séparés)
+        month: integer("month").notNull(), // 1..12
+        year: integer("year").notNull(), // 2025
+
+        durationSec: integer("duration_sec"), // video only
+        fileUrl: text("file_url"),
+        thumbnailUrl: text("thumbnail_url"),
+
+        isGenerated: boolean("is_generated").notNull().default(false),
+        context: text("context"),
+
+        createdAt: timestamp("created_at").notNull().defaultNow(),
+    },
+    (t) => ({
+        userIdx: index("studio_assets_user_idx").on(t.userId),
+        createdIdx: index("studio_assets_user_created_idx").on(t.userId, t.createdAt),
+    })
+);
+
+export const timelineClips = pgTable(
+    "timeline_clips",
+    {
+        id: uuid("id").primaryKey().defaultRandom(),
+        userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+
+        assetId: uuid("asset_id").notNull().references(() => studioAssets.id, { onDelete: "cascade" }),
+        position: integer("position").notNull(), // order sur la timeline
+
+        // optionnel, override par clip
+        context: text("context"),
+        source: text("source").notNull().default("library"), // "library" | "generated"
+
+        createdAt: timestamp("created_at").notNull().defaultNow(),
+    },
+    (t) => ({
+        userIdx: index("timeline_clips_user_idx").on(t.userId),
+        orderIdx: index("timeline_clips_user_position_idx").on(t.userId, t.position),
+    })
+);
+
+export const exportJobs = pgTable(
+    "export_jobs",
+    {
+        id: uuid("id").primaryKey().defaultRandom(),
+        userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+        status: text("status").notNull(), // queued|rendering|done|error
+        progress: integer("progress").notNull().default(0),
+        url: text("url"),
+        musicTrackId: text("music_track_id"),
+        createdAt: timestamp("created_at").notNull().defaultNow(),
+    },
+    (t) => ({
+        userIdx: index("export_jobs_user_idx").on(t.userId),
+    })
+);
+
+export const musicTracks = pgTable("music_tracks", {
+    id: text("id").primaryKey(), // "m1"
+    title: text("title").notNull(),
+    duration: text("duration").notNull(),
+    genre: text("genre").notNull(),
+    previewUrl: text("preview_url"),
+    isActive: boolean("is_active").notNull().default(true),
+});
+
+// (optionnel) relations pour join Drizzle
+export const studioAssetsRelations = relations(studioAssets, ({ many }) => ({
+    clips: many(timelineClips),
+}));
+
+export const timelineClipsRelations = relations(timelineClips, ({ one }) => ({
+    asset: one(studioAssets, { fields: [timelineClips.assetId], references: [studioAssets.id] }),
+}));
