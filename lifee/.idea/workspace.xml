@@ -7,10 +7,17 @@
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/examples/demo1/video.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/Animations.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/Animations.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/landing/AuthModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/AuthModal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/BackgroundEffects.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/BackgroundEffects.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/FeaturesGrid.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/Hero.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/Hero.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/landing/LandingPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/LandingPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/studioApi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/studioApi.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/timeline/clips/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/timeline/clips/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/NavBar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/NavBar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/replicate/provider.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/replicate/provider.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/v/[slug].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/v/[slug].tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,7 +52,7 @@
     "git-widget-placeholder": "main",
     "js.debugger.nextJs.config.created.client": "true",
     "js.debugger.nextJs.config.created.server": "true",
-    "last_opened_file_path": "/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/src/components/studio/modals",
+    "last_opened_file_path": "/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/public/examples/showcase",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -63,17 +70,18 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/public/examples/showcase" />
+      <recent name="$PROJECT_DIR$/public/examples" />
       <recent name="$PROJECT_DIR$/src/components/studio/modals" />
       <recent name="$PROJECT_DIR$/public/examples/demo1" />
       <recent name="$PROJECT_DIR$/public/cabins/calm" />
-      <recent name="$PROJECT_DIR$/public/examples/calm" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/public/examples/showcase" />
       <recent name="$PROJECT_DIR$/src/pages/api/studio/timeline" />
       <recent name="$PROJECT_DIR$/src/pages/api/studio" />
       <recent name="$PROJECT_DIR$/src/pages/api" />
       <recent name="$PROJECT_DIR$/src/pages/api/webhooks" />
-      <recent name="$PROJECT_DIR$/src/pages/api/" />
     </key>
   </component>
   <component name="RunManager" selected="npm.Next.js: server-side">
@@ -107,12 +115,23 @@
       <updated>1766155263293</updated>
       <workItem from="1766155264500" duration="3814000" />
       <workItem from="1766226805887" duration="619000" />
-      <workItem from="1766341899508" duration="24974000" />
+      <workItem from="1766341899508" duration="29202000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

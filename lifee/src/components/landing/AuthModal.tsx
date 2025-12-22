@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Lock, X, Mail, ShieldCheck, Gift } from "lucide-react";
-import { useRouter } from "next/router";
+import React, {useEffect, useMemo, useState} from "react";
+import {ArrowRight, Lock, X, Mail, ShieldCheck, Gift} from "lucide-react";
+import {useRouter} from "next/router";
 
 type Props = {
     /** Si présent, on associe le job (photo+video) à cet email */
@@ -13,7 +13,8 @@ type StartResp =
     | { mode: "created"; authed: true; email: string }
     | { mode: "code_sent"; authed: false; email: string };
 
-export default function AuthModal({ onAuthed }: Props) {
+export default function AuthModal({onAuthed}: Props) {
+    const bonusCode = 'BIEVENUE';
     const router = useRouter();
     const isOpen = useMemo(() => String(router.query.auth || "") === "1", [router.query.auth]);
     const jobId = useMemo(() => router.query.jobId, [router.query.jobId]);
@@ -37,9 +38,9 @@ export default function AuthModal({ onAuthed }: Props) {
     }, [isOpen]);
 
     const close = async () => {
-        const q = { ...router.query };
+        const q = {...router.query};
         delete q.auth;
-        await router.replace({ pathname: router.pathname, query: q }, undefined, { shallow: true });
+        await router.replace({pathname: router.pathname, query: q}, undefined, {shallow: true});
     };
 
     const afterAuth = async (finalEmail: string) => {
@@ -61,8 +62,8 @@ export default function AuthModal({ onAuthed }: Props) {
         try {
             const r = await fetch("/api/auth/start", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, jobId: jobId || null }),
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({email, jobId: jobId || null}),
             });
 
             const data = await r.json();
@@ -90,8 +91,8 @@ export default function AuthModal({ onAuthed }: Props) {
         try {
             const r = await fetch("/api/auth/verify", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, code, jobId: jobId || null }),
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({email, code, jobId: jobId || null}),
             });
 
             const data = await r.json();
@@ -111,8 +112,8 @@ export default function AuthModal({ onAuthed }: Props) {
         try {
             const r = await fetch("/api/auth/start", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, jobId: jobId || null }),
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({email, jobId: jobId || null}),
             });
             const data = await r.json();
             if (!r.ok) throw new Error(data?.error || "Erreur");
@@ -128,16 +129,18 @@ export default function AuthModal({ onAuthed }: Props) {
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
-            <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={close} />
+            <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={close}/>
 
-            <div className="relative bg-white p-8 rounded-2xl w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
+            <div
+                className="relative bg-white p-8 rounded-2xl w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
                 <button onClick={close} className="absolute top-4 right-4 text-stone-400 hover:text-stone-600">
-                    <X size={20} />
+                    <X size={20}/>
                 </button>
 
                 <div className="text-center mb-6">
-                    <div className="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-4 text-rose-500">
-                        <Lock size={28} />
+                    <div
+                        className="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-4 text-rose-500">
+                        <Lock size={28}/>
                     </div>
                     <h3 className="text-2xl font-serif text-stone-900 mb-2">
                         {step === "email" ? "Sécurisez vos souvenirs" : "Vérification"}
@@ -157,11 +160,38 @@ export default function AuthModal({ onAuthed }: Props) {
 
                 {/* Bonus banner (only on email step) */}
                 {step === "email" && (
-                    <div className="bg-amber-50 border border-amber-100 rounded-lg p-3 mb-6 flex items-center gap-3 shadow-inner">
-                        <Gift size={20} className="text-amber-500 shrink-0" />
-                        <div className="text-xs text-amber-800">
-                            <span className="font-bold">Bonus activé :</span> 5 crédits (valeur 5€) ajoutés automatiquement à votre
-                            compte.
+                    <div
+                        className="relative overflow-hidden rounded-2xl border border-amber-200/60 bg-gradient-to-br from-amber-50 via-white to-rose-50 p-4 mb-6 shadow-sm">
+                        {/* halo */}
+                        <div
+                            className="pointer-events-none absolute -top-10 -left-10 h-32 w-32 rounded-full bg-amber-200/40 blur-3xl"/>
+                        <div
+                            className="pointer-events-none absolute -bottom-10 -right-10 h-32 w-32 rounded-full bg-rose-200/30 blur-3xl"/>
+
+                        <div className="relative flex items-start gap-3">
+                            <div
+                                className="shrink-0 rounded-2xl bg-gradient-to-br from-amber-400 to-rose-400 p-2 shadow-md">
+                                <Gift size={18} className="text-white"/>
+                            </div>
+
+                            <div className="min-w-0">
+                                <p className="text-sm font-semibold text-stone-900">
+                                    Bonus activé <span
+                                    className="ml-1 align-middle inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-800">
+          - 30%
+        </span>
+                                </p>
+
+                                <p className="mt-0.5 text-xs leading-relaxed text-stone-600">
+                                    <span className="font-semibold text-stone-800">30% de réduction</span> offert avec le code <span className="font-semibold text-stone-800">{bonusCode}</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* mini barre */}
+                        <div className="relative mt-3 h-1.5 w-full overflow-hidden rounded-full bg-amber-100">
+                            <div
+                                className="h-full w-2/3 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-rose-400"/>
                         </div>
                     </div>
                 )}
@@ -198,9 +228,10 @@ export default function AuthModal({ onAuthed }: Props) {
 
                             <div className="relative flex items-center justify-center">
                                 <div className="absolute inset-0 flex items-center">
-                                    <div className="w-full border-t border-stone-200" />
+                                    <div className="w-full border-t border-stone-200"/>
                                 </div>
-                                <span className="relative bg-white px-4 text-xs text-stone-400 uppercase tracking-widest">
+                                <span
+                                    className="relative bg-white px-4 text-xs text-stone-400 uppercase tracking-widest">
                   Ou via email
                 </span>
                             </div>
@@ -210,7 +241,7 @@ export default function AuthModal({ onAuthed }: Props) {
                             <div>
                                 <label className="block text-xs font-bold text-stone-500 uppercase mb-1">Email</label>
                                 <div className="relative">
-                                    <Mail className="absolute left-3 top-3 text-stone-400" size={18} />
+                                    <Mail className="absolute left-3 top-3 text-stone-400" size={18}/>
                                     <input
                                         type="email"
                                         required
@@ -227,7 +258,7 @@ export default function AuthModal({ onAuthed }: Props) {
                                 disabled={loading}
                                 className="w-full bg-stone-900 hover:bg-stone-800 disabled:opacity-60 text-white font-bold py-3 rounded-lg shadow-lg transition-all flex items-center justify-center gap-2"
                             >
-                                {loading ? "Chargement..." : "Accéder au Studio"} <ArrowRight size={18} />
+                                {loading ? "Chargement..." : "Accéder au Studio"} <ArrowRight size={18}/>
                             </button>
 
                             <p className="text-center text-xs text-stone-400 pt-2">Vos données restent 100% privées.</p>
@@ -236,7 +267,8 @@ export default function AuthModal({ onAuthed }: Props) {
                 ) : (
                     <form onSubmit={submitCode} className="space-y-4">
                         <div>
-                            <label className="block text-xs font-bold text-stone-500 uppercase mb-1">Code (6 chiffres)</label>
+                            <label className="block text-xs font-bold text-stone-500 uppercase mb-1">Code (6
+                                chiffres)</label>
                             <input
                                 inputMode="numeric"
                                 pattern="[0-9]*"
@@ -266,7 +298,7 @@ export default function AuthModal({ onAuthed }: Props) {
                             disabled={loading || code.length !== 6}
                             className="w-full bg-stone-900 hover:bg-stone-800 disabled:opacity-60 text-white font-bold py-3 rounded-lg shadow-lg transition-all flex items-center justify-center gap-2"
                         >
-                            {loading ? "Vérification..." : "Valider"} <ShieldCheck size={18} />
+                            {loading ? "Vérification..." : "Valider"} <ShieldCheck size={18}/>
                         </button>
 
                         <p className="text-center text-xs text-stone-400 pt-2">Vos données restent 100% privées.</p>

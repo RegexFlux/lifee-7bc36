@@ -17,7 +17,7 @@ export function guardNoLiveInDev() {
 
 export function mockVideoAbsoluteUrl(req: NextApiRequest) {
     const appUrl = (process.env.APP_URL || "").replace(/\/$/, "");
-    const rel = process.env.MOCK_VIDEO_URL || "/examples/demo1/video.mp4";
+    const rel = process.env.MOCK_VIDEO_URL || "/examples/showcase/result.mp4";
     // si APP_URL est défini, parfait; sinon fallback request host
     if (appUrl) return `${appUrl}${rel}`;
     const proto = (req.headers["x-forwarded-proto"] as string) || "http";

@@ -137,7 +137,7 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
                     <div className="absolute inset-0 bg-slate-200 p-2 pb-8 shadow-2xl rounded transform -rotate-12 border border-slate-400">
                         <div className="w-full h-full bg-slate-300 overflow-hidden">
                             <img
-                                src="https://images.unsplash.com/photo-1517849845537-4d257902454a?w=400"
+                                src="examples/landing.jpg"
                                 className="w-full h-full object-cover opacity-80 mix-blend-multiply"
                                 alt="polaroid1"
                             />
@@ -147,7 +147,7 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
                     <div className="absolute inset-0 bg-slate-100 p-2 pb-8 shadow-2xl rounded transform -rotate-6 border border-slate-400">
                         <div className="w-full h-full bg-slate-300 overflow-hidden">
                             <img
-                                src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400"
+                                src="examples/landing.jpg"
                                 className="w-full h-full object-cover opacity-80 mix-blend-multiply"
                                 alt="polaroid2"
                             />
@@ -157,7 +157,7 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
                     <div className="absolute inset-0 bg-white p-2 pb-8 shadow-2xl rounded transform rotate-3 border border-slate-300">
                         <div className="w-full h-full bg-slate-800 overflow-hidden mb-1">
                             <img
-                                src="https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?w=400"
+                                src="examples/landing.jpg"
                                 className="w-full h-full object-cover"
                                 alt="polaroid3"
                             />
@@ -165,7 +165,7 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
                         <div className="h-1.5 w-16 bg-slate-200 rounded-full mx-auto" />
                     </div>
 
-                    <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs font-handwriting text-slate-400 whitespace-nowrap">
+                    <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 text-xs font-handwriting text-slate-400 whitespace-nowrap">
                         Vos Photos
                     </div>
                 </div>

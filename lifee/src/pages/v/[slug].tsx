@@ -12,6 +12,7 @@ import {useLifeeJobStatus} from "@/components/useLifeeJobStatus";
 import {PlayerCard} from "@/components/PlayerCard";
 import {ConversionCard} from "@/components/ConversionCard";
 import AuthModal from "@/components/landing/AuthModal";
+import Bonus from "@/components/landing/Bonus";
 
 function getAppUrlFromReq(req: any) {
     const envUrl = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL;
@@ -171,6 +172,13 @@ export default function SharedMemorySlugPage({
                     </div>
                 </div>
             </div>
+            <Bonus
+                onLoginClick={() => showAuthModal()}
+                chance={0.4}
+                minDelayMs={1500}
+                maxDelayMs={8000}
+                persist="session"
+            />
         </div>
     );
 }
