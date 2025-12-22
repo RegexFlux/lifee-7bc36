@@ -1,35 +1,59 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import type { Asset } from "@/types/studio";
-import { getStore } from "./_store";
+import { and, eq, sql } from "drizzle-orm";
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-    const store = getStore();
+import { db } from "@/lib/db";
+import { requireUserId } from "./_auth";
+import { users, studioAssets } from "@/lib/db/schema";
+
+function toMMYYYY(month: number, year: number) {
+    return `${String(month).padStart(2, "0")}/${year}`;
+}
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    const userId = await requireUserId(req, res);
+    if (!userId) return;
 
     if (req.method !== "POST") return res.status(405).send("Method not allowed");
 
-    const body = req.body as { sourceAssetId: number; durationSec: number; prompt: string };
+    const body = req.body as { sourceAssetId: string; durationSec: number; prompt: string };
     if (!body?.sourceAssetId || !body?.durationSec) return res.status(400).send("Missing fields");
 
-    if (store.credits <= 0) return res.status(402).send("No credits");
+    const [user] = await db.select({ credits: appUsers.credits }).from(appUsers).where(eq(appUsers.id, userId));
+    if ((user?.credits ?? 0) <= 0) return res.status(402).send("No credits");
 
-    const source = store.library.find((a) => a.id === body.sourceAssetId);
+    const [source] = await db
+        .select()
+        .from(studioAssets)
+        .where(and(eq(studioAssets.id, body.sourceAssetId), eq(studioAssets.userId, userId)));
+
     if (!source) return res.status(404).send("Source asset not found");
 
-    store.credits -= 1;
+    // debit credit
+    await db.update(appUsers).set({ credits: sql`${appUsers.credits} - 1` }).where(eq(appUsers.id, userId));
 
-    const generated: Asset & { context: string; isGenerated: true } = {
-        id: Date.now(),
+    const [created] = await db
+        .insert(studioAssets)
+        .values({
+            userId,
+            type: "video",
+            title: `${source.title} (AI)`,
+            month: source.month,
+            year: source.year,
+            durationSec: Math.max(1, Math.min(30, Math.floor(body.durationSec))),
+            thumbnailUrl: source.thumbnailUrl,
+            isGenerated: true,
+            context: body.prompt ?? null,
+        })
+        .returning();
+
+    res.status(200).json({
+        id: created.id,
         type: "video",
-        title: `${source.title} (AI)`,
-        date: source.date,
-        duration: `${body.durationSec}s`,
-        thumbnailUrl: source.thumbnailUrl,
-        context: body.prompt || "AI",
+        title: created.title,
+        date: toMMYYYY(created.month, created.year),
+        duration: created.durationSec ? `${created.durationSec}s` : undefined,
+        thumbnailUrl: created.thumbnailUrl ?? undefined,
         isGenerated: true,
-    };
-
-    // On ajoute à la bibliothèque
-    store.library.unshift(generated);
-
-    return res.status(200).json(generated);
+        context: created.context ?? undefined,
+    });
 }

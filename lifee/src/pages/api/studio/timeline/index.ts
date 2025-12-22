@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { TimelineItem } from "@/types/studio";
-import { getStore } from "./_store";
+import { getStore } from "../_store";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
     const store = getStore();

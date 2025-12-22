@@ -1,33 +1,60 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import type { Asset } from "@/types/studio";
-import { getStore } from "../_store";
+import { eq } from "drizzle-orm";
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-    const store = getStore();
+import { db } from "@/lib/db";
+import { requireUserId } from "../_auth";
+import { users, studioAssets } from "@/lib/db/schema";
 
-    if (req.method === "POST") {
-        const body = req.body as Partial<Asset> & {
-            date: string;
-            title: string;
-            type: "image" | "video";
-        };
+function parseMMYYYY(date: string) {
+    const [mm, yyyy] = date.split("/");
+    const month = Number(mm);
+    const year = Number(yyyy);
+    if (!Number.isFinite(month) || month < 1 || month > 12) throw new Error("Invalid month");
+    if (!Number.isFinite(year) || year < 1970 || year > 3000) throw new Error("Invalid year");
+    return { month, year };
+}
 
-        if (!body.title || !body.type || !body.date) {
-            return res.status(400).send("Missing fields");
-        }
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    const userId = await requireUserId(req, res);
+    if (!userId) return;
 
-        const asset: Asset = {
-            id: Date.now(),
+    if (req.method !== "POST") return res.status(405).send("Method not allowed");
+
+    const body = req.body as {
+        title: string;
+        type: "image" | "video";
+        date: string; // "MM/YYYY"
+        duration?: string;
+        thumbnailUrl?: string;
+        fileUrl?: string;
+    };
+
+    if (!body?.title || !body?.type || !body?.date) return res.status(400).send("Missing fields");
+
+    const { month, year } = parseMMYYYY(body.date);
+    const durationSec = body.type === "video" && body.duration ? Number(body.duration.replace("s", "")) : null;
+
+    const [created] = await db
+        .insert(studioAssets)
+        .values({
+            userId,
             title: body.title,
             type: body.type,
-            date: body.date,
-            duration: body.type === "video" ? body.duration : undefined,
-            thumbnailUrl: body.thumbnailUrl,
-        };
+            month,
+            year,
+            durationSec: durationSec && Number.isFinite(durationSec) ? durationSec : null,
+            thumbnailUrl: body.thumbnailUrl ?? null,
+            fileUrl: body.fileUrl ?? null,
+            isGenerated: false,
+        })
+        .returning();
 
-        store.library.unshift(asset);
-        return res.status(200).json(asset);
-    }
-
-    return res.status(405).send("Method not allowed");
+    res.status(200).json({
+        id: created.id,
+        type: created.type,
+        title: created.title,
+        date: body.date,
+        duration: created.durationSec ? `${created.durationSec}s` : undefined,
+        thumbnailUrl: created.thumbnailUrl ?? undefined,
+    });
 }

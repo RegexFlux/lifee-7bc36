@@ -36,6 +36,13 @@ export default function AuthModal({ onAuthed }: Props) {
         }
     }, [isOpen]);
 
+    const afterAuth = async (finalEmail: string) => {
+        onAuthed?.(finalEmail);
+        await close();
+        await router.push("/studio");
+    };
+
+
     const close = async () => {
         const q = { ...router.query };
         delete q.auth;
@@ -59,14 +66,10 @@ export default function AuthModal({ onAuthed }: Props) {
 
             const resp = data as StartResp;
 
-            // New user => auto login => close
             if (resp.mode === "created") {
-                onAuthed?.(resp.email);
-                await close();
+                await afterAuth(resp.email);
                 return;
             }
-
-            // Existing user => code step
             setStep("code");
         } catch (err: any) {
             setError(err?.message || "Erreur");
@@ -92,6 +95,7 @@ export default function AuthModal({ onAuthed }: Props) {
 
             onAuthed?.(email);
             await close();
+            await router.push("/studio");
         } catch (err: any) {
             setError(err?.message || "Erreur");
         } finally {
@@ -214,6 +218,18 @@ export default function AuthModal({ onAuthed }: Props) {
                     </form>
                 )}
             </div>
+            <button
+                type="button"
+                onClick={() => {
+                    const jid = jobId ? `?jobId=${encodeURIComponent(String(jobId))}` : "";
+                    window.location.href = `/api/auth/google/start${jid}`;
+                }}
+                disabled={loading}
+                className="w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold py-3 rounded-lg transition-all"
+            >
+                Continuer avec Google
+            </button>
+
         </div>
     );
 }

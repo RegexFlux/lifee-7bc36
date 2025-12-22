@@ -7,7 +7,6 @@ import StudioApp from "@/components/studio/StudioApp";
 type View = "landing" | "transition" | "studio";
 
 export default function HomePage() {
-  const [currentView, setCurrentView] = useState<View>("landing");
   return (
       <>
         <Head>
@@ -18,12 +17,7 @@ export default function HomePage() {
           />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
         </Head>
-
-          <StudioApp />
-
-        {/*{currentView === "studio" && <StudioApp />}*/}
-        {/*{currentView === "transition" && <TransitionScreen />}*/}
-        {/*{currentView === "landing" && <LandingPage />}*/}
+        <LandingPage />
       </>
   );
 }

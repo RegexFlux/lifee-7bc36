@@ -1,41 +1,94 @@
-import crypto from "node:crypto";
-import type { NextApiResponse } from "next";
-import { db } from "@/lib/db/index";
-import { sessions } from "@/lib/db/schema";
+import type { NextApiRequest, NextApiResponse } from "next";
+import crypto from "crypto";
+import { eq, and, isNull, gt } from "drizzle-orm";
 
-function sha256(s: string) {
-    return crypto.createHash("sha256").update(s).digest("hex");
+import { db } from "@/lib/db";
+import { authSessions } from "@/lib/db/schema.auth";
+
+const COOKIE_NAME = "lifee_session";
+const SESSION_DAYS = 30;
+
+function sha256(input: string) {
+    return crypto.createHash("sha256").update(input).digest("hex");
 }
 
-export async function createSessionAndSetCookie(params: {
-    userId: string;
-    res: NextApiResponse;
-}) {
-    const token = crypto.randomBytes(32).toString("hex");
+function randomToken() {
+    return crypto.randomBytes(32).toString("hex");
+}
+
+function serializeCookie(name: string, value: string, opts: {
+    maxAgeSeconds: number;
+    httpOnly?: boolean;
+    secure?: boolean;
+    sameSite?: "lax" | "strict" | "none";
+    path?: string;
+}): string {
+    const parts = [
+        `${name}=${encodeURIComponent(value)}`,
+        `Max-Age=${opts.maxAgeSeconds}`,
+        `Path=${opts.path ?? "/"}`,
+        `SameSite=${opts.sameSite ?? "lax"}`,
+    ];
+    if (opts.httpOnly !== false) parts.push("HttpOnly");
+    if (opts.secure) parts.push("Secure");
+    return parts.join("; ");
+}
+
+export async function createSession(res: NextApiResponse, userId: string) {
+    const token = randomToken();
     const tokenHash = sha256(token);
 
-    const now = new Date();
-    const expiresAt = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 30); // 30j
+    const expiresAt = new Date(Date.now() + SESSION_DAYS * 24 * 3600 * 1000);
 
-    await db.insert(sessions).values({
-        id: crypto.randomUUID(),
-        userId: params.userId,
+    await db.insert(authSessions).values({
+        userId,
         tokenHash,
-        createdAt: now,
         expiresAt,
     });
 
-    const secure = process.env.NODE_ENV === "production";
-    const cookie = [
-        `lifee_session=${token}`,
-        "Path=/",
-        "HttpOnly",
-        "SameSite=Lax",
-        secure ? "Secure" : "",
-        `Max-Age=${60 * 60 * 24 * 30}`,
-    ]
-        .filter(Boolean)
-        .join("; ");
+    const isProd = process.env.NODE_ENV === "production";
+    res.setHeader("Set-Cookie", serializeCookie(COOKIE_NAME, token, {
+        maxAgeSeconds: SESSION_DAYS * 24 * 3600,
+        httpOnly: true,
+        secure: isProd,
+        sameSite: "lax",
+        path: "/",
+    }));
+}
 
-    params.res.setHeader("Set-Cookie", cookie);
+export function clearSessionCookie(res: NextApiResponse) {
+    const isProd = process.env.NODE_ENV === "production";
+    res.setHeader("Set-Cookie", serializeCookie(COOKIE_NAME, "", {
+        maxAgeSeconds: 0,
+        httpOnly: true,
+        secure: isProd,
+        sameSite: "lax",
+        path: "/",
+    }));
+}
+
+export async function getUserIdFromReq(req: NextApiRequest): Promise<string | null> {
+    const raw = req.headers.cookie || "";
+    const m = raw.match(new RegExp(`(?:^|; )${COOKIE_NAME}=([^;]+)`));
+    if (!m) return null;
+
+    const token = decodeURIComponent(m[1] || "");
+    if (!token) return null;
+
+    const tokenHash = sha256(token);
+    const now = new Date();
+
+    const rows = await db
+        .select({ userId: authSessions.userId })
+        .from(authSessions)
+        .where(
+            and(
+                eq(authSessions.tokenHash, tokenHash),
+                isNull(authSessions.revokedAt),
+                gt(authSessions.expiresAt, now)
+            )
+        )
+        .limit(1);
+
+    return rows[0]?.userId ?? null;
 }

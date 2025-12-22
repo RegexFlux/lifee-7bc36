@@ -1,5 +1,4 @@
-// src/lib/studioApi.ts
-import type { Asset, TimelineItem, MusicTrack, StudioBootstrap } from "@/types/studio";
+import type { Asset, MusicTrack, StudioBootstrap, TimelineItem } from "@/types/studio";
 
 async function safeJson<T>(res: Response): Promise<T> {
     const text = await res.text();
@@ -12,6 +11,7 @@ async function safeJson<T>(res: Response): Promise<T> {
 
 async function request<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
     const res = await fetch(input, {
+        credentials: "include", // ✅ important pour cookie session
         headers: { "Content-Type": "application/json", ...(init?.headers || {}) },
         ...init,
     });
@@ -22,43 +22,51 @@ async function request<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
 export const studioApi = {
     bootstrap: () => request<StudioBootstrap>("/api/studio/bootstrap"),
 
+    // Library
     createAsset: (payload: {
         title: string;
         type: "image" | "video";
         date: string; // "MM/YYYY"
         duration?: string;
-        // si upload fichier: passe plutôt par FormData côté route, ici on reste JSON
-        fileUrl?: string; // optionnel si déjà upload ailleurs
         thumbnailUrl?: string;
-    }) => request<Asset>("/api/studio/library", { method: "POST", body: JSON.stringify(payload) }),
+        fileUrl?: string;
+    }) => request<Asset>("/api/library", { method: "POST", body: JSON.stringify(payload) }),
 
-    deleteAsset: (id: number) => request<{ ok: true }>(`/api/library/${id}`, { method: "DELETE" }),
+    deleteAsset: (id: string) =>
+        request<{ ok: true }>(`/api/library/${id}`, { method: "DELETE" }),
 
-    saveTimeline: (timeline: TimelineItem[]) =>
-        request<{ ok: true }>("/api/studio/timeline", { method: "PUT", body: JSON.stringify({ timeline }) }),
+    // Timeline (✅ DB-driven)
+    createClip: (payload: { assetId: string; position?: number | null }) =>
+        request<TimelineItem>("/api/timeline/clips", { method: "POST", body: JSON.stringify(payload) }),
 
-    generateVideoFromImage: (payload: {
-        sourceAssetId: number;
-        durationSec: number;
-        prompt: string;
-    }) => request<Asset & { context: string; isGenerated: true }>(
-        "/api/studio/generate",
-        { method: "POST", body: JSON.stringify(payload) }
-    ),
+    deleteClip: (clipId: string) =>
+        request<{ ok: true }>(`/api/timeline/clips/${clipId}`, { method: "DELETE" }),
 
-    listMusicPresets: () => request<MusicTrack[]>("/api/studio/music"),
+    reorderClips: (orderedClipIds: string[]) =>
+        request<{ ok: true }>("/api/timeline/reorder", {
+            method: "PUT",
+            body: JSON.stringify({ orderedClipIds }),
+        }),
 
-    startExport: (payload: { timeline: TimelineItem[]; musicId?: string | null }) =>
-        request<{ jobId: string }>("/api/studio/export", { method: "POST", body: JSON.stringify(payload) }),
+    // AI
+    generateVideoFromImage: (payload: { sourceAssetId: string; durationSec: number; prompt: string }) =>
+        request<Asset>("/api/generate", { method: "POST", body: JSON.stringify(payload) }),
 
-    exportStatus: (jobId: string) =>
-        request<{ status: "queued" | "rendering" | "done" | "error"; progress: number; url?: string }>(
-            `/api/studio/export/${jobId}`
-        ),
+    // Music / Credits
+    listMusicPresets: () => request<MusicTrack[]>("/api/music"),
 
     purchaseCredits: (amount: number) =>
-        request<{ credits: number }>("/api/studio/credits/purchase", {
+        request<{ credits: number }>("/api/credits/purchase", {
             method: "POST",
             body: JSON.stringify({ amount }),
         }),
+
+    // Export
+    startExport: (payload: { timelineClipIds: string[]; musicId?: string | null }) =>
+        request<{ jobId: string }>("/api/export", { method: "POST", body: JSON.stringify(payload) }),
+
+    exportStatus: (jobId: string) =>
+        request<{ status: "queued" | "rendering" | "done" | "error"; progress: number; url?: string }>(
+            `/api/export/${jobId}`
+        ),
 };

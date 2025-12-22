@@ -1,83 +1,64 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import crypto from "node:crypto";
-import { and, desc, eq, isNull, gt } from "drizzle-orm";
+import crypto from "crypto";
+import { and, desc, eq, isNull, gt, sql } from "drizzle-orm";
 
-import { db } from "@/lib/db/index";
-import { users, emailLoginCodes, lifeeJobs, lifeeJobEvents } from "@/lib/db/schema";
-import { getClientIp, hashIp } from "@/lib/security/ip";
-import { consumeRateLimitOrThrow } from "@/lib/security/rateLimit";
-import { createSessionAndSetCookie } from "@/pages/api/auth/session";
+import { db } from "@/lib/db";
+import { appUsers, authEmailCodes } from "@/lib/db/schema.auth";
+import { createSession} from "@/pages/api/auth/session";
+import { importJobToLibrary } from "@/lib/studio/importJobToLibrary";
 
-function normEmail(s: string) {
-    return String(s || "").trim().toLowerCase();
+function normalizeEmail(email: string) {
+    return email.trim().toLowerCase();
 }
 function sha256(s: string) {
     return crypto.createHash("sha256").update(s).digest("hex");
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+    if (req.method !== "POST") return res.status(405).send("Method not allowed");
 
-    const email = normEmail(req.body?.email);
-    const code = String(req.body?.code || "").trim();
-    const jobId = req.body?.jobId ? String(req.body.jobId) : null;
+    const body = req.body as { email?: string; code?: string; jobId?: string | null };
+    const email = normalizeEmail(body?.email || "");
+    const code = String(body?.code || "").replace(/\D/g, "").slice(0, 6);
+    const jobId = body?.jobId || null;
 
-    if (!email || !code) return res.status(400).json({ error: "Missing email/code" });
+    if (!email || !code || code.length !== 6) return res.status(400).json({ error: "Données invalides" });
 
-    // Anti-flood verify (IP + email)
-    const ipHash = hashIp(getClientIp(req));
-    await consumeRateLimitOrThrow({ key: `auth:verify:ip:${ipHash}`, limit: 20, windowSec: 600 });
-    await consumeRateLimitOrThrow({ key: `auth:verify:email:${email}`, limit: 12, windowSec: 600 });
+    const [user] = await db.select().from(appUsers).where(eq(appUsers.email, email)).limit(1);
+    if (!user) return res.status(404).json({ error: "Compte introuvable" });
 
     const now = new Date();
 
-    const rows = await db
+    // prend le code le plus récent non consommé
+    const [row] = await db
         .select()
-        .from(emailLoginCodes)
-        .where(and(eq(emailLoginCodes.email, email), isNull(emailLoginCodes.usedAt), gt(emailLoginCodes.expiresAt, now)))
-        .orderBy(desc(emailLoginCodes.createdAt))
+        .from(authEmailCodes)
+        .where(and(eq(authEmailCodes.email, email), isNull(authEmailCodes.consumedAt), gt(authEmailCodes.expiresAt, now)))
+        .orderBy(desc(authEmailCodes.createdAt))
         .limit(1);
 
-    const rec = rows[0];
-    if (!rec) return res.status(400).json({ error: "Code invalide ou expiré" });
+    if (!row) return res.status(400).json({ error: "Code expiré ou invalide" });
 
-    if ((rec.attempts as any) >= 5) {
-        return res.status(429).json({ error: "Trop d'essais. Redemandez un code." });
-    }
+    // max attempts
+    if ((row.attempts ?? 0) >= 5) return res.status(429).json({ error: "Trop de tentatives. Recommence." });
 
-    const secret = process.env.AUTH_CODE_SECRET || process.env.IP_HASH_SALT || "secret";
-    const expected = sha256(`${email}:${code}:${secret}`);
-
-    if (expected !== rec.codeHash) {
+    const expected = sha256(`${email}:${code}:${process.env.AUTH_CODE_SALT || "salt"}`);
+    if (row.codeHash !== expected) {
         await db
-            .update(emailLoginCodes)
-            .set({ attempts: (Number(rec.attempts) || 0) + 1 })
-            .where(eq(emailLoginCodes.id, rec.id));
-        return res.status(400).json({ error: "Code incorrect" });
+            .update(authEmailCodes)
+            .set({ attempts: sql`${authEmailCodes.attempts} + 1` })
+            .where(eq(authEmailCodes.id, row.id));
+        return res.status(400).json({ error: "Code invalide" });
     }
 
-    // Mark used
-    await db.update(emailLoginCodes).set({ usedAt: now }).where(eq(emailLoginCodes.id, rec.id));
+    // consume code
+    await db.update(authEmailCodes).set({ consumedAt: now }).where(eq(authEmailCodes.id, row.id));
 
-    // Find user
-    const u = await db.select().from(users).where(eq(users.email, email)).limit(1);
-    const user = u[0];
-    if (!user) return res.status(400).json({ error: "Compte introuvable" });
+    // create session
+    await createSession(res, user.id);
 
-    // Attach job
-    if (jobId) {
-        await db.update(lifeeJobs).set({ email, updatedAt: now }).where(eq(lifeeJobs.id, jobId));
-        await db.insert(lifeeJobEvents).values({
-            id: crypto.randomUUID(),
-            jobId,
-            type: "info",
-            message: `Email associé via verify: ${email}`,
-            createdAt: now,
-        });
-    }
+    // import jobId -> library (si fourni)
+    if (jobId) await importJobToLibrary(user.id, jobId);
 
-    // Session cookie
-    await createSessionAndSetCookie({ userId: user.id, res });
-
-    return res.status(200).json({ authed: true, email });
+    return res.status(200).json({ ok: true });
 }
