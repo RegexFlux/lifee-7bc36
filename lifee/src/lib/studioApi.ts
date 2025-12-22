@@ -37,13 +37,13 @@ export const studioApi = {
 
     // Timeline (✅ DB-driven)
     createClip: (payload: { assetId: string; position?: number | null }) =>
-        request<TimelineItem>("/api/timeline/clips", { method: "POST", body: JSON.stringify(payload) }),
+        request<TimelineItem>("/api/studio/timeline/clips", { method: "POST", body: JSON.stringify(payload) }),
 
     deleteClip: (clipId: string) =>
-        request<{ ok: true }>(`/api/timeline/clips/${clipId}`, { method: "DELETE" }),
+        request<{ ok: true }>(`/api/studio/timeline/clips/${clipId}`, { method: "DELETE" }),
 
     reorderClips: (orderedClipIds: string[]) =>
-        request<{ ok: true }>("/api/timeline/reorder", {
+        request<{ ok: true }>("/api/studio/timeline/reorder", {
             method: "PUT",
             body: JSON.stringify({ orderedClipIds }),
         }),

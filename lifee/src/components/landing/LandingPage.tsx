@@ -7,6 +7,9 @@ import Footer from "./Footer";
 import AuthModal from "./AuthModal";
 import Animations from "./Animations";
 import {useRouter} from "next/router";
+import Solution from "@/components/landing/Solution";
+import HowItWorks from "@/components/landing/HowItWorks";
+import SocialProof from "@/components/landing/SocialProof";
 
 
 export default function LandingPage() {
@@ -26,6 +29,10 @@ export default function LandingPage() {
             <NavBar onLoginClick={() => showAuthModal()} />
 
             <Hero onDownloadClick={showAuthModal} />
+
+            <Solution />
+            <HowItWorks />
+            <SocialProof />
 
             <FeaturesGrid />
 

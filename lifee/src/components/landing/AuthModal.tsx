@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Lock, X, Mail, ShieldCheck } from "lucide-react";
+import { ArrowRight, Lock, X, Mail, ShieldCheck, Gift } from "lucide-react";
 import { useRouter } from "next/router";
 
 type Props = {
@@ -36,17 +36,21 @@ export default function AuthModal({ onAuthed }: Props) {
         }
     }, [isOpen]);
 
+    const close = async () => {
+        const q = { ...router.query };
+        delete q.auth;
+        await router.replace({ pathname: router.pathname, query: q }, undefined, { shallow: true });
+    };
+
     const afterAuth = async (finalEmail: string) => {
         onAuthed?.(finalEmail);
         await close();
         await router.push("/studio");
     };
 
-
-    const close = async () => {
-        const q = { ...router.query };
-        delete q.auth;
-        await router.replace({ pathname: router.pathname, query: q }, undefined, { shallow: true });
+    const handleGoogleLogin = () => {
+        const jid = jobId ? `?jobId=${encodeURIComponent(String(jobId))}` : "";
+        window.location.href = `/api/auth/google/start${jid}`;
     };
 
     const submitEmail = async (e: React.FormEvent) => {
@@ -61,7 +65,7 @@ export default function AuthModal({ onAuthed }: Props) {
                 body: JSON.stringify({ email, jobId: jobId || null }),
             });
 
-            const data = (await r.json());
+            const data = await r.json();
             if (!r.ok) throw new Error(data?.error || "Erreur");
 
             const resp = data as StartResp;
@@ -93,9 +97,7 @@ export default function AuthModal({ onAuthed }: Props) {
             const data = await r.json();
             if (!r.ok) throw new Error(data?.error || "Erreur");
 
-            onAuthed?.(email);
-            await close();
-            await router.push("/studio");
+            await afterAuth(email);
         } catch (err: any) {
             setError(err?.message || "Erreur");
         } finally {
@@ -114,7 +116,7 @@ export default function AuthModal({ onAuthed }: Props) {
             });
             const data = await r.json();
             if (!r.ok) throw new Error(data?.error || "Erreur");
-            // reste en step code
+            // stay on code step
         } catch (err: any) {
             setError(err?.message || "Erreur");
         } finally {
@@ -126,67 +128,115 @@ export default function AuthModal({ onAuthed }: Props) {
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={close} />
+            <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={close} />
 
-            <div className="relative bg-slate-900 border border-white/10 p-8 rounded-2xl w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
-                <button onClick={close} className="absolute top-4 right-4 text-slate-500 hover:text-white">
+            <div className="relative bg-white p-8 rounded-2xl w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
+                <button onClick={close} className="absolute top-4 right-4 text-stone-400 hover:text-stone-600">
                     <X size={20} />
                 </button>
 
-                <div className="text-center mb-8">
-                    <div className="w-12 h-12 bg-indigo-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-indigo-400">
-                        <Lock size={24} />
+                <div className="text-center mb-6">
+                    <div className="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-4 text-rose-500">
+                        <Lock size={28} />
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-2">
-                        {step === "email" ? "Sauvegarder votre création" : "Vérification"}
+                    <h3 className="text-2xl font-serif text-stone-900 mb-2">
+                        {step === "email" ? "Sécurisez vos souvenirs" : "Vérification"}
                     </h3>
-                    <p className="text-slate-400 text-sm">
+                    <p className="text-stone-500 text-sm">
                         {step === "email"
-                            ? "Entrez votre email pour télécharger votre vidéo HD et accéder au studio."
+                            ? "Créez votre compte pour sauvegarder vos créations et accéder au studio."
                             : "Un code vient d’être envoyé à votre email. Saisissez-le pour vous connecter."}
                     </p>
                 </div>
 
                 {error && (
-                    <div className="mb-4 text-sm text-red-200 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+                    <div className="mb-4 text-sm text-red-700 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
                         {error}
                     </div>
                 )}
 
+                {/* Bonus banner (only on email step) */}
+                {step === "email" && (
+                    <div className="bg-amber-50 border border-amber-100 rounded-lg p-3 mb-6 flex items-center gap-3 shadow-inner">
+                        <Gift size={20} className="text-amber-500 shrink-0" />
+                        <div className="text-xs text-amber-800">
+                            <span className="font-bold">Bonus activé :</span> 5 crédits (valeur 5€) ajoutés automatiquement à votre
+                            compte.
+                        </div>
+                    </div>
+                )}
+
                 {step === "email" ? (
-                    <form onSubmit={submitEmail} className="space-y-4">
-                        <div>
-                            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label>
-                            <div className="relative">
-                                <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-                                <input
-                                    type="email"
-                                    required
-                                    placeholder="nom@entreprise.com"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full pl-9 bg-slate-800 border border-slate-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
-                                />
+                    <>
+                        <div className="space-y-4 mb-6">
+                            <button
+                                type="button"
+                                onClick={handleGoogleLogin}
+                                disabled={loading}
+                                className="w-full py-3 rounded-xl border border-stone-200 flex items-center justify-center gap-3 hover:bg-stone-50 transition-colors text-stone-700 font-medium group"
+                            >
+                                <svg className="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+                                    <path
+                                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                                        fill="#4285F4"
+                                    />
+                                    <path
+                                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                                        fill="#34A853"
+                                    />
+                                    <path
+                                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                                        fill="#FBBC05"
+                                    />
+                                    <path
+                                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                                        fill="#EA4335"
+                                    />
+                                </svg>
+                                Continuer avec Google
+                            </button>
+
+                            <div className="relative flex items-center justify-center">
+                                <div className="absolute inset-0 flex items-center">
+                                    <div className="w-full border-t border-stone-200" />
+                                </div>
+                                <span className="relative bg-white px-4 text-xs text-stone-400 uppercase tracking-widest">
+                  Ou via email
+                </span>
                             </div>
                         </div>
 
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white font-bold py-3 rounded-lg shadow-lg shadow-indigo-500/25 transition-all flex items-center justify-center gap-2"
-                        >
-                            {loading ? "Chargement..." : "Accéder au téléchargement"} <ArrowRight size={18} />
-                        </button>
+                        <form onSubmit={submitEmail} className="space-y-4">
+                            <div>
+                                <label className="block text-xs font-bold text-stone-500 uppercase mb-1">Email</label>
+                                <div className="relative">
+                                    <Mail className="absolute left-3 top-3 text-stone-400" size={18} />
+                                    <input
+                                        type="email"
+                                        required
+                                        placeholder="votre@email.com"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="w-full bg-stone-50 border border-stone-200 rounded-lg py-3 pl-10 pr-3 text-stone-800 focus:ring-2 focus:ring-rose-200 focus:border-rose-400 outline-none transition-all"
+                                    />
+                                </div>
+                            </div>
 
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full bg-stone-900 hover:bg-stone-800 disabled:opacity-60 text-white font-bold py-3 rounded-lg shadow-lg transition-all flex items-center justify-center gap-2"
+                            >
+                                {loading ? "Chargement..." : "Accéder au Studio"} <ArrowRight size={18} />
+                            </button>
 
-                        <p className="text-center text-xs text-slate-600 pt-2">
-                            Gratuit et sans engagement.
-                        </p>
-                    </form>
+                            <p className="text-center text-xs text-stone-400 pt-2">Vos données restent 100% privées.</p>
+                        </form>
+                    </>
                 ) : (
                     <form onSubmit={submitCode} className="space-y-4">
                         <div>
-                            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Code (6 chiffres)</label>
+                            <label className="block text-xs font-bold text-stone-500 uppercase mb-1">Code (6 chiffres)</label>
                             <input
                                 inputMode="numeric"
                                 pattern="[0-9]*"
@@ -194,15 +244,17 @@ export default function AuthModal({ onAuthed }: Props) {
                                 placeholder="123456"
                                 value={code}
                                 onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                                className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono tracking-widest text-center"
+                                className="w-full bg-stone-50 border border-stone-200 rounded-lg py-3 px-3 text-stone-800 focus:ring-2 focus:ring-rose-200 focus:border-rose-400 outline-none transition-all font-mono tracking-widest text-center"
                             />
-                            <div className="mt-2 text-xs text-slate-500 flex items-center justify-between">
-                                <span>Envoyé à: <span className="text-slate-300 font-mono">{email}</span></span>
+                            <div className="mt-2 text-xs text-stone-500 flex items-center justify-between">
+                <span>
+                  Envoyé à: <span className="text-stone-800 font-mono">{email}</span>
+                </span>
                                 <button
                                     type="button"
                                     onClick={resend}
                                     disabled={loading}
-                                    className="text-indigo-300 hover:text-indigo-200 underline underline-offset-2 disabled:opacity-60"
+                                    className="text-stone-700 hover:text-stone-900 underline underline-offset-2 disabled:opacity-60"
                                 >
                                     Renvoyer
                                 </button>
@@ -212,14 +264,23 @@ export default function AuthModal({ onAuthed }: Props) {
                         <button
                             type="submit"
                             disabled={loading || code.length !== 6}
-                            className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white font-bold py-3 rounded-lg shadow-lg shadow-indigo-500/25 transition-all flex items-center justify-center gap-2"
+                            className="w-full bg-stone-900 hover:bg-stone-800 disabled:opacity-60 text-white font-bold py-3 rounded-lg shadow-lg transition-all flex items-center justify-center gap-2"
                         >
                             {loading ? "Vérification..." : "Valider"} <ShieldCheck size={18} />
                         </button>
+
+                        <p className="text-center text-xs text-stone-400 pt-2">Vos données restent 100% privées.</p>
                     </form>
                 )}
             </div>
 
+            {/* --- CSS UTILS --- */}
+            <style>{`
+        @keyframes zoom {
+          0% { transform: scale(1); }
+          100% { transform: scale(1.1); }
+        }
+      `}</style>
         </div>
     );
 }

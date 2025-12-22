@@ -3,7 +3,7 @@ import { and, eq, sql, desc } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { requireUserId } from "../../_auth";
-import { studioAssets, timelineClips } from "@/lib/db/schema";
+import { studioAssets, timelineClips} from "@/lib/db/schema.studio";
 
 function toMMYYYY(month: number, year: number) {
     return `${String(month).padStart(2, "0")}/${year}`;
