@@ -12,6 +12,7 @@ import SocialProof from "@/components/landing/SocialProof";
 import Bonus from "@/components/landing/Bonus";
 import {navigate} from "next/dist/client/components/segment-cache/navigation";
 import ShowCase from "@/components/landing/Showcase";
+import StudioShowcase from "@/components/landing/StudioShowcase";
 
 
 export default function LandingPage() {
@@ -32,6 +33,8 @@ export default function LandingPage() {
 
             <Hero onDownloadClick={showAuthModal} />
             <ShowCase />
+            <StudioShowcase screenshotSrc="/images/studio/screenshot.png"
+                            onPrimaryCta={() => showAuthModal()} />
 
             <Solution />
             <HowItWorks />
@@ -47,7 +50,6 @@ export default function LandingPage() {
                 chance={0.4}
                 minDelayMs={1500}
                 maxDelayMs={8000}
-                persist="session"
             />
         </div>
     );

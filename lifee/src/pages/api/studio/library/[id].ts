@@ -3,7 +3,7 @@ import { and, eq } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { requireUserId } from "../_auth";
-import { studioAssets } from "@/lib/db/schema";
+import { studioAssets } from "@/lib/db/schema.studio";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const userId = await requireUserId(req, res);

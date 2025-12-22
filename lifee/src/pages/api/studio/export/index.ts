@@ -3,7 +3,7 @@ import { eq, inArray } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { requireUserId } from "../_auth";
-import { exportJobs, timelineClips } from "@/lib/db/schema";
+import { exportJobs, timelineClips} from "@/lib/db/schema.studio";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const userId = await requireUserId(req, res);

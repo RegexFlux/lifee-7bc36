@@ -4,20 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" />
+    <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/examples/demo1/video.mp4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/Animations.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/Animations.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/AuthModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/AuthModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/BackgroundEffects.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/BackgroundEffects.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/FeaturesGrid.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/Hero.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/Hero.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/landing/LandingPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/LandingPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/NavBar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/NavBar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/replicate/provider.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/replicate/provider.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/v/[slug].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/v/[slug].tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/Sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/Sidebar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/TimelineCanvas.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/TimelineCanvas.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/Toolbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/Toolbar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/export/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/export/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/library/[id].ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/library/[id].ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/timeline/clips/[clipId].ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/timeline/clips/[clipId].ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/timeline/reorder.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/timeline/reorder.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,6 +45,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
     "git-widget-placeholder": "main",
     "js.debugger.nextJs.config.created.client": "true",
     "js.debugger.nextJs.config.created.server": "true",
@@ -115,8 +112,17 @@
       <updated>1766155263293</updated>
       <workItem from="1766155264500" duration="3814000" />
       <workItem from="1766226805887" duration="619000" />
-      <workItem from="1766341899508" duration="29202000" />
+      <workItem from="1766341899508" duration="31039000" />
     </task>
+    <task id="LOCAL-00001" summary="add">
+      <option name="closed" value="true" />
+      <created>1766372110299</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1766372110299</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -132,6 +138,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="add" />
+    <option name="LAST_COMMIT_MESSAGE" value="add" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

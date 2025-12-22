@@ -26,7 +26,7 @@ export function Sidebar(props: {
             <div className="p-4 md:p-5 border-b border-gray-100 bg-slate-50 shrink-0">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                        <Film className="w-5 h-5 text-indigo-600" /> <span className="md:inline">Studio Assets</span>
+                        <Film className="w-5 h-5 text-indigo-600" /> <span className="md:inline">Lifee Studio</span>
                     </h2>
                     <div className="flex gap-2">
                         <button onClick={props.onOpenUpload} className="bg-indigo-600 hover:bg-indigo-700 text-white p-1.5 rounded-lg shadow transition-colors">
