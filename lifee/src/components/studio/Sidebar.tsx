@@ -5,7 +5,7 @@ import { Film, PanelLeftClose, Plus, Search, Image as ImageIcon, Video } from "l
 import type { Asset } from "@/types/studio";
 import { LibraryList } from "./LibraryList";
 
-export function Sidebar(props: {
+export function Sidebar(props: Readonly<{
     open: boolean;
     searchTerm: string;
     filterType: "all" | "video" | "image";
@@ -26,7 +26,7 @@ export function Sidebar(props: {
 
     // ✅ optionnel : pour fermer automatiquement sur mobile après add
     onAutoCloseAfterAdd?: () => void;
-}) {
+}>) {
     // ✅ ESC close (petit confort desktop)
     useEffect(() => {
         if (!props.open) return;
@@ -37,7 +37,7 @@ export function Sidebar(props: {
         return () => window.removeEventListener("keydown", onKey);
     }, [props.open, props.onClose]);
 
-    const stats = props.stats ?? { total: props.filteredItems.length, videos: 0, images: 0 };
+    const stats = props.stats ?? { total: props.filteredItems.length, videos: props.filteredItems.filter(i => i.type === 'video').length, images: props.filteredItems.filter(i => i.type === 'image').length };
 
     return (
         <div
@@ -74,18 +74,27 @@ export function Sidebar(props: {
 
                             {/* Stats */}
                             <div className="mt-3 flex items-center gap-2 text-[11px] text-stone-600">
-                <span className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-2 py-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-stone-400" />
+                                <div className="flex gap-2 items-center rounded-full border border-stone-200 bg-white px-2 py-1 w-max">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-stone-400" />
+                <span className="w-max">
+
                     {stats.total} total
                 </span>
-                                <span className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-2 py-1">
-                  <Video className="h-3.5 w-3.5 text-indigo-600" />
+                                </div>
+                                <div className="flex gap-2 items-center rounded-full border border-stone-200 bg-white px-2 py-1">
+                                <Video className="h-3.5 w-3.5 text-indigo-600" />
+
+                                <span className="inline-flex items-center gap-1  w-max">
                                     {stats.videos} vidéos
                 </span>
-                                <span className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-2 py-1">
-                  <ImageIcon className="h-3.5 w-3.5 text-rose-600" />
+                                </div>
+                                <div className="flex gap-2 items-center rounded-full border border-stone-200 bg-white px-2 py-1 w-max">
+                                    <ImageIcon className="h-3.5 w-3.5 text-rose-600" />
+                                <span className="w-max">
+
                                     {stats.images} photos
                 </span>
+                                </div>
                             </div>
                         </div>
 

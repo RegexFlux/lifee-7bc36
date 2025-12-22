@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import type { TimelineItem } from "@/types/studio";
 
 export function useTimelineItemActions(opts: {
-    onRenameItem?: (uniqueId: string, title: string) => void;
-    onDuplicateItem?: (uniqueId: string) => void;
-    onReplaceItem?: (uniqueId: string) => void;
+    onRenameItem?: (id: string, title: string) => void;
+    onDuplicateItem?: (id: string) => void;
+    onReplaceItem?: (id: string) => void;
     onOpenAsset?: (assetId: string) => void;
-    onDeleteItem: (uniqueId: string) => void;
+    onDeleteItem: (id: string) => void;
     onSelectItem: (id: string | null) => void;
 }) {
     const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
@@ -37,8 +37,8 @@ export function useTimelineItemActions(opts: {
         };
     }, []);
 
-    function toggleMenu(uniqueId: string) {
-        setMenuOpenId((v) => (v === uniqueId ? null : uniqueId));
+    function toggleMenu(id: string) {
+        setMenuOpenId((v) => (v === id ? null : id));
     }
 
     function closeMenu() {
@@ -46,7 +46,7 @@ export function useTimelineItemActions(opts: {
     }
 
     function beginEdit(item: TimelineItem) {
-        setEditingId(item.uniqueId);
+        setEditingId(item.id);
         setDraftTitle(item.title || "");
         setMenuOpenId(null);
     }
@@ -60,22 +60,22 @@ export function useTimelineItemActions(opts: {
         const next = draftTitle.trim();
         setEditingId(null);
         if (!next || next === item.title) return;
-        opts.onRenameItem?.(item.uniqueId, next);
+        opts.onRenameItem?.(item.id, next);
     }
 
     function doDelete(item: TimelineItem) {
-        opts.onDeleteItem(item.uniqueId);
+        opts.onDeleteItem(item.id);
         opts.onSelectItem(null);
         setMenuOpenId(null);
     }
 
     function doDuplicate(item: TimelineItem) {
-        opts.onDuplicateItem?.(item.uniqueId);
+        opts.onDuplicateItem?.(item.id);
         setMenuOpenId(null);
     }
 
     function doReplace(item: TimelineItem) {
-        opts.onReplaceItem?.(item.uniqueId);
+        opts.onReplaceItem?.(item.id);
         setMenuOpenId(null);
     }
 

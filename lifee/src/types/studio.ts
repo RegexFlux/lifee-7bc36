@@ -13,7 +13,7 @@ export type Asset = {
 };
 
 export type TimelineItem = Asset & {
-    uniqueId: string; // ✅ clipId (UUID)
+    id: string; // ✅ clipId (UUID)
     source: "library" | "generated";
 };
 

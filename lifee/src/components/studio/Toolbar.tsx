@@ -43,7 +43,7 @@ export function Toolbar(props: {
                 )}
 
                 {props.showZoomControls && (
-                    <div className="hidden md:flex gap-1 bg-white p-1 rounded-lg shadow-md border border-gray-200">
+                    <div className="flex gap-1 bg-white p-1 rounded-lg shadow-md border border-gray-200">
                         <button
                             onClick={props.onZoomIn}
                             className="p-1.5 hover:bg-gray-100 rounded"

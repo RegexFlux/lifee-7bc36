@@ -60,7 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Return TimelineItem shape
     return res.status(200).json({
-        id: asset.id,
+        assetId: asset.id,
         type: asset.type,
         title: asset.title,
         date: toMMYYYY(asset.month, asset.year),
@@ -69,7 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         isGenerated: asset.isGenerated,
         context: asset.context ?? undefined,
 
-        uniqueId: clip.id,
+        id: clip.id,
         source: (clip.source as "library" | "generated") ?? "library",
     });
 }

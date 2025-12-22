@@ -58,7 +58,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 isGenerated: a.isGenerated,
                 context: (c.context ?? a.context) ?? undefined,
 
-                uniqueId: c.id, // ✅ clipId
+                id: c.id, // ✅ clipId
                 source: (c.source as "library" | "generated") ?? "library",
             };
         })

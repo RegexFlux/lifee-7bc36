@@ -58,6 +58,11 @@ export const studioApi = {
         }) => request<Asset>
         ("/api/studio/library", {method: "POST", body: JSON.stringify(payload)}),
 
+    getClip: (clipId: string) =>
+        request<{ clipId: string; assetId: string; type: "video" | "image"; url: string }>(
+            `/api/studio/timeline/clips/${clipId}/get`
+        ),
+
         deleteAsset:
             (id: string) => request<{ ok: true }>(`/api/studio/library/${id}`, {method: "DELETE"}),
 
@@ -68,7 +73,7 @@ export const studioApi = {
 
         deleteClip:
             (clipId: string) =>
-                request<{ ok: true }>(`/api/studio/timeline/clips/${clipId}`, {method: "DELETE"}),
+                request<{ ok: true }>(`/api/studio/timeline/clips/${clipId}/delete`, {method: "DELETE"}),
 
         reorderClips:
             (orderedClipIds: string[]) =>
@@ -84,16 +89,16 @@ export const studioApi = {
 
         // Music / Credits
         listMusicPresets:
-            () => request<MusicTrack[]>("/api/music"),
+            () => request<MusicTrack[]>("/api/studio/music"),
 
         purchaseCredits:
             (amount: number) =>
-                request<{ credits: number }>("/api/credits/purchase", {method: "POST", body: JSON.stringify({amount})}),
+                request<{ credits: number }>("/api/studio/credits/purchase", {method: "POST", body: JSON.stringify({amount})}),
 
         // Export
         startExport:
             (payload: { timelineClipIds: string[]; musicId?: string | null }) =>
-                request<{ jobId: string }>("/api/export", {method: "POST", body: JSON.stringify(payload)}),
+                request<{ jobId: string }>("/api/studio/export", {method: "POST", body: JSON.stringify(payload)}),
 
         exportStatus:
             (jobId: string) =>
@@ -101,6 +106,6 @@ export const studioApi = {
                     status: "queued" | "rendering" | "done" | "error";
                     progress: number;
                     url?: string
-                }>(`/api/export/${jobId}`),
+                }>(`/api/studio/export/${jobId}`),
     }
 ;

@@ -10,7 +10,7 @@ import {Sidebar} from "./Sidebar";
 import {Toolbar} from "./Toolbar";
 import {TimelineCanvas} from "./TimelineCanvas";
 import {UploadDraft, UploadModal} from "@/components/studio/modals/UploadModal";
-import {MusicModal} from "@/components/studio/modals/MusicModal";
+import {CustomTrack, MusicModal} from "@/components/studio/modals/MusicModal";
 import {AIGenModal} from "@/components/studio/modals/AIGenModal";
 import {CreditModal} from "@/components/studio/modals/CreditModal";
 import {ExportModal} from "@/components/studio/modals/ExportModal";
@@ -118,7 +118,7 @@ export default function StudioApp() {
     const deleteTimelineItem = async (clipId: string) => {
         // optimistic
         const prev = timeline;
-        setTimeline((t) => t.filter((x) => x.uniqueId !== clipId));
+        setTimeline((t) => t.filter((x) => x.id !== clipId));
         try {
             await studioApi.deleteClip(clipId);
             push({title: "Supprimé de la timeline", variant: "success"});
@@ -129,7 +129,7 @@ export default function StudioApp() {
     };
 
     const moveTimelineItem = async (clipId: string, direction: -1 | 1) => {
-        const idx = timeline.findIndex((t) => t.uniqueId === clipId);
+        const idx = timeline.findIndex((t) => t.id === clipId);
         if (idx < 0) return;
         const nextIdx = idx + direction;
         if (nextIdx < 0 || nextIdx >= timeline.length) return;
@@ -148,7 +148,7 @@ export default function StudioApp() {
 
     const reorderByDrop = async (clipId: string, targetIndex: number) => {
         const next = [...timeline];
-        const from = next.findIndex((x) => x.uniqueId === clipId);
+        const from = next.findIndex((x) => x.id === clipId);
         if (from < 0) return;
 
         const [moved] = next.splice(from, 1);
@@ -167,7 +167,7 @@ export default function StudioApp() {
 
     const handleDropPlacement = async (payload: DragPayload, index: number) => {
         if (payload.source === "timeline") {
-            const clipId = payload.item?.uniqueId as string | undefined;
+            const clipId = payload.item?.id as string | undefined;
             if (!clipId) return;
             await reorderByDrop(clipId, index);
             return;
@@ -246,31 +246,6 @@ export default function StudioApp() {
             push({title: "Upload échoué", message: e?.message || "", variant: "error"});
         }
     };
-    // const handleUploadSubmit = async (draft: UploadDraft) => {
-    //     push({title: "Enregistrement dans la bibliothèque..", message: "", variant: "info"});
-    //     try {
-    //         if (!draft.file) throw new Error("Fichier manquant");
-    //
-    //         const date = formatMMYYYY(draft.month, draft.year);
-    //         const thumb =
-    //             draft.file && draft.type === "image" ? URL.createObjectURL(draft.file) : draft.thumbnailUrl;
-    //
-    //         const asset = await studioApi.createAsset({
-    //             title: draft.title,
-    //             type: draft.type,
-    //             date,
-    //             duration: draft.type === "video" ? draft.duration : undefined,
-    //             thumbnailUrl: thumb,
-    //         });
-    //
-    //         setLibrary((prev) => [asset, ...prev]);
-    //         setIsUploadOpen(false);
-    //         push({ title: "Ajouté à la bibliothèque", message: asset.title, variant: "success" });
-    //     } catch (e: any) {
-    //         push({title: "Upload échoué", message: e?.message || "", variant: "error"});
-    //     }
-    // };
-
 
     // AI generate -> returns Asset, then create clip
     const handleGenerateAI = async () => {
@@ -344,7 +319,7 @@ export default function StudioApp() {
 
         try {
             const {jobId} = await studioApi.startExport({
-                timelineClipIds: timeline.map((t) => t.uniqueId),
+                timelineClipIds: timeline.map((t) => t.id),
                 musicId: audioTrack?.id ?? null,
             });
 
@@ -449,6 +424,11 @@ export default function StudioApp() {
                 open={isMusicOpen}
                 tracks={musicPresets}
                 selectedId={audioTrack?.id ?? null}
+                onUploadCustom={async (file: File) => {return {
+                    id: '1',
+                    title: 'yes'
+                } as CustomTrack}}
+                onSelectCustom={(track) => {}}
                 onSelect={(t) => {
                     setAudioTrack(t);
                     push({

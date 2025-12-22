@@ -14,12 +14,12 @@ export function TimelineCanvasView(props: {
     onSelectItem: (id: string | null) => void;
 
     onDragStartTimeline: (e: React.DragEvent, item: TimelineItem) => void;
-    onDeleteItem: (uniqueId: string) => void;
-    onMoveItem: (uniqueId: string, direction: -1 | 1) => void;
+    onDeleteItem: (id: string) => void;
+    onMoveItem: (id: string, direction: -1 | 1) => void;
 
-    onRenameItem?: (uniqueId: string, title: string) => void;
-    onDuplicateItem?: (uniqueId: string) => void;
-    onReplaceItem?: (uniqueId: string) => void;
+    onRenameItem?: (id: string, title: string) => void;
+    onDuplicateItem?: (id: string) => void;
+    onReplaceItem?: (id: string) => void;
     onOpenAsset?: (assetId: string) => void;
 
     axisGradient: string;
@@ -113,11 +113,11 @@ export function TimelineCanvasView(props: {
             {/* Items */}
             {props.timeline.map((item, index) => {
                 const pal = props.palettes[index];
-                const isSelected = props.selectedItemId === item.uniqueId;
+                const isSelected = props.selectedItemId === item.id;
 
                 return (
                     <TimelineCanvasItem
-                        key={item.uniqueId}
+                        key={item.id}
                         item={item}
                         index={index}
                         palette={pal}

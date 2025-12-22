@@ -88,12 +88,12 @@ export function TimelineCanvas(props: {
     onDragStartTimeline: (e: React.DragEvent, item: TimelineItem) => void;
     onDropPlacement: (payload: DragPayload, index: number) => void;
 
-    onDeleteItem: (uniqueId: string) => void;
-    onMoveItem: (uniqueId: string, direction: -1 | 1) => void;
+    onDeleteItem: (id: string) => void;
+    onMoveItem: (id: string, direction: -1 | 1) => void;
 
-    onRenameItem?: (uniqueId: string, title: string) => void;
-    onDuplicateItem?: (uniqueId: string) => void;
-    onReplaceItem?: (uniqueId: string) => void;
+    onRenameItem?: (id: string, title: string) => void;
+    onDuplicateItem?: (id: string) => void;
+    onReplaceItem?: (id: string) => void;
     onOpenAsset?: (assetId: string) => void;
 }) {
     const PADDING_LEFT = props.paddingLeft ?? DEFAULT_PADDING_LEFT;

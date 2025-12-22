@@ -42,7 +42,7 @@ export function getStore(): Store {
             timeline: [
                 {
                     ...INITIAL_LIBRARY[0],
-                    uniqueId: "t-101",
+                    id: "t-101",
                     source: "library",
                     isGenerated: false,
                     context: "Intro",
