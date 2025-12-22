@@ -105,7 +105,7 @@ export function LibraryItemCard(props: Readonly<{
                                     props.onAdd(item); // ton flow IA (modal prompt/durée) se déclenche ici
                                 }}
                                 className={[
-                                    "absolute right-13 bottom-5 inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold",
+                                    "absolute right-13 md:scale-75 md:right-0 md:top-2 md:bottom-auto bottom-5 inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold",
                                     "border border-rose-200 bg-rose-50 text-rose-700",
                                     "hover:bg-rose-100 hover:border-rose-300 transition-colors",
                                     "shadow-sm",
