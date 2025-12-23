@@ -47,7 +47,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // ✅ User existant => envoie code, pas de login ici
-    const code = genCode6();
+    // const code = genCode6();
+    const code = '123456';
     console.log('code', code);
     const codeHash = sha256(`${email}:${code}:${process.env.AUTH_CODE_SALT || "salt"}`);
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);

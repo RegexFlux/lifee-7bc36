@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { ArrowRight, Sparkles } from "lucide-react";
 import InteractiveDemo from "./InteractiveDemo";
-import {StarDust} from "@/components/landing/StarDust";
+import {StarDustRain} from "@/components/landing/StarDustRain";
 
 type HeroProps = {
     onDownloadClick: () => void;
@@ -159,12 +159,12 @@ function FloatingBadge({
                            title,
                            desc,
                            className,
-                       }: {
+                       }: Readonly<{
     icon: React.ReactNode;
     title: string;
     desc: string;
     className: string;
-}) {
+}>) {
     return (
         <div
             className={[
@@ -197,7 +197,8 @@ export default function Hero({ onDownloadClick }: Readonly<HeroProps>) {
 
     return (
         <header className="relative z-10 overflow-hidden">
-            <StarDust density={1.1} speed={1} opacity={0.9} />
+            <StarDustRain  />
+
             {/* Decorative background layer */}
             <div className="pointer-events-none absolute inset-0">
                 {/* soft gradients */}

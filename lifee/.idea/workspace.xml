@@ -5,11 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
+      <change afterPath="$PROJECT_DIR$/src/components/landing/StarDustRain.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MiniAudioWidget.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MiniAudioWidget.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/VideoPlayer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/VideoPlayer.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/landing/Hero.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/Hero.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/SocialProof.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/SocialProof.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/StarDust.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/auth/start.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/auth/start.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -110,7 +112,7 @@
       <workItem from="1766226805887" duration="619000" />
       <workItem from="1766341899508" duration="36454000" />
       <workItem from="1766379281655" duration="15475000" />
-      <workItem from="1766416741486" duration="4572000" />
+      <workItem from="1766416741486" duration="6501000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />

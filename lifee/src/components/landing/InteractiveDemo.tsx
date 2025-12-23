@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Layers, X, Upload, Wand2 } from "lucide-react";
-import {useRouter} from "next/router";
-import {StarDust} from "@/components/landing/StarDust";
+import { useRouter } from "next/router";
+import { useVideoResultModal, VideoResultModal} from "@/hooks/useVideoResultModal";
 
 type DemoState = "idle" | "analyzing" | "generating" | "success" | "failed";
 
@@ -19,7 +19,8 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
     const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     const router = useRouter();
-    const setJobId = (jobId?: string) => router.push({ query: { ...router.query, jobId  } }, undefined, { shallow: true });
+    const setJobId = (jobId?: string) =>
+        router.push({ query: { ...router.query, jobId } }, undefined, { shallow: true });
 
     useEffect(() => {
         return () => {
@@ -54,8 +55,8 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
                 } else {
                     setDemoState("generating");
                 }
-            } catch (e: any) {
-                // on n’échoue pas direct, on continue (réseau, cold start, etc.)
+            } catch {
+                // on continue (réseau, cold start, etc.)
             }
         }, 1500);
     };
@@ -70,7 +71,6 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
 
         const fd = new FormData();
         fd.append("file", file);
-        // fd.append("prompt", "…"); // optionnel si tu veux un prompt custom
 
         const r = await fetch("/api/lifee/video", { method: "POST", body: fd });
         const data = await r.json();
@@ -85,27 +85,36 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
     const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         const f = e.dataTransfer.files?.[0];
-        if (f) {
-            try {
-                await uploadAndGenerate(f);
-            } catch (err: any) {
-                setError(err?.message || "Error");
-                setDemoState("failed");
-            }
+        if (!f) return;
+
+        try {
+            await uploadAndGenerate(f);
+        } catch (err: any) {
+            setError(err?.message || "Error");
+            setDemoState("failed");
         }
     };
 
     const handlePick = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const f = e.target.files?.[0];
-        if (f) {
-            try {
-                await uploadAndGenerate(f);
-            } catch (err: any) {
-                setError(err?.message || "Error");
-                setDemoState("failed");
-            }
+        if (!f) return;
+
+        try {
+            await uploadAndGenerate(f);
+        } catch (err: any) {
+            setError(err?.message || "Error");
+            setDemoState("failed");
         }
     };
+
+    // ✅ Hook: ouvre automatiquement la modale dès que videoUrl est là
+    const resultModal = useVideoResultModal({
+        videoUrl,
+        shareUrl,
+        onDownloadClick,
+        studioPath: "/studio", // adapte si besoin
+        // onGoToStudio: () => router.push("/studio"), // option override
+    });
 
     return (
         <div className="relative group perspective-1000 lg:pl-10">
@@ -130,9 +139,6 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
                     />
                 </svg>
 
-                <div className="absolute left-40 top-10 bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-mono text-cyan-300 transform -rotate-3 border border-cyan-500/30">
-                    Generate
-                </div>
 
                 <div className="relative w-36 h-44 transform -rotate-6 transition-transform group-hover:-rotate-12 duration-500">
                     <div className="absolute inset-0 bg-slate-200 p-2 pb-8 shadow-2xl rounded transform -rotate-12 border border-slate-400">
@@ -155,7 +161,7 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
                         </div>
                     </div>
 
-                    <div className="absolute inset-0 bg-white p-2 pb-8 shadow-2xl rounded transform rotate-3 border border-slate-300">
+                    <div className="absolute inset-0 z-40 bg-white p-2 pb-8 shadow-2xl rounded transform rotate-3 border border-slate-300">
                         <div className="w-full h-full bg-slate-800 overflow-hidden mb-1">
                             <img
                                 src="examples/landing.jpg"
@@ -171,6 +177,19 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
                     </div>
                 </div>
             </div>
+            {/* ✅ Fullscreen result modal */}
+            {videoUrl ? (
+                <VideoResultModal
+                    open={resultModal.open}
+                    mounted={resultModal.mounted}
+                    isMobile={resultModal.isMobile}
+                    videoUrl={videoUrl}
+                    shareUrl={shareUrl}
+                    onClose={resultModal.close}
+                    onDownload={resultModal.download}
+                    onGoToStudio={resultModal.goToStudio}
+                />
+            ) : null}
 
             <input
                 ref={fileInputRef}
@@ -184,13 +203,16 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
                 id="demo-area"
                 className="relative bg-slate-800 backdrop-blur-xl border border-white/10 rounded-2xl pt-2 shadow-2xl overflow-hidden aspect-[4/3] flex flex-col z-10"
             >
-                <div className="h-10 border-b border-white/5  flex items-center px-4 gap-2 justify-between">
+                <div className="h-10 border-b border-white/5 flex items-center px-4 gap-2 justify-between">
                     <div className="flex gap-1.5">
                         <div className="w-3 h-3 rounded-full bg-red-500/20" />
                         <div className="w-3 h-3 rounded-full bg-yellow-500/20" />
                         <div className="w-3 h-3 rounded-full bg-green-500/20" />
                     </div>
-                    <p className="text-sm text-slate-500"><X size={12} /></p>
+                    <p className="text-xs text-slate-500 flex items-center gap-4">
+                        Transformez votre premier souvenir
+                        <X size={12} />
+                    </p>
                 </div>
 
                 <div
@@ -199,11 +221,12 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
                     onDrop={handleDrop}
                     onClick={() => {
                         if (demoState === "idle" || demoState === "failed") fileInputRef.current?.click();
+                        if (demoState === "success" && videoUrl) resultModal.setOpen(true); // ré-ouvrir
                     }}
                 >
                     {demoState === "idle" && (
-                        <div className="text-center space-y-4 cursor-pointer group/drop">
-                            <div className="w-20 h-20 mx-auto rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-all duration-300 relative">
+                        <div className="text-center space-y-4 cursor-pointer">
+                            <div className="w-20 h-20 mx-auto rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
                                 <Upload size={32} className="text-slate-400" />
                             </div>
                             <div>
@@ -241,35 +264,25 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
 
                     {demoState === "success" && (
                         <div className="absolute inset-0 bg-black">
-                            <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+                            {/* On garde un aperçu discret dans la card */}
+                            <div className="absolute inset-0 opacity-80">
                                 {videoUrl ? (
-                                    <video
-                                        src={videoUrl}
-                                        playsInline
-                                        autoPlay
-                                        className="w-full h-full object-cover"
-                                    />
+                                    <video src={videoUrl} playsInline autoPlay muted className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="text-white/70">Chargement…</div>
+                                    <div className="text-white/70 flex items-center justify-center h-full">Chargement…</div>
                                 )}
                             </div>
 
-                            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent flex justify-between items-end">
-                                <div>
-                                    <div className="text-xs font-bold text-white mb-1">Votre Souvenir est prêt</div>
-                                    {shareUrl && (
-                                        <a className="text-[10px] text-cyan-200 underline font-mono" href={shareUrl} target="_blank" rel="noreferrer">
-                                            Partager / Revisionner
-                                        </a>
-                                    )}
-                                </div>
+                            {/* CTA: ré-ouvrir le plein écran */}
+                            <div className="absolute inset-0 flex items-center justify-center">
                                 <button
-                                    onClick={() => {
-                                        onDownloadClick();
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        resultModal.setOpen(true);
                                     }}
-                                    className="bg-white text-black text-xs font-bold px-4 py-2 rounded hover:bg-indigo-50 transition-colors shadow-lg shadow-white/20"
+                                    className="px-4 py-2 rounded-xl bg-white/10 border border-white/20 text-white text-xs font-bold hover:bg-white/15 backdrop-blur"
                                 >
-                                    Télécharger
+                                    Ouvrir en plein écran
                                 </button>
                             </div>
                         </div>
@@ -287,7 +300,6 @@ export default function InteractiveDemo({ onDownloadClick }: Props) {
                 <Wand2 size={20} className="text-cyan-400 mb-2" />
                 <div className="w-10 h-1 bg-slate-600 rounded" />
             </div>
-
         </div>
     );
 }
