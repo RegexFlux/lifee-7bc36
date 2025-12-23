@@ -3,6 +3,20 @@ import React from "react";
 export default function Animations() {
     return (
         <style>{`
+        @keyframes lifeeSweep {
+            0% { transform: translateX(-10%); opacity: 1; }
+            25% { opacity: 0.5; }
+            50% { transform: translateX(40%); opacity: 1; }
+           
+          
+            75% { opacity: 0.5; }
+            100% { transform: translateX(-10%); opacity: 1; }
+        }
+            .lifee-sweep{
+            filter: blur(.2px);
+            animation: lifeeSweep 4s ease-in-out infinite;
+        }
+            @media (prefers-reduced-motion: reduce){ .lifee-sweep{ animation:none; } }
       @keyframes scan {
         0% { top: 0; opacity: 0; }
         10% { opacity: 1; }

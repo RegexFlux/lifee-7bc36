@@ -114,6 +114,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Si succeeded, on upload sur S3 (best effort). On garde replicateOutputUrl pour lecture immédiate.
     if (status === "succeeded" && outputUrl && !job.videoKey) {
+        console.log('ooo', outputUrl);
         await createVideoKey(jobId, outputUrl);
     }
 

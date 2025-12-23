@@ -14,6 +14,7 @@ import {navigate} from "next/dist/client/components/segment-cache/navigation";
 import ShowCase from "@/components/landing/Showcase";
 import StudioShowcase from "@/components/landing/StudioShowcase";
 import GoFurther from "@/components/landing/GoFurther";
+import DustParticles from "@/components/effects/DustParticles";
 
 
 export default function LandingPage() {
@@ -46,7 +47,6 @@ export default function LandingPage() {
 
             <AuthModal />
 
-            <Animations />
             <Bonus
                 onLoginClick={() => showAuthModal()}
                 chance={0.4}

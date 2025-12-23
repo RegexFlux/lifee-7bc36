@@ -63,7 +63,6 @@ export async function importJobToLibrary(userId: string, jobId: string) {
             title: "Démo — Image",
             month,
             year,
-            fileUrl: imageUrl,
             thumbnailUrl: thumbUrl ?? imageUrl,
             isGenerated: false,
         });

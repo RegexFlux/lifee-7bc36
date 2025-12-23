@@ -11,7 +11,7 @@ import {Toolbar} from "./Toolbar";
 import {TimelineCanvas} from "./TimelineCanvas";
 import {UploadDraft, UploadModal} from "@/components/studio/modals/UploadModal";
 import {CustomTrack, MusicModal} from "@/components/studio/modals/MusicModal";
-import {AIGenModal} from "@/components/studio/modals/AIGenModal";
+import {AIGenModal} from "@/components/studio/aigen/AIGenModal";
 import {CreditModal} from "@/components/studio/modals/CreditModal";
 import {ExportModal} from "@/components/studio/modals/ExportModal";
 

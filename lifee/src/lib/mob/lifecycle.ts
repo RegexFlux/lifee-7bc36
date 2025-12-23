@@ -32,6 +32,7 @@ export async function advanceMockJobIfNeeded(params: { jobId: string; req: NextA
     // si on change d’état, on écrit en DB + event
     if (job.status !== next.status) {
         const outUrl = next.status === "succeeded" ? mockVideoAbsoluteUrl(params.req) : job.replicateOutputUrl;
+        console.log('oo, ou', outUrl);
         const videoKey = await createVideoKey(job.id, outUrl ?? "");
 
 

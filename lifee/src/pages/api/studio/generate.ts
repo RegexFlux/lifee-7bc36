@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { requireUserId } from "./_auth";
 import {appUsers} from "@/lib/db/schema.auth";
 import {studioAssets} from "@/lib/db/schema.studio";
+import {createVideoKey} from "@/pages/api/webhooks/replicate";
 
 function toMMYYYY(month: number, year: number) {
     return `${String(month).padStart(2, "0")}/${year}`;
@@ -32,6 +33,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // debit credit
     await db.update(appUsers).set({ credits: sql`${appUsers.credits} - 1` }).where(eq(appUsers.id, userId));
 
+    // TODO GENERATE VIDEO IF IT WORKS THEN DEBIT CREDIT
+    // FOR VIDEO GENERATION USE
+    const videoKey = await createVideoKey()
+
     const [created] = await db
         .insert(studioAssets)
         .values({
@@ -41,7 +46,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             month: source.month,
             year: source.year,
             durationSec: Math.max(1, Math.min(30, Math.floor(body.durationSec))),
-            thumbnailUrl: source.thumbnailUrl,
+            thumbnailKey: source.thumbnailKey ?? source.fileKey,
+            fileKey: videoKey,
             isGenerated: true,
             context: body.prompt ?? null,
         })
@@ -53,7 +59,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         title: created.title,
         date: toMMYYYY(created.month, created.year),
         duration: created.durationSec ? `${created.durationSec}s` : undefined,
-        thumbnailUrl: created.thumbnailUrl ?? undefined,
+        thumbnailKey: created.thumbnailKey ?? undefined,
+        fileKey: created.fileKey,
         isGenerated: true,
         context: created.context ?? undefined,
     });

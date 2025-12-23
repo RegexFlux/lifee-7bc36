@@ -3,22 +3,36 @@ import React from "react";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import dynamic from "next/dynamic";
 import { eq } from "drizzle-orm";
-import { Sparkles, User } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 import { db } from "@/lib/db";
 import { lifeeJobs } from "@/lib/db/schema";
-import {useLifeeJobStatus} from "@/components/useLifeeJobStatus";
-import {PlayerCard} from "@/components/PlayerCard";
-import {ConversionCard} from "@/components/ConversionCard";
+import { useLifeeJobStatus } from "@/components/useLifeeJobStatus";
+import { PlayerCard } from "@/components/PlayerCard";
+import { ConversionCard } from "@/components/ConversionCard";
 import AuthModal from "@/components/landing/AuthModal";
-import Bonus from "@/components/landing/Bonus";
+import NavBar from "@/components/landing/NavBar";
+
+// ✅ Bonus peut contenir du hasard/timers → éviter SSR pour prévenir les “hydration mismatch”
+const Bonus = dynamic(() => import("@/components/landing/Bonus"), { ssr: false });
+
+
+import { Tilt3D } from "@/components/fx/Tilt3D";
+import {StarDustRain} from "@/components/effects/StarDustRain";
+
+const FXBackdrop = dynamic(() => import("@/components/fx/FXBackdrop"), {
+    ssr: false,
+});
 
 function getAppUrlFromReq(req: any) {
     const envUrl = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL;
     if (envUrl) return envUrl.replace(/\/$/, "");
+
     const proto = (req.headers["x-forwarded-proto"] as string) || "http";
-    const host = (req.headers["x-forwarded-host"] as string) || req.headers.host;
+    const xfHost = (req.headers["x-forwarded-host"] as string) || req.headers.host;
+    const host = String(xfHost).split(",")[0].trim(); // ⚠️ parfois "a,b,c"
     return `${proto}://${host}`;
 }
 
@@ -35,6 +49,9 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (ctx) => 
     const slug = String(ctx.params?.slug || "").trim();
     if (!slug) return { notFound: true };
 
+    // (optionnel) garde-fou anti slugs bizarres
+    if (!/^[a-zA-Z0-9_-]{3,}$/i.test(slug)) return { notFound: true };
+
     const row = await db
         .select({
             id: lifeeJobs.id,
@@ -49,25 +66,32 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (ctx) => 
 
     if (!row) return { notFound: true };
 
-    const base = getAppUrlFromReq(ctx.req);
-    const createdAt = row.createdAt ? new Date(row.createdAt as any) : null;
+    // évite que les proxies cachent une page privée
+    ctx.res.setHeader("Cache-Control", "private, no-store, max-age=0");
 
+    const base = getAppUrlFromReq(ctx.req);
+
+    const createdAt = row.createdAt ? new Date(row.createdAt as any) : null;
     const createdLabel = createdAt
-        ? `Créé le ${createdAt.toLocaleDateString("fr-FR", {
+        ? `Créé le ${new Intl.DateTimeFormat("fr-FR", {
             day: "2-digit",
             month: "short",
             year: "numeric",
-        })}`
+        }).format(createdAt)}`
         : "Créé récemment";
+
+    const createdBy = row.email
+        ? row.email.split("@")[0].slice(0, 18) // un peu plus safe
+        : "un proche";
 
     return {
         props: {
             slug,
-            jobId: row.id,
+            jobId: String(row.id),
             shareUrl: `${base}/v/${row.shareSlug}`,
             title: "Souvenirs",
             createdLabel,
-            createdBy: row.email ? row.email.split("@")[0] : "un proche",
+            createdBy,
         },
     };
 };
@@ -79,106 +103,117 @@ export default function SharedMemorySlugPage({
                                                  createdLabel,
                                                  createdBy,
                                              }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-
     const router = useRouter();
+
+    const queryJobId = router.query.jobId;
 
     React.useEffect(() => {
         if (!router.isReady) return;
 
         // évite de réécrire si déjà présent
-        if (router.query.jobId === jobId) return;
+        if (queryJobId === jobId) return;
 
-        // ✅ replace = pas d’empilement dans l’historique
         router.replace(
             { pathname: router.pathname, query: { ...router.query, jobId } },
             undefined,
             { shallow: true }
         );
-    }, [router.isReady, router.query, router.pathname, jobId, router]);
+    }, [router.isReady, router.pathname, router.query, queryJobId, jobId, router]);
+
+    const openAuth = React.useCallback(() => {
+        router.push(
+            { pathname: router.pathname, query: { ...router.query, jobId, auth: "1" } },
+            undefined,
+            { shallow: true }
+        );
+    }, [router, jobId]);
+
+    const { videoUrl, thumbnailUrl, statusLine, progress, shareUrl: shareUrlFromApi, createdAt } =
+        useLifeeJobStatus(jobId);
+
+    const finalShareUrl = shareUrlFromApi || shareUrl;
 
     const showAuthModal = () => router.push({ query: { ...router.query, auth: "1" } }, undefined, { shallow: true });
 
-    const { videoUrl, thumbnailUrl, statusLine, progress, shareUrl: shareUrlFromApi, createdAt } = useLifeeJobStatus(jobId);
-    const finalShareUrl = shareUrlFromApi || shareUrl;
 
     return (
-        <div className="min-h-screen bg-slate-950 text-white flex flex-col relative overflow-hidden font-sans">
-            <AuthModal />
+        <div className="min-h-screen bg-gradient-to-b from-stone-50 via-white to-stone-50 text-stone-900 relative overflow-hidden">
+            <FXBackdrop />
+            <StarDustRain />
+
             <Head>
                 <title>Lifee — Revisionnage</title>
                 <meta name="robots" content="noindex,nofollow" />
+                <meta name="theme-color" content="#fafaf9" />
             </Head>
 
-            {/* Background blobs */}
-            <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none animate-pulse" />
-            <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-cyan-600/10 rounded-full blur-[120px] pointer-events-none" />
+            <AuthModal />
 
-            {/* Navbar simplified */}
-            <nav className="relative z-10 px-6 py-6 flex justify-between items-center w-full max-w-7xl mx-auto">
-                <div className="flex items-center gap-2 font-bold text-xl tracking-tighter">
-                    <div className="w-8 h-8 bg-gradient-to-tr from-indigo-500 to-cyan-400 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                        <Sparkles size={18} className="text-white fill-white" />
-                    </div>
-                    Lifee.
-                </div>
-                <button
-                    onClick={showAuthModal}
-                    className="text-sm font-medium text-slate-400 hover:text-white transition-colors border border-white/10 px-4 py-2 rounded-full hover:bg-white/5"
-                >
-                    Connexion
-                </button>
-            </nav>
+            {/* Décor de fond (style “grainy / stone”) */}
+            <div className="pointer-events-none absolute inset-0">
+                <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-rose-200/30 blur-3xl" />
+                <div className="absolute -bottom-28 -right-28 h-80 w-80 rounded-full bg-amber-200/30 blur-3xl" />
+                <div className="absolute inset-0 opacity-[0.06] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+            </div>
+
+            <NavBar onLoginClick={() => showAuthModal()} />
 
             {/* Main */}
-            <div className="flex-1 flex flex-col lg:flex-row max-w-6xl mx-auto w-full p-6 gap-12 items-center justify-center relative z-10">
-                <PlayerCard
-                    videoUrl={videoUrl}
-                    title={title}
-                    createdLabel={createdLabel}
-                    createdBy={createdBy}
-                    progress={progress}
-                    statusText={statusLine}
-                />
+            <main className="relative z-10 mx-auto max-w-6xl px-6 pb-16 pt-6">
+                {/* petit header editorial */}
+                <div className="mb-8">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white/70 px-3 py-1 text-xs text-stone-600 shadow-sm backdrop-blur">
+                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-rose-400" />
+                        Visionnage privé
+                    </div>
+                </div>
 
-                <div className="w-full lg:w-1/3">
-                    <ConversionCard
-                        canReplay={Boolean(videoUrl)}
-                        statusLine={statusLine}
-                        progress={progress}
-                        shareUrl={finalShareUrl}
-                        onUnlock={showAuthModal}
-                        createdAt={createdAt}
-                    />
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+                    <div className="lg:col-span-8">
+                        <Tilt3D className="rounded-3xl" intensity={6}>
 
-                    {/* Social Proof Mini (tu peux remplacer/retirer si tu veux) */}
-                    <div className="border-t border-white/5 pt-6 flex items-center justify-between mt-8">
-                        <div className="flex -space-x-3">
-                            {[1, 2, 3].map((i) => (
-                                <div
-                                    key={i}
-                                    className="w-8 h-8 rounded-full bg-slate-700 border-2 border-slate-950 flex items-center justify-center text-[8px] text-slate-400"
-                                >
-                                    <User size={12} />
-                                </div>
-                            ))}
-                            <div className="w-8 h-8 rounded-full bg-slate-800 border-2 border-slate-950 flex items-center justify-center text-[8px] text-white font-bold">
-                                +10k
+                        <PlayerCard
+                            videoUrl={videoUrl}
+                            thumbnailUrl={thumbnailUrl}
+                            title={title}
+                            createdLabel={createdLabel}
+                            createdBy={createdBy}
+                            progress={progress}
+                            statusText={statusLine}
+                        />
+                        </Tilt3D>
+                    </div>
+
+                    <div className="lg:col-span-4">
+                        <Tilt3D className="rounded-3xl" intensity={6}>
+
+                        <ConversionCard
+                            canReplay={Boolean(videoUrl)}
+                            statusLine={statusLine}
+                            progress={progress}
+                            shareUrl={finalShareUrl}
+                            onUnlock={openAuth}
+                            createdAt={createdAt}
+                            variant="light"
+                        />
+                        </Tilt3D>
+
+                        {/* Social proof mini (version “stone”) */}
+                        <div className="mt-8 rounded-2xl border border-stone-200 bg-white/70 shadow-sm backdrop-blur p-5">
+                            <div className="text-sm font-semibold text-stone-900">Déjà utilisé par des milliers de familles</div>
+                            <div className="mt-1 text-xs text-stone-500">
+                                Un lien simple, une émotion intacte — sans friction.
                             </div>
-                        </div>
-                        <div className="text-right">
-                            <div className="text-xs text-slate-400">Déjà utilisé par</div>
-                            <div className="text-sm font-bold text-white">10,000+ familles</div>
+                            <div className="mt-4 flex items-center justify-between">
+                                <div className="text-[11px] font-mono text-stone-500">confiance • privé • HD</div>
+                                <div className="text-sm font-semibold text-stone-900">10k+</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <Bonus
-                onLoginClick={() => showAuthModal()}
-                chance={0.4}
-                minDelayMs={1500}
-                maxDelayMs={8000}
-                persist="session"
-            />
+            </main>
+
+            <Bonus onLoginClick={openAuth} chance={0.4} minDelayMs={1500} maxDelayMs={8000} persist="session" />
         </div>
     );
 }

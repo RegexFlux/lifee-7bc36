@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { ArrowRight, Sparkles } from "lucide-react";
 import InteractiveDemo from "./InteractiveDemo";
-import {StarDustRain} from "@/components/landing/StarDustRain";
+import {StarDustRain} from "@/components/effects/StarDustRain";
 
 type HeroProps = {
     onDownloadClick: () => void;

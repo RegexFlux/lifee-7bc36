@@ -25,6 +25,7 @@ function uid() {
 export function StarDustRain(props: {
     className?: string;
     density?: number; // 0.5..2 (1 = normal)
+    color?: string;
 }) {
     const density = props.density ?? 1.6; // ↑ par défaut: plus de particules
     const [mounted, setMounted] = useState(false);

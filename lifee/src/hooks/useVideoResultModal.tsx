@@ -178,7 +178,7 @@ export function VideoResultModal(props: Readonly<{
           </div>
 
           {/* Body */}
-          <div className="p-3 sm:p-5">
+          <div className="p-3 sm:p-5 flex flex-col ml-auto">
             <div className="rounded-2xl border border-slate-200 overflow-hidden bg-black">
               <video
                 ref={videoRef}
@@ -213,7 +213,7 @@ export function VideoResultModal(props: Readonly<{
                 href={props.shareUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-3 inline-flex text-xs text-slate-500 hover:text-slate-700 underline"
+                className="mt-3 inline-flex text-xs text-slate-500 hover:text-slate-700 underline ml-auto"
               >
                 Ouvrir le lien de partage
               </a>

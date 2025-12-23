@@ -271,7 +271,7 @@ export function MiniAudioWidget({
                     {/* Hint bubble (mobile + desktop) */}
                     {hint && (
                         <div className="absolute -top-16 -right-0">
-                            <div className="rounded-2xl border border-stone-200 bg-white/90 backdrop-blur px-3 py-2 shadow-md">
+                            <div className="rounded-2xl border border-stone-200 bg-white/90 backdrop-blur px-3 py-2 shadow-md w-max">
                                 <div className="text-[11px] font-semibold text-stone-800">{hint}</div>
                                 <div className="mt-0.5 text-[11px] text-stone-500">
                                     Il vous suffit de cliquer sur l'écran
