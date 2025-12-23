@@ -45,7 +45,7 @@ export const studioApi = {
             });
 
             if (!res.ok) throw new Error(await res.text());
-            return res.json() as Promise<{ fileUrl: string; thumbnailUrl?: string; key: string; thumbnailKey?: string }>;
+            return res.json() as Promise<{ fileUrl: string; thumbnailUrl?: string; fileKey: string; thumbnailKey?: string }>;
         },
         // Library
         createAsset: (payload: {
@@ -53,8 +53,8 @@ export const studioApi = {
             type: "image" | "video";
             date: string; // "MM/YYYY"
             duration?: string;
-            thumbnailUrl?: string;
-            fileUrl?: string;
+            thumbnailKey?: string;
+            fileKey?: string;
         }) => request<Asset>
         ("/api/studio/library", {method: "POST", body: JSON.stringify(payload)}),
 

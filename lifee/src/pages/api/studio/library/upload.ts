@@ -67,7 +67,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const baseName = originalName.replace(ext, "") || "file";
 
         const prefix = (process.env.S3_PREFIX || "studio").replace(/^\/|\/$/g, "");
-        const key = `${prefix}/${userId}/${now}-${rnd}-${baseName}${ext}`;
+        const fileKey = `${prefix}/${userId}/${now}-${rnd}-${baseName}${ext}`;
 
         const filePath = getFilePath(file);
         const contentType = file.mimetype || "application/octet-stream";
@@ -76,7 +76,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const thumbPath = thumb ? getFilePath(thumb) : null;
 
         try {
-            await putFileToS3({ key, filePath, contentType });
+            await putFileToS3({ key: fileKey, filePath, contentType });
 
             if (thumb && thumbPath) {
                 const tName = sanitizeBase(thumb.originalFilename || "thumb.jpg");
@@ -91,8 +91,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
 
             return res.status(200).json({
-                key,
-                fileUrl: publicUrlFromKey(key),
+                fileKey: fileKey,
+                fileUrl: publicUrlFromKey(fileKey),
                 thumbnailKey: thumbKey,
                 thumbnailUrl: thumbKey ? publicUrlFromKey(thumbKey) : undefined,
             });

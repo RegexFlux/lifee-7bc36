@@ -27,8 +27,8 @@ export const studioAssets = pgTable(
         year: integer("year").notNull(),
 
         durationSec: integer("duration_sec"),
-        fileUrl: text("file_url"),
-        thumbnailUrl: text("thumbnail_url"),
+        fileKey: text("file_key").notNull(),
+        thumbnailKey: text("thumbnail_key"),
 
         isGenerated: boolean("is_generated").notNull().default(false),
         context: text("context"),

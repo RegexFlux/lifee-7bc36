@@ -41,6 +41,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         videoSource = "replicate";
     }
 
+
+    let thumbnailUrl: string | null = null;
+    if (job.imageKey) {
+        thumbnailUrl = await presignGet(job.imageKey);
+    }
+
     return res.status(200).json({
         id: job.id,
         shareUrl: `${appUrl(req)}/v/${job.shareSlug}`,
@@ -49,7 +55,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         message: job.progressMessage,
         error: job.error,
         videoUrl,
+        thumbnailUrl,
         videoSource,
         createdAt: job.createdAt,
+        events: events.map((e) => ({ at: e.createdAt, type: e.type, message: e.message })),
     });
 }

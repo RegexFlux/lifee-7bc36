@@ -7,6 +7,7 @@ export type LifeeStatusResp = {
     message?: string;
     error?: string;
     videoUrl?: string | null;
+    thumbnailUrl?: string | null;
     videoSource?: "s3" | "replicate" | "mock" | null;
     createdAt: string;
 };

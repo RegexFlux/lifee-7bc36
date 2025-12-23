@@ -36,42 +36,42 @@ type HiddenPreset = {
 
 const PRESETS: HiddenPreset[] = [
     {
-        key: "cinema_slow",
+        fileKey: "cinema_slow",
         title: "Mouvement ciné",
         desc: "Dolly-in lent + mouvement doux.",
         tag: "slow cinematic dolly-in, gentle motion",
         defaultOn: true,
     },
     {
-        key: "parallax_soft",
+        fileKey: "parallax_soft",
         title: "Profondeur douce",
         desc: "Parallax subtil, sans artefacts.",
         tag: "soft parallax depth, subtle separation foreground/background",
         defaultOn: true,
     },
     {
-        key: "light_warm",
+        fileKey: "light_warm",
         title: "Lumière dorée",
         desc: "Ambiance nostalgique chaleureuse.",
         tag: "warm golden light, nostalgic mood",
         defaultOn: true,
     },
     {
-        key: "film_grain",
+        fileKey: "film_grain",
         title: "Grain cinéma",
         desc: "Texture film légère.",
         tag: "light film grain, cinematic texture",
         defaultOn: true,
     },
     {
-        key: "stabilize",
+        fileKey: "stabilize",
         title: "Stabiliser",
         desc: "Réduit tremblements & wobble.",
         tag: "stabilize motion, reduce wobble artifacts",
         defaultOn: true,
     },
     {
-        key: "face_focus",
+        fileKey: "face_focus",
         title: "Focus visage",
         desc: "Priorise le sujet principal.",
         tag: "prioritize face and main subject clarity",

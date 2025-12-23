@@ -223,7 +223,7 @@ export default function StudioApp() {
         try {
             if (!draft.file) throw new Error("Fichier manquant");
 
-            const {fileUrl, thumbnailUrl} = await studioApi.uploadMedia({
+            const {fileUrl, thumbnailUrl, fileKey, thumbnailKey} = await studioApi.uploadMedia({
                 file: draft.file,
                 thumbnail: draft.thumbnailFile ?? null,
             });
@@ -235,8 +235,8 @@ export default function StudioApp() {
                 type: draft.type,
                 date,
                 duration: draft.type === "video" ? draft.duration : undefined,
-                fileUrl,
-                thumbnailUrl,
+                fileKey,
+                thumbnailKey,
             });
 
             setLibrary((prev) => [asset, ...prev]);

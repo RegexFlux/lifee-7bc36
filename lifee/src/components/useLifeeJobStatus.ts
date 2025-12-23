@@ -67,6 +67,7 @@ export function useLifeeJobStatus(jobId: string) {
     const ui = useMemo(() => {
         const shareUrl = status?.shareUrl || "";
         const videoUrl = status?.videoUrl ?? null;
+        const thumbnailUrl = status?.thumbnailUrl ?? null;
 
         const statusLine = (() => {
             if (!status) return "Chargement…";
@@ -75,7 +76,7 @@ export function useLifeeJobStatus(jobId: string) {
             return status.message || "Génération en cours…";
         })();
 
-        return { shareUrl, videoUrl, statusLine };
+        return { shareUrl, videoUrl, statusLine, thumbnailUrl };
     }, [status]);
 
     return { status, loading, createdAt, progress, ...ui };

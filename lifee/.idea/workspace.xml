@@ -5,13 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
-      <change afterPath="$PROJECT_DIR$/src/components/landing/StarDustRain.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb/storage_v2/_src_/database/lifee_db.lCs6OQ/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb/storage_v2/_src_/database/lifee_db.lCs6OQ/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/VideoPlayer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/VideoPlayer.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/Hero.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/Hero.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/StarDust.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/auth/start.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/auth/start.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/drizzle/0000_left_black_bolt.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/drizzle/meta/0000_snapshot.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/drizzle/meta/_journal.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/StudioApp.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/StudioApp.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/modals/AIGenModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/modals/AIGenModal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/useLifeeJobStatus.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/useLifeeJobStatus.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/db/schema.studio.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/db/schema.studio.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/mob/lifecycle.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/mob/lifecycle.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/s3.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/s3.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/studioApi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/studioApi.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/lifee/video/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/lifee/video/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/library/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/library/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/library/upload.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/library/upload.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/webhooks/replicate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/webhooks/replicate.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/v/[slug].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/v/[slug].tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types/lifeeStatusResp.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/lifeeStatusResp.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,32 +50,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;js.debugger.nextJs.config.created.client&quot;: &quot;true&quot;,
-    &quot;js.debugger.nextJs.config.created.server&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/public/audio&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;npm.Next.js: server-side.executor&quot;: &quot;Run&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
+    "git-widget-placeholder": "main",
+    "js.debugger.nextJs.config.created.client": "true",
+    "js.debugger.nextJs.config.created.server": "true",
+    "last_opened_file_path": "/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/public/audio",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "npm.Next.js: server-side.executor": "Debug",
+    "ts.external.directory.path": "/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;postgresql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/public/audio" />
@@ -113,6 +126,7 @@
       <workItem from="1766341899508" duration="36454000" />
       <workItem from="1766379281655" duration="15475000" />
       <workItem from="1766416741486" duration="6501000" />
+      <workItem from="1766482629813" duration="3977000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
@@ -152,10 +166,22 @@
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/src/components/landing/SocialProof.tsx</url>
-          <line>537</line>
+          <url>file://$PROJECT_DIR$/src/pages/api/webhooks/replicate.ts</url>
+          <line>115</line>
           <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="2" />
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/pages/api/webhooks/replicate.ts</url>
+          <line>137</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/lib/mob/lifecycle.ts</url>
+          <line>34</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="8" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

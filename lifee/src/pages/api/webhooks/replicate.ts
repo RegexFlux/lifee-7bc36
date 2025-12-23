@@ -114,28 +114,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Si succeeded, on upload sur S3 (best effort). On garde replicateOutputUrl pour lecture immédiate.
     if (status === "succeeded" && outputUrl && !job.videoKey) {
-        try {
-            const videoKey = `lifee/videos/${jobId}.mp4`;
-            await putRemoteUrlToS3({ key: videoKey, url: outputUrl, contentType: "video/mp4" });
-
-            await db.update(lifeeJobs).set({ videoKey, updatedAt: new Date() }).where(eq(lifeeJobs.id, jobId));
-            await db.insert(lifeeJobEvents).values({
-                id: crypto.randomUUID(),
-                jobId,
-                type: "info",
-                message: "Vidéo enregistrée sur S3",
-                createdAt: new Date(),
-            });
-        } catch (e: any) {
-            await db.insert(lifeeJobEvents).values({
-                id: crypto.randomUUID(),
-                jobId,
-                type: "warn",
-                message: `Upload S3 vidéo échoué: ${e?.message || "?"}`,
-                createdAt: new Date(),
-            });
-        }
+        await createVideoKey(jobId, outputUrl);
     }
 
     return res.status(200).json({ ok: true });
+}
+
+export const createVideoKey = async (jobId: string, outputUrl: string) => {
+    try {
+        const videoKey = `lifee/videos/${jobId}.mp4`;
+        await putRemoteUrlToS3({ key: videoKey, url: outputUrl, contentType: "video/mp4" });
+
+        await db.update(lifeeJobs).set({ videoKey, updatedAt: new Date() }).where(eq(lifeeJobs.id, jobId));
+        await db.insert(lifeeJobEvents).values({
+            id: crypto.randomUUID(),
+            jobId,
+            type: "info",
+            message: "Vidéo enregistrée sur S3",
+            createdAt: new Date(),
+        });
+        return videoKey;
+    } catch (e: any) {
+        await db.insert(lifeeJobEvents).values({
+            id: crypto.randomUUID(),
+            jobId,
+            type: "warn",
+            message: `Upload S3 vidéo échoué: ${e?.message || "?"}`,
+            createdAt: new Date(),
+        });
+    }
 }

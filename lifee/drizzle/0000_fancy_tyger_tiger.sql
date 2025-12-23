@@ -130,8 +130,8 @@ CREATE TABLE "studio_assets" (
 	"month" integer NOT NULL,
 	"year" integer NOT NULL,
 	"duration_sec" integer,
-	"file_url" text,
-	"thumbnail_url" text,
+	"file_key" text NOT NULL,
+	"thumbnail_key" text,
 	"is_generated" boolean DEFAULT false NOT NULL,
 	"context" text,
 	"created_at" timestamp DEFAULT now() NOT NULL

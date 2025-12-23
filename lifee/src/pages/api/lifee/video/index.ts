@@ -139,7 +139,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             (files.file as unknown as formidable.File) ||
             (Object.values(files)[0] as unknown as formidable.File);
 
-        const file = _files[0];
+        const file = _files[0] as formidable.File;
 
         if (!file) {
             // on libère l’essai si pas de fichier (pas de coût)

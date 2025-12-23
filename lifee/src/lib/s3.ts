@@ -3,6 +3,7 @@ import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Readable } from "node:stream";
 import fs from "node:fs";
+import {Upload} from "@aws-sdk/lib-storage";
 
 export const loadS3Env = () => {
     const client = new S3Client({
@@ -48,23 +49,82 @@ export async function putFileToS3(params: { key: string; filePath: string; conte
     );
 }
 
-export async function putRemoteUrlToS3(params: { key: string; url: string; contentType?: string }) {
+type PutRemoteUrlToS3Params = {
+    key: string;
+    url: string;
+    contentType?: string;
+    headers?: Record<string, string>;
+    timeoutMs?: number;
+    // Optionnel si tu veux forcer PutObject simple (<= 5GB)
+    forceSinglePut?: boolean;
+};
+
+export async function putRemoteUrlToS3({
+                                           key,
+                                           url,
+                                           contentType,
+                                           headers,
+                                           timeoutMs = 120_000,
+                                           forceSinglePut = false,
+                                       }: PutRemoteUrlToS3Params) {
     const { client, bucket } = loadS3Env();
 
-    const res = await fetch(params.url);
-    if (!res.ok || !res.body) throw new Error(`Failed to fetch remote: ${res.status}`);
+    const controller = new AbortController();
+    const t = setTimeout(() => controller.abort(), timeoutMs);
 
-    const ct = params.contentType || res.headers.get("content-type") || "application/octet-stream";
+    let res: Response;
+    try {
+        res = await fetch(url, {
+            signal: controller.signal,
+            redirect: "follow",
+            headers,
+        });
+    } finally {
+        clearTimeout(t);
+    }
+
+    if (!res.ok || !res.body) {
+        throw new Error(`Failed to fetch remote: ${res.status} ${res.statusText}`);
+    }
+
+    const ct = contentType || res.headers.get("content-type") || "application/octet-stream";
     const bodyStream = Readable.fromWeb(res.body as any);
 
-    await client.send(
-        new PutObjectCommand({
+    // Content-Length est souvent utile, mais peut être absent/incorrect avec certaines CDN
+    const clHeader = res.headers.get("content-length");
+    const contentLength = clHeader ? Number(clHeader) : undefined;
+    const hasValidCL = Number.isFinite(contentLength) && (contentLength as number) > 0;
+
+    // Si tu es sûr que c’est < 5GB, PutObject simple marche très bien.
+    if (forceSinglePut) {
+        await client.send(
+            new PutObjectCommand({
+                Bucket: bucket,
+                Key: key,
+                Body: bodyStream,
+                ContentType: ct,
+                ...(hasValidCL ? { ContentLength: contentLength } : {}),
+            })
+        );
+        return;
+    }
+
+    // Multipart robuste (recommandé pour vidéos)
+    const upload = new Upload({
+        client,
+        params: {
             Bucket: bucket,
-            Key: params.key,
+            Key: key,
             Body: bodyStream,
             ContentType: ct,
-        })
-    );
+            ...(hasValidCL ? { ContentLength: contentLength } : {}),
+        },
+        queueSize: 4,
+        partSize: 10 * 1024 * 1024, // 10MB (>= 5MB obligatoire pour multipart)
+        leavePartsOnError: false,
+    });
+
+    await upload.done();
 }
 
 export async function presignGet(key: string, expiresIn?: number) {

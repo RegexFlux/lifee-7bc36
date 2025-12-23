@@ -65,7 +65,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (ctx) => 
             slug,
             jobId: row.id,
             shareUrl: `${base}/v/${row.shareSlug}`,
-            title: "Souvenirs d'Été",
+            title: "Souvenirs",
             createdLabel,
             createdBy: row.email ? row.email.split("@")[0] : "un proche",
         },
@@ -98,7 +98,7 @@ export default function SharedMemorySlugPage({
 
     const showAuthModal = () => router.push({ query: { ...router.query, auth: "1" } }, undefined, { shallow: true });
 
-    const { videoUrl, statusLine, progress, shareUrl: shareUrlFromApi, createdAt } = useLifeeJobStatus(jobId);
+    const { videoUrl, thumbnailUrl, statusLine, progress, shareUrl: shareUrlFromApi, createdAt } = useLifeeJobStatus(jobId);
     const finalShareUrl = shareUrlFromApi || shareUrl;
 
     return (

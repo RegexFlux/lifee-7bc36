@@ -1,5 +1,5 @@
 {
-  "id": "03f3218d-30c1-4971-bcc7-5de844abbc51",
+  "id": "7ae6305d-2a3a-44d5-afd0-f8b157ad1e34",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -1067,14 +1067,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "file_url": {
-          "name": "file_url",
+        "file_key": {
+          "name": "file_key",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
-        "thumbnail_url": {
-          "name": "thumbnail_url",
+        "thumbnail_key": {
+          "name": "thumbnail_key",
           "type": "text",
           "primaryKey": false,
           "notNull": false
