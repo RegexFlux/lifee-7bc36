@@ -8,20 +8,16 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/LibraryItemCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/LibraryItemCard.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/studio/LibraryList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/LibraryList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/Sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/Sidebar.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/studio/StudioApp.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/StudioApp.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/studio/TimelineCanvasItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/TimelineCanvasItem.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/db/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/db/schema.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/replicate/replicateClient.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/replicate/replicateClient.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/s3.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/s3.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/bootstrap.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/bootstrap.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/TimelineCanvasView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/TimelineCanvasView.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/Toolbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/Toolbar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/aigen/AIGenModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/aigen/AIGenModal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/aigen/AdvancedInspectorOverlay.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/aigen/AdvancedInspectorOverlay.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/api/studio/generate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/generate.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/library/upload.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/library/upload.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/timeline/clips/[clipId]/get.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/timeline/clips/[clipId]/get.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/timeline/clips/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/timeline/clips/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/webhooks/replicate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/webhooks/replicate.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/studio.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/studio.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/studio.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/studio.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -123,7 +119,7 @@
       <workItem from="1766341899508" duration="36454000" />
       <workItem from="1766379281655" duration="15475000" />
       <workItem from="1766416741486" duration="6501000" />
-      <workItem from="1766482629813" duration="29565000" />
+      <workItem from="1766482629813" duration="31906000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />

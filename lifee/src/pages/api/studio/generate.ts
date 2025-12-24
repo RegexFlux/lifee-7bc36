@@ -95,7 +95,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const name = "kling-v2.5-turbo-pro";
     const version = await getLatestVersionId(owner, name);
 
-    // TODO
+    // TODO need to be cleaned
     const tunnelWeb = await localtunnel({ port: 3000 });
 
     console.log(tunnelWeb.url);
@@ -108,19 +108,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const input: Record<string, any> = {
         start_image: startImageUrl,
         prompt: body.prompt,
-        duration: Math.floor(body.durationSec),
+        duration: 1,
     };
 
     if (body.negativePrompt) input.negative_prompt = body.negativePrompt;
     // aspect_ratio ignoré si start_image est fourni (mais tu peux le garder pour futur T2V)
     if (body.aspectRatio) input.aspect_ratio = body.aspectRatio;
 
-    const prediction = await replicate.predictions.create({
-        version,
-        input,
-        webhook: webhookUrl,
-        webhook_events_filter: ["start", "logs", "completed"], // valeurs supportées :contentReference[oaicite:6]{index=6}
-    });
+    // TODO ENABLE PREDICTION
+    // const prediction = await replicate.predictions.create({
+    //     version,
+    //     input,
+    //     webhook: webhookUrl,
+    //     webhook_events_filter: ["start", "logs", "completed"], // valeurs supportées :contentReference[oaicite:6]{index=6}
+    // });
 
     await db.update(lifeeJobs).set({
         replicatePredictionId: prediction.id,

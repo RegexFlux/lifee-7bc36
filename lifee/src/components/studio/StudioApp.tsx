@@ -14,6 +14,7 @@ import {CustomTrack, MusicModal} from "@/components/studio/modals/MusicModal";
 import {AIGenModal} from "@/components/studio/aigen/AIGenModal";
 import {CreditModal} from "@/components/studio/modals/CreditModal";
 import {ExportModal} from "@/components/studio/modals/ExportModal";
+import StudioTutorial from "@/components/studio/StudioTutorial";
 
 
 type DragPayload = { item: any; source: "library" | "timeline" };
@@ -367,6 +368,7 @@ export default function StudioApp() {
 
     return (
         <div className="flex h-screen bg-gray-50 font-sans overflow-hidden text-slate-800 select-none relative">
+            <StudioTutorial />
             <Sidebar
                 open={isSidebarOpen}
                 searchTerm={searchTerm}

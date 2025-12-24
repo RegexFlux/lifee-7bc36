@@ -396,58 +396,6 @@ export function AdvancedInspectorOverlay(props: {
                                         })}
                                     </div>
                                 </div>
-
-                                {/* Spotlight / detail */}
-                                <div className="rounded-2xl border border-stone-200 bg-white p-3">
-                                    <div className="text-[11px] font-bold uppercase text-stone-500">Focus</div>
-                                    <div className="mt-1 text-sm font-semibold text-stone-900">{spotlightPreset.title}</div>
-                                    <div className="mt-1 text-xs text-stone-500">{spotlightPreset.desc}</div>
-
-                                    <div className="mt-3 rounded-2xl border border-stone-200 bg-stone-50 p-3">
-                                        <div className="flex items-center justify-between gap-2">
-                                            <div className="text-[11px] font-bold uppercase text-stone-500">Tag</div>
-                                            <button
-                                                type="button"
-                                                onClick={() => safeCopy(spotlightPreset.tag)}
-                                                className={cx(
-                                                    "inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-3 py-1 text-[11px] font-bold text-stone-700 hover:bg-stone-50 transition",
-                                                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-200"
-                                                )}
-                                            >
-                                                <Copy size={14} />
-                                                Copier
-                                            </button>
-                                        </div>
-                                        <div className="mt-2 text-[11px] font-mono text-stone-700 leading-snug">
-                                            {spotlightPreset.tag}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Prompt preview */}
-                                {props.hiddenPromptPreview ? (
-                                    <div className="rounded-2xl border border-stone-200 bg-white p-3">
-                                        <div className="flex items-center justify-between gap-2">
-                                            <div className="text-[11px] font-bold uppercase text-stone-500">
-                                                Prompt final (preview)
-                                            </div>
-                                            <button
-                                                type="button"
-                                                onClick={() => safeCopy(props.hiddenPromptPreview || "")}
-                                                className={cx(
-                                                    "inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-3 py-1 text-[11px] font-bold text-stone-700 hover:bg-stone-50 transition",
-                                                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-200"
-                                                )}
-                                            >
-                                                <Copy size={14} />
-                                                Copier
-                                            </button>
-                                        </div>
-                                        <div className="mt-2 text-[11px] font-mono text-stone-600 leading-snug max-h-28 overflow-auto pr-1">
-                                            {props.hiddenPromptPreview}
-                                        </div>
-                                    </div>
-                                ) : null}
                             </div>
                         ) : (
                             <div className="space-y-4">

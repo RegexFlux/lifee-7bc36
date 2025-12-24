@@ -71,10 +71,10 @@ function Preview({
         item.type === "video" ? item.id : undefined
     );
 
-    console.log('hh', item)
 
     return (
         <div
+            data-tour="card"
             className="relative rounded-2xl overflow-hidden border bg-white/60 backdrop-blur-sm"
             style={{
                 borderColor: pal.border,

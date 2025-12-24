@@ -74,7 +74,7 @@ export function LibraryList(props: Readonly<{
     }
 
     return (
-        <div className="flex-1 overflow-y-auto px-3 py-4 bg-gray-50/50">
+        <div className="flex-1 overflow-y-auto px-3 py-4 bg-gray-50/50" data-tour="library">
             <div className="space-y-4">
                 {groups.map((g) => {
                     const isClosed = !!collapsed[g.yearKey];

@@ -42,6 +42,8 @@ export function TimelineCanvasView(props: {
             {props.timeline.length > 0 && hasAxis ? (
                 <>
                     <div
+                        data-tour="timeline"
+
                         className="absolute top-1/2 -translate-y-1/2 h-2 rounded-full -z-10"
                         style={{
                             left: `${props.axisStart}px`,
@@ -50,6 +52,8 @@ export function TimelineCanvasView(props: {
                         }}
                     />
                     <div
+                        data-tour="timeline"
+
                         className="absolute top-1/2 -translate-y-1/2 h-10 -z-20 opacity-60 blur-2xl rounded-full"
                         style={{
                             left: `${props.axisStart}px`,
@@ -58,6 +62,8 @@ export function TimelineCanvasView(props: {
                         }}
                     />
                     <div
+                        data-tour="timeline"
+
                         className="absolute top-1/2 -translate-y-1/2 h-[1px] -z-10 opacity-25"
                         style={{
                             left: `${props.axisStart}px`,
@@ -75,6 +81,7 @@ export function TimelineCanvasView(props: {
             {/* Year group labels */}
             {props.yearTicks.map((t) => (
                 <div
+                    data-tour="timeline"
                     key={`${t.year}-${t.x}`}
                     className="absolute top-1/2 -translate-y-[38px] z-10"
                     style={{ left: `${t.x}px` }}

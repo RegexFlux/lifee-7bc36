@@ -208,7 +208,7 @@ export function AIGenModal(props: AIGenModalProps) {
                     {/* ✅ BODY (reworked completely): ONE vertical scroll area on desktop, per-panel vertical scroll on mobile */}
                     <div className="relative flex-1 min-h-0">
                         <div
-                            className={inspectorOpen ? "h-full overflow-hidden" : "h-full"}
+                            className={inspectorOpen ? "h-full overflow-hidden" : "hidden"}
                             {...(inspectorOpen ? ({ inert: "" } as any) : {})}
                             aria-hidden={inspectorOpen ? true : undefined}
                         />

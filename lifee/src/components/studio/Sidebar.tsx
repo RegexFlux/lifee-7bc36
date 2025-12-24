@@ -56,7 +56,7 @@ export function Sidebar(props: Readonly<{
                         <div className="absolute -bottom-16 -left-12 h-48 w-48 rounded-full bg-amber-200/25 blur-3xl" />
                     </div>
 
-                    <div className="relative flex items-start justify-between gap-3">
+                    <div className="relative flex items-start justify-between gap-3" >
                         <div className="min-w-0">
                             <div className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white/70 px-3 py-1 text-[11px] font-bold text-stone-700 shadow-sm backdrop-blur">
                                 <Film className="h-4 w-4 text-rose-600" />
@@ -100,6 +100,7 @@ export function Sidebar(props: Readonly<{
 
                         <div className="flex items-center gap-2">
                             <button
+                                data-tour="import"
                                 onClick={props.onOpenUpload}
                                 className="inline-flex items-center gap-2 rounded-xl bg-stone-900 px-3 py-2 text-white shadow-lg hover:bg-stone-800 transition-colors"
                                 title="Importer"
@@ -119,7 +120,7 @@ export function Sidebar(props: Readonly<{
                     </div>
 
                     {/* Search */}
-                    <div className="relative mt-4">
+                    <div className="relative mt-4" data-tour="search">
                         <Search className="absolute left-3 top-1/5 h-4 w-4 text-stone-400" />
                         <input
                             type="text"
@@ -135,7 +136,7 @@ export function Sidebar(props: Readonly<{
                     </div>
 
                     {/* Filters (pills) */}
-                    <div className="mt-4 flex gap-2">
+                    <div className="mt-4 flex gap-2" data-tour="filters">
                         <button
                             onClick={() => props.onChangeFilter("all")}
                             className={`flex-1 rounded-2xl border px-3 py-2 text-xs font-bold transition-all ${
