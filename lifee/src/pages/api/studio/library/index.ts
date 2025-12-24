@@ -1,7 +1,8 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+// pages/api/studio/library/index.ts
+import type {NextApiRequest, NextApiResponse} from "next";
 
-import { db } from "@/lib/db";
-import { requireUserId } from "../_auth";
+import {db} from "@/lib/db";
+import {requireUserId} from "../_auth";
 import {studioAssets} from "@/lib/db/schema.studio";
 import {presignGet} from "@/lib/s3";
 
@@ -11,7 +12,7 @@ function parseMMYYYY(date: string) {
     const year = Number(yyyy);
     if (!Number.isFinite(month) || month < 1 || month > 12) throw new Error("Invalid month");
     if (!Number.isFinite(year) || year < 1970 || year > 3000) throw new Error("Invalid year");
-    return { month, year };
+    return {month, year};
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -35,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const thumbnailKey = body.thumbnailKey ?? (body.type === "image" ? body.fileKey : undefined);
 
-    const { month, year } = parseMMYYYY(body.date);
+    const {month, year} = parseMMYYYY(body.date);
     const durationSec = body.type === "video" && body.duration ? Number(body.duration.replace("s", "")) : null;
 
     const [created] = await db

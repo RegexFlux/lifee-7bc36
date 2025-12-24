@@ -1,9 +1,10 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { and, eq } from "drizzle-orm";
+// pages/api/studio/library/[id].tsx
+import type {NextApiRequest, NextApiResponse} from "next";
+import {and, eq} from "drizzle-orm";
 
-import { db } from "@/lib/db";
-import { requireUserId } from "../_auth";
-import { studioAssets } from "@/lib/db/schema.studio";
+import {db} from "@/lib/db";
+import {requireUserId} from "../_auth";
+import {studioAssets} from "@/lib/db/schema.studio";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const userId = await requireUserId(req, res);
@@ -14,12 +15,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // ✅ ownership check
     const [asset] = await db
-        .select({ id: studioAssets.id })
+        .select({id: studioAssets.id})
         .from(studioAssets)
         .where(and(eq(studioAssets.id, assetId), eq(studioAssets.userId, userId)));
 
     if (!asset) return res.status(404).send("Not found");
 
     await db.delete(studioAssets).where(and(eq(studioAssets.id, assetId), eq(studioAssets.userId, userId)));
-    return res.status(200).json({ ok: true });
+    return res.status(200).json({ok: true});
 }

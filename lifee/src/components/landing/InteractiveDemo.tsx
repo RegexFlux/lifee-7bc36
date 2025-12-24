@@ -44,21 +44,23 @@ export default function InteractiveDemo({onDownloadClick}: Props) {
         await demo.uploadAndGenerate(f);
     };
 
+    console.log({...demo})
     return (
         <div className="relative group perspective-1000 lg:pl-10">
             {/* ✅ TOP-RIGHT Dock */}
-            <Dock
-                open={dockOpen}
-                onOpen={() => setDockOpen(true)}
-                onMinimize={() => setDockOpen(false)}
-                state={demo.demoState}
-                jobId={demo.jobId}
-                shareUrl={demo.shareUrl}
-                videoUrl={demo.videoUrl}
-                error={demo.error}
-                onOpenResult={() => resultModal.setOpen(true)}
-                onOpenShare={demo.openShare}
-            />
+            {demo.demoState !== "idle" && (
+                <Dock
+                    open={dockOpen}
+                    onOpen={() => setDockOpen(true)}
+                    onMinimize={() => setDockOpen(false)}
+                    state={demo.demoState}
+                    jobId={demo.jobId}
+                    shareUrl={demo.shareUrl}
+                    videoUrl={demo.videoUrl}
+                    error={demo.error}
+                    onOpenResult={() => resultModal.setOpen(true)}
+                    onOpenShare={demo.openShare}
+                />)}
 
             {/* Left polaroids */}
             <div className="absolute -left-12 -top-12 z-20 hidden lg:block pointer-events-none select-none">

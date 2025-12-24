@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import BackgroundEffects from "./BackgroundEffects";
 import NavBar from "./NavBar";
 import Hero from "./Hero";
@@ -19,40 +19,41 @@ import DustParticles from "@/components/effects/DustParticles";
 
 export default function LandingPage() {
     const router = useRouter();
-    const showAuthModal = () => router.push({ query: { ...router.query, auth: "1" } }, undefined, { shallow: true });
+    const showAuthModal = () => router.push({query: {...router.query, auth: "1"}}, undefined, {shallow: true});
 
     return (
-        <div className="min-h-screen bg-stone-50 text-stone-800 selection:bg-indigo-500 selection:text-white font-sans overflow-x-hidden">
+        <div
+            className="min-h-screen bg-stone-50 text-stone-800 selection:bg-indigo-500 selection:text-white font-sans overflow-x-hidden">
             {/* SEO “simulation” gardée (mais Head est déjà dans index.tsx) */}
             <div className="hidden">
                 <h1>Lifee - Générateur de Vidéo IA Cinématique</h1>
-                <p>Transformez vos images fixes en vidéos animées de qualité studio. Idéal pour le e-commerce, le luxe et les créatifs.</p>
+                <p>Transformez vos images fixes en vidéos animées de qualité studio. Idéal pour le e-commerce, le luxe
+                    et les créatifs.</p>
             </div>
 
-            <BackgroundEffects />
+            <BackgroundEffects/>
 
-            <NavBar onLoginClick={() => showAuthModal()} />
-
-            <Hero onDownloadClick={showAuthModal} />
-            <ShowCase />
-            <StudioShowcase screenshotSrc="/examples/studio/dashboard.png"
-                            onPrimaryCta={() => showAuthModal()} />
-
-            <Solution />
-            <HowItWorks />
-            <GoFurther />
-            <SocialProof />
-
-            <Footer />
-
-            <AuthModal />
-
+            <NavBar onLoginClick={() => showAuthModal()}/>
             <Bonus
                 onLoginClick={() => showAuthModal()}
-                chance={0.4}
+                chance={1}
                 minDelayMs={1500}
                 maxDelayMs={8000}
             />
+
+            <Hero onDownloadClick={showAuthModal}/>
+            <ShowCase/>
+            <StudioShowcase screenshotSrc="/examples/studio/dashboard.png"
+                            onPrimaryCta={() => showAuthModal()}/>
+
+            <Solution/>
+            <HowItWorks/>
+            <GoFurther/>
+            <SocialProof/>
+
+            <Footer/>
+
+            <AuthModal/>
         </div>
     );
 }

@@ -1,4 +1,4 @@
-// pages/api/studio/generateKling.ts
+// pages/api/studio/generate.ts
 import type {NextApiRequest, NextApiResponse} from "next";
 import crypto from "node:crypto";
 import {and, eq, sql} from "drizzle-orm";
@@ -92,12 +92,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const prediction = await createPredictionLive(
         jobId,
         {
-        startImageUrl,
-        prompt: body.prompt,
-        negativePrompt: body.negativePrompt,
-        aspectRatio: body.aspectRatio,
+            startImageUrl,
+            prompt: body.prompt,
+            negativePrompt: body.negativePrompt,
+            aspectRatio: body.aspectRatio,
             version: 'standard' // TODO CHECK IF HAS CREATOR PACKAGE
-    });
+        });
 
     await db.update(lifeeJobs).set({
         replicatePredictionId: prediction.id,
