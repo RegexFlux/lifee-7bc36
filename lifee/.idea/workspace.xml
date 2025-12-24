@@ -6,10 +6,23 @@
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/effects/StudioOpening.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/effects/StudioOpening.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/fx/FXBackdrop.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/fx/FXBackdrop.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/fx/Tilt3D.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/fx/Tilt3D.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/Animations.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/Animations.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/landing/GoFurther.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/GoFurther.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/Hero.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/Hero.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/useVideoResultModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useVideoResultModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/lifee/video/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/lifee/video/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/Showcase.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/Showcase.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/interactiveDemo/Dock.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/interactiveDemo/Dock.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/LibraryItemCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/LibraryItemCard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/LibraryList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/LibraryList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/modals/CreditModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/modals/CreditModal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/tutorial/TutorialOverlay.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/tutorial/TutorialOverlay.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/replicate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/replicate.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/lifee/demo/latest.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/lifee/demo/latest.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/webhooks/replicate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/webhooks/replicate.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,7 +30,6 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FormatOnSaveOptions">
-    <option name="myRunOnSave" value="false" />
     <option name="myAllFileTypesSelected" value="true" />
     <option name="mySelectedFileTypes">
       <set />
@@ -51,7 +63,9 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "npm.Next.js: server-side.executor": "Run",
+    "npm.Next.js: server-side.executor": "Debug",
+    "rearrange.code.on.save": "true",
+    "settings.editor.selected.configurable": "actions.on.save",
     "ts.external.directory.path": "/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/node_modules/typescript/lib",
     "vue.rearranger.settings.migration": "true"
   },
@@ -115,7 +129,7 @@
       <workItem from="1766482629813" duration="43111000" />
       <workItem from="1766584822328" duration="272000" />
       <workItem from="1766585104258" duration="176000" />
-      <workItem from="1766585287848" duration="9408000" />
+      <workItem from="1766585287848" duration="12719000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
@@ -169,7 +183,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/pages/api/webhooks/replicate.ts</url>
-          <line>140</line>
+          <line>141</line>
           <option name="timeStamp" value="15" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
@@ -208,11 +222,6 @@
           <option name="timeStamp" value="32" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/src/pages/api/webhooks/replicate.ts</url>
-          <line>71</line>
-          <option name="timeStamp" value="33" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/pages/api/studio/timeline/clips/[clipId]/get.ts</url>
           <line>20</line>
           <option name="timeStamp" value="34" />
@@ -230,15 +239,51 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts</url>
-          <line>91</line>
+          <line>110</line>
           <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="37" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/src/lib/db/schema.ts</url>
-          <line>110</line>
+          <url>file://$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts</url>
+          <line>65</line>
           <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="38" />
+          <option name="timeStamp" value="39" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts</url>
+          <line>88</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="40" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/pages/api/webhooks/replicate.ts</url>
+          <line>93</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="42" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts</url>
+          <line>58</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="43" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts</url>
+          <line>42</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="44" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts</url>
+          <line>150</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="46" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts</url>
+          <line>37</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="47" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

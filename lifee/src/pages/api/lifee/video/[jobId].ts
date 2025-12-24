@@ -1,13 +1,13 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { asc, and, eq } from "drizzle-orm";
+import type {NextApiRequest, NextApiResponse} from "next";
+import {asc, and, eq} from "drizzle-orm";
 
-import { db } from "@/lib/db";
-import { lifeeJobs, lifeeJobEvents } from "@/lib/db/schema";
-import { presignGet, s3Exists } from "@/lib/s3";
-import { advanceMockJobIfNeeded } from "@/lib/mob/lifecycle";
+import {db} from "@/lib/db";
+import {lifeeJobs, lifeeJobEvents} from "@/lib/db/schema";
+import {presignGet, s3Exists} from "@/lib/s3";
+import {advanceMockJobIfNeeded} from "@/lib/mob/lifecycle";
 
-import { getReplicatePrediction, extractOutputUrl } from "@/lib/replicate";
-import { putRemoteUrlToS3} from "@/lib/s3";
+import {getReplicatePrediction, extractOutputUrl} from "@/lib/replicate";
+import {putRemoteUrlToS3} from "@/lib/s3";
 
 function appUrl(req: NextApiRequest) {
     const u = process.env.APP_URL;
@@ -17,8 +17,25 @@ function appUrl(req: NextApiRequest) {
     return `${proto}://${host}`;
 }
 
-async function maybeFinalizeProcessingJob(job: { id: string; createdAt: Date; email: string | null; shareSlug: string; updatedAt: Date; status: string; progress: number | null; progressMessage: string | null; prompt: string | null; replicatePredictionId: string | null; replicateStatus: string | null; replicateLogs: string | null; replicateOutputUrl: string | null; imageKey: string | null; videoKey: string | null; error: string | null; }, jobId: string) {
-    if (job.status !== "processing") return job;
+async function maybeFinalizeProcessingJob(job: {
+    id: string;
+    createdAt: Date;
+    email: string | null;
+    shareSlug: string;
+    updatedAt: Date;
+    status: string;
+    progress: number | null;
+    progressMessage: string | null;
+    prompt: string | null;
+    replicatePredictionId: string | null;
+    replicateStatus: string | null;
+    replicateLogs: string | null;
+    replicateOutputUrl: string | null;
+    imageKey: string | null;
+    videoKey: string | null;
+    error: string | null;
+}, jobId: string) {
+    if (job.status === "processing") return job;
 
     const videoKey = job.videoKey ?? `lifee/videos/${jobId}.mp4`;
 
@@ -36,8 +53,10 @@ async function maybeFinalizeProcessingJob(job: { id: string; createdAt: Date; em
                 })
                 .where(and(eq(lifeeJobs.id, jobId), eq(lifeeJobs.status, "processing")));
 
-            return { ...job, status: "succeeded", progress: 1, progressMessage: "Vidéo prête" };
+            return {...job, status: "succeeded", progress: 1, progressMessage: "Vidéo prête"};
         }
+    } else {
+        await db.update(lifeeJobs).set({videoKey, updatedAt: new Date()}).where(eq(lifeeJobs.id, jobId));
     }
 
     // 2) Sinon, si on a un predictionId => poll Replicate
@@ -86,7 +105,7 @@ async function maybeFinalizeProcessingJob(job: { id: string; createdAt: Date; em
                 createdAt: new Date(),
             });
 
-            return { ...job, videoKey, status: "succeeded", progress: 1, progressMessage: "Vidéo prête" };
+            return {...job, videoKey, status: "succeeded", progress: 1, progressMessage: "Vidéo prête"};
         }
 
         if (pred.status === "failed" || pred.status === "canceled") {
@@ -108,7 +127,7 @@ async function maybeFinalizeProcessingJob(job: { id: string; createdAt: Date; em
                 createdAt: new Date(),
             });
 
-            return { ...job, status: "failed", progressMessage: "Génération échouée" };
+            return {...job, status: "failed", progressMessage: "Génération échouée"};
         }
 
         // starting/processing : pas de side effect
@@ -119,14 +138,14 @@ async function maybeFinalizeProcessingJob(job: { id: string; createdAt: Date; em
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
+    if (req.method !== "GET") return res.status(405).json({error: "Method not allowed"});
 
     const jobId = String(req.query.jobId || "");
-    if (!jobId) return res.status(400).json({ error: "Missing jobId" });
+    if (!jobId) return res.status(400).json({error: "Missing jobId"});
 
     // ton mock advancer
-    let job = await advanceMockJobIfNeeded({ jobId, req });
-    if (!job) return res.status(404).json({ error: "Not found" });
+    let job = await advanceMockJobIfNeeded({jobId, req});
+    if (!job) return res.status(404).json({error: "Not found"});
 
     // ✅ finalize proprement si processing
     job = await maybeFinalizeProcessingJob(job, jobId);
@@ -150,11 +169,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
     }
 
-    if (!videoUrl && job.replicateOutputUrl) {
-        videoUrl = job.replicateOutputUrl;
-        videoSource = "replicate";
-    }
-
     let thumbnailUrl: string | null = null;
     if (job.imageKey) {
         thumbnailUrl = await presignGet(job.imageKey);
@@ -171,6 +185,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         thumbnailUrl,
         videoSource,
         createdAt: job.createdAt,
-        events: events.map((e) => ({ at: e.createdAt, type: e.type, message: e.message })),
+        events: events.map((e) => ({at: e.createdAt, type: e.type, message: e.message})),
     });
 }

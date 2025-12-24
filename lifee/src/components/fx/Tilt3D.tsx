@@ -96,12 +96,6 @@ export function Tilt3D(props: {
                     }}
                 />
             ) : null}
-
-            <style jsx>{`
-        @media (prefers-reduced-motion: reduce) {
-          div { transform: none !important; }
-        }
-      `}</style>
         </div>
     );
 }

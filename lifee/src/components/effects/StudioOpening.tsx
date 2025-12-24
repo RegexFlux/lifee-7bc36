@@ -560,14 +560,6 @@ function KineticGeometryBackdrop({ active }: { active: boolean }) {
 
             {/* Micro-noise (static, not film grain) */}
             <div className="lifee-micro-noise absolute inset-0 opacity-[0.10] mix-blend-overlay" />
-
-            <style jsx global>{`
-        .lifee-micro-noise {
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.32'/%3E%3C/svg%3E");
-          background-size: 220px 220px;
-          transform: translate3d(0, 0, 0);
-        }
-      `}</style>
         </div>
     );
 }

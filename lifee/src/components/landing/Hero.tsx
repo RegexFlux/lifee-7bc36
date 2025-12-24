@@ -346,21 +346,6 @@ export default function Hero({ onDownloadClick }: Readonly<HeroProps>) {
                     </div>
                 </div>
             </div>
-
-            {/* Local keyframes */}
-            <style jsx>{`
-        @keyframes float {
-          0% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
-          100% {
-            transform: translateY(0px);
-          }
-        }
-      `}</style>
         </header>
     );
 }

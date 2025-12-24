@@ -185,35 +185,6 @@ function Thumb(props: {
                         </div>
                     </div>
                 </div>
-
-                <style jsx>{`
-          @keyframes shimmer {
-            0% {
-              transform: translateX(-60%) rotate(12deg);
-              opacity: 0.15;
-            }
-            50% {
-              opacity: 0.35;
-            }
-            100% {
-              transform: translateX(60%) rotate(12deg);
-              opacity: 0.15;
-            }
-          }
-          @keyframes progress {
-            0% {
-              transform: translateX(-70%);
-              opacity: 0.35;
-            }
-            50% {
-              opacity: 0.7;
-            }
-            100% {
-              transform: translateX(170%);
-              opacity: 0.35;
-            }
-          }
-        `}</style>
             </div>
         );
     }
@@ -520,22 +491,6 @@ export function LibraryItemCard(props: Readonly<{
                     )}
                 </div>
             </div>
-
-            <style jsx>{`
-        @keyframes progress {
-          0% {
-            transform: translateX(-70%);
-            opacity: 0.35;
-          }
-          50% {
-            opacity: 0.7;
-          }
-          100% {
-            transform: translateX(170%);
-            opacity: 0.35;
-          }
-        }
-      `}</style>
         </div>
     );
 }

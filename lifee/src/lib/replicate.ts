@@ -8,8 +8,8 @@ const PAID_MODEL_OWNER = "kwaivgi";
 const PAID_MODEL = "kling-v2.1";
 
 
-const DEMO_MODEL_OWNER = "wavespeedai";
-const DEMO_MODEL = "wan-2.1-i2v-480p";
+const DEMO_MODEL_OWNER = "wan-video";
+const DEMO_MODEL = "wan-2.2-i2v-fast";
 
 
 let cachedVersion: { id: string; at: number } | null = null;
@@ -21,7 +21,7 @@ export async function getDemoModel() {
     const id = model.latest_version?.id;
     if (!id) throw new Error("Unable to resolve latest_version.id for Kling model");
 
-    cachedVersion = { id, at: Date.now() };
+    cachedVersion = {id, at: Date.now()};
     return id;
 }
 
@@ -32,7 +32,7 @@ export async function getKlingModel() {
     const id = model.latest_version?.id;
     if (!id) throw new Error("Unable to resolve latest_version.id for Kling model");
 
-    cachedVersion = { id, at: Date.now() };
+    cachedVersion = {id, at: Date.now()};
     return id;
 }
 
@@ -59,6 +59,10 @@ export function getKlingInput(prompt: string | null, startImageUrl: string, dura
 
 export function getWanInput(prompt: string | null, startImageUrl: string, duration: number = 1, aspectRatio: string = "16:9", negativePrompt?: string) {
     return {
+        go_fast: true,
+        resolution: "720p",
+        num_frames: 81,
+        frames_per_second: 16,
         prompt: prompt ?? defaultLifeeDemoPrompt(),
         image: startImageUrl,
         duration,
@@ -73,6 +77,12 @@ type ReplicatePrediction = {
     output?: any;
     error?: any;
     logs?: string;
+    urls?: {
+        cancel: string,
+        get: string,
+        web: string,
+        steam: string,
+    }
 };
 
 export async function getReplicatePrediction(predictionId: string): Promise<ReplicatePrediction> {
@@ -94,20 +104,6 @@ export async function getReplicatePrediction(predictionId: string): Promise<Repl
     return (await r.json()) as ReplicatePrediction;
 }
 
-export function extractOutputUrl(pred: ReplicatePrediction): string | null {
-    const out = pred.output;
-    if (!out) return null;
-
-    // selon les modèles, output peut être string | array | object
-    if (typeof out === "string") return out;
-    if (Array.isArray(out)) {
-        const s = out.find((x) => typeof x === "string") as string | undefined;
-        return s ?? null;
-    }
-    if (typeof out === "object") {
-        // parfois { video: "..." } ou similaire
-        const maybe = Object.values(out).find((v) => typeof v === "string") as string | undefined;
-        return maybe ?? null;
-    }
-    return null;
+export function extractOutputUrl(pred: ReplicatePrediction): string | undefined {
+    return pred.urls?.get;
 }

@@ -225,23 +225,6 @@ export default function GoFurther() {
                     </div>
                 </div>
             </div>
-
-            <style jsx global>{`
-        @keyframes lifeeAurora {
-          0% {
-            transform: translate3d(0, 0, 0) scale(1);
-            opacity: 0.65;
-          }
-          50% {
-            transform: translate3d(6%, -4%, 0) scale(1.06);
-            opacity: 0.85;
-          }
-          100% {
-            transform: translate3d(0, 0, 0) scale(1);
-            opacity: 0.65;
-          }
-        }
-      `}</style>
         </section>
     );
 }

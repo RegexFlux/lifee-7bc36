@@ -947,14 +947,6 @@ export function CreditModal(props: {
                         </div>
                     </div>
                 )}
-
-                <style jsx>{`
-                    @keyframes pop {
-                        0% { transform: scale(1); }
-                        35% { transform: scale(1.06); }
-                        100% { transform: scale(1); }
-                    }
-                `}</style>
             </div>
         </div>
     );

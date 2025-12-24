@@ -318,22 +318,6 @@ function TreeRow(props: {
                     {props.childrenBlock}
                 </div>
             ) : null}
-
-            <style jsx>{`
-        @keyframes treeprog {
-          0% {
-            transform: translateX(-50%);
-            opacity: 0.35;
-          }
-          50% {
-            opacity: 0.7;
-          }
-          100% {
-            transform: translateX(160%);
-            opacity: 0.35;
-          }
-        }
-      `}</style>
         </div>
     );
 }

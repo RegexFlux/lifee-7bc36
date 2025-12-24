@@ -176,21 +176,6 @@ export default function FXBackdrop(props: { density?: number }) {
                 {/* vignette */}
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0)_20%,rgba(0,0,0,0.05)_100%)]" />
             </div>
-
-            {/* styles local (no config tailwind needed) */}
-            <style jsx global>{`
-        @keyframes lifeeFloat {
-          0% { transform: translate3d(0, 0, 0) scale(1); }
-          50% { transform: translate3d(18px, -14px, 0) scale(1.03); }
-          100% { transform: translate3d(0, 0, 0) scale(1); }
-        }
-        .lifee-float-1 { animation: lifeeFloat 12s ease-in-out infinite; }
-        .lifee-float-2 { animation: lifeeFloat 16s ease-in-out infinite; }
-        .lifee-float-3 { animation: lifeeFloat 20s ease-in-out infinite; }
-        @media (prefers-reduced-motion: reduce) {
-          .lifee-float-1, .lifee-float-2, .lifee-float-3 { animation: none !important; }
-        }
-      `}</style>
         </div>
     );
 }

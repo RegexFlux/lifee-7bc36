@@ -419,7 +419,7 @@ export function TutorialOverlay({
 
         (async () => {
             const stableMs = deferOpen?.stableMs ?? 220;
-            const timeoutMs = deferOpen?.timeoutMs ?? 5000;
+            const timeoutMs = deferOpen?.stepTimeoutMs ?? 5000;
 
             // 1) attendre fonts (souvent ça bouge les rects)
             try {
@@ -460,7 +460,7 @@ export function TutorialOverlay({
 
                 // Laisse démarrer la transition + attends stabilité du step 0
                 const stableMs0 = deferOpen?.stepStableMs ?? deferOpen?.stableMs ?? 220;
-                const timeoutMs0 = deferOpen?.stepTimeoutMs ?? deferOpen?.timeoutMs ?? 5000;
+                const timeoutMs0 = deferOpen?.stepTimeoutMs ?? 5000;
                 const minWaitMs0 = deferOpen?.stepMinWaitMs ?? 120;
 
                 await raf2();
@@ -816,28 +816,6 @@ export function TutorialOverlay({
                     </div>
                 </motion.div>)}
             </AnimatePresence>
-
-            <style jsx global>{`
-        @keyframes lifeeSweep {
-          0% {
-            transform: translateX(-20%);
-            opacity: 0;
-          }
-          20% {
-            opacity: 0.35;
-          }
-          50% {
-            opacity: 0.35;
-          }
-          80% {
-            opacity: 0.15;
-          }
-          100% {
-            transform: translateX(240%);
-            opacity: 0;
-          }
-        }
-      `}</style>
         </div>
     );
 

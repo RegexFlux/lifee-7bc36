@@ -1,14 +1,14 @@
 // pages/api/webhooks/replicate.ts
-import type { NextApiRequest, NextApiResponse } from "next";
-import crypto, { webcrypto } from "node:crypto";
-import { validateWebhook } from "replicate";
-import { db } from "@/lib/db";
-import { lifeeJobs, lifeeJobEvents } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
-import { putRemoteUrlToS3 } from "@/lib/s3";
+import type {NextApiRequest, NextApiResponse} from "next";
+import crypto, {webcrypto} from "node:crypto";
+import {validateWebhook} from "replicate";
+import {db} from "@/lib/db";
+import {lifeeJobs, lifeeJobEvents} from "@/lib/db/schema";
+import {eq} from "drizzle-orm";
+import {putRemoteUrlToS3} from "@/lib/s3";
 
 export const config = {
-    api: { bodyParser: false },
+    api: {bodyParser: false},
 };
 
 async function readRawBody(req: NextApiRequest) {
@@ -36,10 +36,10 @@ function clampLogs(logs: any) {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+    if (req.method !== "POST") return res.status(405).json({error: "Method not allowed"});
 
     const jobId = String(req.query.jobId || "");
-    if (!jobId) return res.status(400).json({ error: "Missing jobId" });
+    if (!jobId) return res.status(400).json({error: "Missing jobId"});
 
     const raw = await readRawBody(req);
     const secret = process.env.REPLICATE_WEBHOOK_SIGNING_SECRET;
@@ -58,14 +58,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             webcrypto
         );
 
-        if (!webhookIsValid) return res.status(401).json({ error: "Invalid webhook signature" });
+        if (!webhookIsValid) return res.status(401).json({error: "Invalid webhook signature"});
     }
 
     let body: any;
     try {
         body = JSON.parse(raw.toString("utf8"));
     } catch {
-        return res.status(400).json({ error: "Invalid JSON" });
+        return res.status(400).json({error: "Invalid JSON"});
     }
 
     const status: string = body.status; // succeeded / failed / canceled / processing / starting...
@@ -75,8 +75,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const err = body.error ? String(body.error) : null;
 
     console.log(`status: ${status}`, outputUrl);
-    const job = await db.query.lifeeJobs.findFirst({ where: eq(lifeeJobs.id, jobId) });
-    if (!job) return res.status(404).json({ error: "Job not found" });
+    const job = await db.query.lifeeJobs.findFirst({where: eq(lifeeJobs.id, jobId)});
+    if (!job) return res.status(404).json({error: "Job not found"});
 
     const nextProgress =
         status === "starting" ? 0.35 :
@@ -118,8 +118,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // IMPORTANT: Replicate peut retenter (donc handler idempotent) :contentReference[oaicite:8]{index=8}
     if (status === "succeeded" && outputUrl) {
         const key = job.videoKey || `lifee/videos/${jobId}.mp4`;
+        await db.update(lifeeJobs).set({videoKey: key, updatedAt: new Date()}).where(eq(lifeeJobs.id, jobId));
         try {
-            await putRemoteUrlToS3({ key, url: outputUrl, contentType: "video/mp4" });
+            await putRemoteUrlToS3({key, url: outputUrl, contentType: "video/mp4"});
             await db.insert(lifeeJobEvents).values({
                 id: crypto.randomUUID(),
                 jobId,
@@ -138,5 +139,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
     }
 
-    return res.status(200).json({ ok: true });
+    return res.status(200).json({ok: true});
 }
