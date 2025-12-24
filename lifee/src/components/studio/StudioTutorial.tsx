@@ -57,6 +57,7 @@ const studioSteps: TourStep[] = [
         body: "Chaque carte est un bloc d’édition : cliquez pour ajuster, remplacer ou relancer une génération.",
         tip: "Une fois généré, vous pourrez réordonner (drag) plus librement.",
         placement: "right",
+        avoidScrolling: true
     },
     {
         id: "playback",
@@ -83,15 +84,21 @@ const studioSteps: TourStep[] = [
     },
 ];
 
-export default function StudioTutorial() {
+export default function StudioTutorial({
+    setSidebarState
+                                       }: {
+    setSidebarState: (state: boolean) => void;
+}) {
     return (
         <>
             <TutorialOverlay steps={studioSteps}
                              deferOpen={{
+                                 eventName: "lifee:studio-intro-done",
                                  selectors: studioSteps.map(s => s.target),
                                  stableMs: 220,
                                  timeoutMs: 6000,
                              }}
+                             onIndexChange={(index) => setSidebarState(index < 4 ? true : false)}
             />
         </>
     );

@@ -19,6 +19,7 @@ export type TourStep = {
     radius?: number; // spotlight radius
     showInMap?: boolean; // for “map mode”
     multi?: MultiMode; // NEW: handle multiple matching targets
+    avoidScrolling?: boolean;
 };
 
 type Mode = "walkthrough" | "map";
@@ -40,6 +41,7 @@ type Props = {
     defaultMode?: Mode;
     forceOpen?: boolean; // for debugging
     onClose?: () => void;
+    onIndexChange?: (index: number) => void;
     deferOpen?: DeferOpen;
 };
 
@@ -291,6 +293,7 @@ export function TutorialOverlay({
                                     forceOpen = false,
     deferOpen,
                                     onClose,
+    onIndexChange
                                 }: Props) {
     const reduced = useReducedMotion();
     const portalId = useId();
@@ -299,6 +302,12 @@ export function TutorialOverlay({
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<Mode>(defaultMode);
     const [i, setI] = useState(0);
+
+    if (onIndexChange) {
+    useEffect(() => {
+        onIndexChange(i)
+    }, [i]);
+    }
 
     // NEW: when a step matches multiple elements, we can focus one of them (for scroll + card anchoring).
     const [matchIndex, setMatchIndex] = useState(0);
@@ -429,7 +438,10 @@ export function TutorialOverlay({
         if (!el) return;
 
         try {
-            el.scrollIntoView({ block: "center", inline: "center", behavior: reduced ? "auto" : "smooth" });
+            if (!step?.avoidScrolling) {
+                // console.log('scr', step?.avoidScrolling);
+                // el.scrollIntoView({block: "center", inline: "center", behavior: reduced ? "auto" : "smooth"});
+            }
         } catch {
             // ignore
         }

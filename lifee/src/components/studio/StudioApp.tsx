@@ -16,6 +16,7 @@ import {CreditModal} from "@/components/studio/modals/CreditModal";
 import {ExportModal} from "@/components/studio/modals/ExportModal";
 import StudioTutorial from "@/components/studio/StudioTutorial";
 import {useRouter} from "next/router";
+import {StudioOpening} from "@/components/effects/StudioOpening";
 
 
 type DragPayload = { item: any; source: "library" | "timeline" };
@@ -375,7 +376,12 @@ export default function StudioApp() {
 
     return (
         <div className="flex h-screen bg-gray-50 font-sans overflow-hidden text-slate-800 select-none relative">
-            <StudioTutorial />
+            <StudioTutorial
+            setSidebarState={(state) => {
+                console.log('re', state, isSidebarOpen)
+                setIsSidebarOpen(state)
+            }}
+            />
             <Sidebar
                 open={isSidebarOpen}
                 searchTerm={searchTerm}

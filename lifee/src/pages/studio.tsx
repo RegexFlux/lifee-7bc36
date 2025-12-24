@@ -3,6 +3,8 @@ import Head from "next/head";
 import LandingPage from "../components/landing/LandingPage";
 import TransitionScreen from "../views/TransitionScreen";
 import StudioApp from "@/components/studio/StudioApp";
+import StudioTutorial from "@/components/studio/StudioTutorial";
+import {StudioOpening} from "@/components/effects/StudioOpening";
 
 type View = "landing" | "transition" | "studio";
 
@@ -17,6 +19,12 @@ export default function HomePage() {
                 />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
             </Head>
+            <StudioOpening
+                forceOpen={true}
+                onDone={() => {
+                    window.dispatchEvent(new Event("lifee:sidebar-settled"));
+                }}
+            />
             <StudioApp />
         </>
     );
