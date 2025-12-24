@@ -1,9 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { asc, and, eq } from "drizzle-orm";
+
 import { db } from "@/lib/db";
 import { lifeeJobs, lifeeJobEvents } from "@/lib/db/schema";
-import { presignGet } from "@/lib/s3";
-import { asc, eq } from "drizzle-orm";
-import {advanceMockJobIfNeeded} from "@/lib/mob/lifecycle";
+import { presignGet, s3Exists } from "@/lib/s3";
+import { advanceMockJobIfNeeded } from "@/lib/mob/lifecycle";
+
+import { getReplicatePrediction, extractOutputUrl } from "@/lib/replicate";
+import { putRemoteUrlToS3} from "@/lib/s3";
 
 function appUrl(req: NextApiRequest) {
     const u = process.env.APP_URL;
@@ -13,14 +17,119 @@ function appUrl(req: NextApiRequest) {
     return `${proto}://${host}`;
 }
 
+async function maybeFinalizeProcessingJob(job: { id: string; createdAt: Date; email: string | null; shareSlug: string; updatedAt: Date; status: string; progress: number | null; progressMessage: string | null; prompt: string | null; replicatePredictionId: string | null; replicateStatus: string | null; replicateLogs: string | null; replicateOutputUrl: string | null; imageKey: string | null; videoKey: string | null; error: string | null; }, jobId: string) {
+    if (job.status !== "processing") return job;
+
+    const videoKey = job.videoKey ?? `lifee/videos/${jobId}.mp4`;
+
+    // 1) Si videoKey existe ET l’objet est bien sur S3 => succeeded
+    if (job.videoKey) {
+        const exists = await s3Exists(job.videoKey);
+        if (exists) {
+            await db
+                .update(lifeeJobs)
+                .set({
+                    status: "succeeded",
+                    progress: 1,
+                    progressMessage: "Vidéo prête",
+                    updatedAt: new Date(),
+                })
+                .where(and(eq(lifeeJobs.id, jobId), eq(lifeeJobs.status, "processing")));
+
+            return { ...job, status: "succeeded", progress: 1, progressMessage: "Vidéo prête" };
+        }
+    }
+
+    // 2) Sinon, si on a un predictionId => poll Replicate
+    if (job.replicatePredictionId) {
+        const pred = await getReplicatePrediction(job.replicatePredictionId);
+
+        if (pred.status === "succeeded") {
+            const outUrl = extractOutputUrl(pred);
+            if (!outUrl) {
+                await db.insert(lifeeJobEvents).values({
+                    id: crypto.randomUUID(),
+                    jobId,
+                    type: "warn",
+                    message: "Replicate succeeded mais aucun output URL n’a été trouvé.",
+                    createdAt: new Date(),
+                });
+                return job;
+            }
+
+            // Upload vers S3 (idempotent : si déjà là, on skip)
+            const already = await s3Exists(videoKey).catch(() => false);
+            if (!already) {
+                await putRemoteUrlToS3({
+                    key: videoKey,
+                    url: outUrl,
+                    contentType: "video/mp4",
+                });
+            }
+
+            await db
+                .update(lifeeJobs)
+                .set({
+                    videoKey,
+                    status: "succeeded",
+                    progress: 1,
+                    progressMessage: "Vidéo prête",
+                    updatedAt: new Date(),
+                })
+                .where(and(eq(lifeeJobs.id, jobId), eq(lifeeJobs.status, "processing")));
+
+            await db.insert(lifeeJobEvents).values({
+                id: crypto.randomUUID(),
+                jobId,
+                type: "info",
+                message: "Vidéo finalisée : Replicate → S3",
+                createdAt: new Date(),
+            });
+
+            return { ...job, videoKey, status: "succeeded", progress: 1, progressMessage: "Vidéo prête" };
+        }
+
+        if (pred.status === "failed" || pred.status === "canceled") {
+            await db
+                .update(lifeeJobs)
+                .set({
+                    status: "failed",
+                    error: typeof pred.error === "string" ? pred.error : JSON.stringify(pred.error ?? "Replicate failed"),
+                    progressMessage: "Génération échouée",
+                    updatedAt: new Date(),
+                })
+                .where(and(eq(lifeeJobs.id, jobId), eq(lifeeJobs.status, "processing")));
+
+            await db.insert(lifeeJobEvents).values({
+                id: crypto.randomUUID(),
+                jobId,
+                type: "warn",
+                message: `Replicate status: ${pred.status}`,
+                createdAt: new Date(),
+            });
+
+            return { ...job, status: "failed", progressMessage: "Génération échouée" };
+        }
+
+        // starting/processing : pas de side effect
+        return job;
+    }
+
+    return job;
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
 
     const jobId = String(req.query.jobId || "");
-    const job = await advanceMockJobIfNeeded({ jobId, req });
+    if (!jobId) return res.status(400).json({ error: "Missing jobId" });
+
+    // ton mock advancer
+    let job = await advanceMockJobIfNeeded({ jobId, req });
     if (!job) return res.status(404).json({ error: "Not found" });
 
-    if (!job) return res.status(404).json({ error: "Not found" });
+    // ✅ finalize proprement si processing
+    job = await maybeFinalizeProcessingJob(job, jobId);
 
     const events = await db
         .select()
@@ -29,33 +138,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         .orderBy(asc(lifeeJobEvents.createdAt))
         .limit(50);
 
-    // Vidéo: S3 si dispo, sinon replicateOutputUrl (affichage immédiat)
+    // Vidéo: S3 si existe, sinon fallback Replicate si tu veux preview (optionnel)
     let videoUrl: string | null = null;
     let videoSource: "s3" | "replicate" | null = null;
 
     if (job.videoKey) {
-        videoUrl = await presignGet(job.videoKey);
-        videoSource = "s3";
-    } else if (job.replicateOutputUrl) {
+        const exists = await s3Exists(job.videoKey).catch(() => false);
+        if (exists) {
+            videoUrl = await presignGet(job.videoKey);
+            videoSource = "s3";
+        }
+    }
+
+    if (!videoUrl && job.replicateOutputUrl) {
         videoUrl = job.replicateOutputUrl;
         videoSource = "replicate";
     }
-
-    if (job.status === 'processing') {
-        const videoKey = `lifee/videos/${jobId}.mp4`;
-        // TODO CHECK IF VIDEO EXISTS ON S3 and FETCH REPLICATE TO CHECK IF STATUS MATCH (job.replicatePredictionId)
-        // IF ITS SUCCEEDED ON REPLICATE THEN => FEtCH FROM replicate output url and save in s3 at videoKey
-        if (videoUrl) {
-            await db.update(lifeeJobs).set({
-                videoKey,
-                status: 'succeeded',
-                progress: 1,
-                updatedAt: new Date(),
-            }).where(eq(lifeeJobs.id, jobId));
-        }
-        console.log('vv', videoUrl);
-    }
-
 
     let thumbnailUrl: string | null = null;
     if (job.imageKey) {

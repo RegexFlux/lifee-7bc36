@@ -23,7 +23,7 @@ export function PlayerCard(props: {
     const showThumbAsMain = !props.videoUrl && hasThumb;
 
     // ✅ infos sur le player repliables (le média reste “clean”)
-    const [showInfoOnPlayer, setShowInfoOnPlayer] = React.useState(true);
+    const [showInfoOnPlayer, setShowInfoOnPlayer] = React.useState(false);
 
     return (
         <div className="w-full relative">
@@ -66,7 +66,7 @@ export function PlayerCard(props: {
                         <button
                             type="button"
                             onClick={() => setShowInfoOnPlayer((v) => !v)}
-                            className="absolute top-4 right-4 inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white/80 px-3 py-1.5 text-xs text-stone-700 shadow-sm backdrop-blur hover:bg-white transition"
+                            className="absolute hidden top-4 right-4 md:inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white/80 px-3 py-1.5 text-xs text-stone-700 shadow-sm backdrop-blur hover:bg-white transition"
                             aria-label={showInfoOnPlayer ? "Masquer les infos" : "Afficher les infos"}
                         >
                             {showInfoOnPlayer ? (
@@ -159,19 +159,19 @@ export function PlayerCard(props: {
                 {/* SOURCE PANEL (thumbnail TOUJOURS affiché si disponible) */}
                 <div className="relative">
 
-                    <div className="rounded-3xl border border-stone-200 bg-white/70 shadow-sm backdrop-blur p-4">
-                        <div className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white/80 px-3 py-1 text-xs text-stone-700 shadow-sm backdrop-blur">
+                    <div className="rounded-3xl border gap-x-4 border-stone-200 bg-white/70 shadow-sm backdrop-blur p-4 grid grid-cols-1 md:grid-cols-2">
+                        <div className="md:col-span-2 w-max inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white/80 px-3 py-1 text-xs text-stone-700 shadow-sm backdrop-blur">
                             <ImageIcon size={14} className="text-rose-500" />
                             Photo d’origine
                         </div>
 
-                        <div className="mt-3 rounded-2xl border border-stone-200 bg-white overflow-hidden">
+                        <div className="mt-3 order-3 rounded-2xl border border-stone-200 bg-white overflow-hidden">
                             {hasThumb ? (
                                 <img
                                     loading="lazy"
                                     src={props.thumbnailUrl as string}
                                     alt="Photo d'origine"
-                                    className="w-full h-40 object-cover"
+                                    className="w-full h-96 object-cover"
                                 />
                             ) : (
                                 <div className="h-40 flex items-center justify-center bg-stone-50">
@@ -189,7 +189,7 @@ export function PlayerCard(props: {
 
                         {/* ✅ Quand on replie sur le player, on “range” les infos ici */}
                         {!showInfoOnPlayer ? (
-                            <div className="mt-4 rounded-2xl border border-stone-200 bg-white/80 p-3">
+                            <div className="mt-4 md:order-4 rounded-2xl border border-stone-200 bg-white/80 p-3 h-max mb-auto">
                                 <div className="text-sm font-semibold text-stone-900">
                                     {props.title}
                                 </div>

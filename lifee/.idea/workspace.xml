@@ -5,18 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb/storage_v2/_src_/database/lifee_db.lCs6OQ/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb/storage_v2/_src_/database/lifee_db.lCs6OQ/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/mob/lifecycle.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/mob/lifecycle.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/replicate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/replicate.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/replicate/provider.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/replicate/provider.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/s3.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/s3.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/PlayerCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/PlayerCard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/VideoPlayer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/VideoPlayer.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/lifee/video/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/lifee/video/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/studio/generate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/studio/generate.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,7 +50,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "npm.Next.js: server-side.executor": "Debug",
+    "npm.Next.js: server-side.executor": "Run",
     "ts.external.directory.path": "/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/node_modules/typescript/lib",
     "vue.rearranger.settings.migration": "true"
   },
@@ -122,7 +114,7 @@
       <workItem from="1766482629813" duration="43111000" />
       <workItem from="1766584822328" duration="272000" />
       <workItem from="1766585104258" duration="176000" />
-      <workItem from="1766585287848" duration="5218000" />
+      <workItem from="1766585287848" duration="6010000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
@@ -237,7 +229,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts</url>
-          <line>43</line>
+          <line>91</line>
           <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="37" />
         </line-breakpoint>

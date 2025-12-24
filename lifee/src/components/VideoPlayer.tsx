@@ -30,7 +30,7 @@ export function VideoPlayer({
 
     function scheduleHideUI() {
         clearHideTimer();
-        hideTimer.current = setTimeout(() => setShowUI(false), 2000);
+        hideTimer.current = setTimeout(() => setShowUI(false), 500);
     }
 
     // ---------- Fullscreen helpers ----------
@@ -162,7 +162,7 @@ export function VideoPlayer({
             const p = el.play();
             if (p) await p;
             setPlaying(true);
-            setShowUI(true);
+            // setShowUI(true);
             scheduleHideUI();
         } catch {
             setPlaying(false);
@@ -253,7 +253,7 @@ export function VideoPlayer({
                     {/* Overlay */}
                     <div
                         className={[
-                            "absolute inset-0 transition-opacity duration-500",
+                            "absolute inset-0 transition-opacity duration-200",
                             overlayVisible ? "opacity-100" : "opacity-0",
                         ].join(" ")}
                     >
