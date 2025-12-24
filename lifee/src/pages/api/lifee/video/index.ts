@@ -1,18 +1,18 @@
 // pages/api/lifee/video/index.ts
-import type {NextApiRequest, NextApiResponse} from "next";
-import formidable from "formidable";
+import type { NextApiRequest, NextApiResponse } from "next";
+import formidable, { type Fields, type Files, type File as FormidableFile } from "formidable";
 import fs from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
-import {nanoid} from "nanoid";
-import {eq} from "drizzle-orm";
+import { nanoid } from "nanoid";
+import { eq } from "drizzle-orm";
 
-import {db} from "@/lib/db";
-import {lifeeJobs, lifeeJobEvents} from "@/lib/db/schema";
+import { db } from "@/lib/db";
+import { lifeeJobs, lifeeJobEvents } from "@/lib/db/schema";
 
-import {presignGet, putBufferToS3} from "@/lib/s3";
+import { presignGet, putBufferToS3 } from "@/lib/s3";
 
-import {getClientIp, hashIp} from "@/lib/security/ip";
+import { getClientIp, hashIp } from "@/lib/security/ip";
 import {
     enforceMaxActiveJobsOrThrow,
     enforceOneTryPerIpOrThrow,
@@ -20,11 +20,11 @@ import {
     reserveDailyRunOrThrow,
 } from "@/lib/security/limits";
 
-import {getProviderMode, createPredictionLive} from "@/lib/replicate/provider";
-import {defaultLifeeDemoPrompt} from "@/lib/replicate";
+import { getProviderMode, createPredictionLive } from "@/lib/replicate/provider";
+import { defaultLifeeDemoPrompt } from "@/lib/replicate";
 
 export const config = {
-    api: {bodyParser: false},
+    api: { bodyParser: false },
 };
 
 type ApiOk = {
@@ -37,7 +37,9 @@ type ApiErr = {
     error: string;
 };
 
-export function appUrl(req: NextApiRequest) {
+type EventType = "info" | "warn" | "replicate";
+
+function appUrl(req: NextApiRequest): string {
     const u = process.env.APP_URL;
     if (u) return u.replace(/\/$/, "");
     const proto = (req.headers["x-forwarded-proto"] as string) || "http";
@@ -45,7 +47,14 @@ export function appUrl(req: NextApiRequest) {
     return `${proto}://${host}`;
 }
 
-function parseForm(req: NextApiRequest) {
+function shouldEnforceLimits(mode: "live" | "mock"): boolean {
+    const flag = process.env.LIFEE_ENFORCE_LIMITS;
+    if (flag) return flag.toLowerCase() === "true";
+    if (mode === "mock") return false;
+    return process.env.NODE_ENV === "production";
+}
+
+function parseForm(req: NextApiRequest): Promise<{ fields: Fields; files: Files }> {
     const maxMb = Number(process.env.LIFEE_MAX_FILE_MB || "10");
     const form = formidable({
         multiples: false,
@@ -54,12 +63,22 @@ function parseForm(req: NextApiRequest) {
         uploadDir: "/tmp",
     });
 
-    return new Promise<{ fields: formidable.Fields; files: formidable.Files }>((resolve, reject) => {
-        form.parse(req, (err, fields, files) => (err ? reject(err) : resolve({fields, files})));
+    return new Promise((resolve, reject) => {
+        form.parse(req, (err, fields, files) => (err ? reject(err) : resolve({ fields, files })));
     });
 }
 
-function guessExt(mime: string, original: string) {
+function pickFirstFile(files: Files): FormidableFile | null {
+    const candidate =
+        (files.photo as FormidableFile | FormidableFile[] | undefined) ??
+        (files.file as FormidableFile | FormidableFile[] | undefined) ??
+        (Object.values(files)[0] as FormidableFile | FormidableFile[] | undefined);
+
+    if (!candidate) return null;
+    return Array.isArray(candidate) ? candidate[0] ?? null : candidate;
+}
+
+function guessExt(mime: string, original: string): string {
     const extFromName = path.extname(original || "").toLowerCase();
     if (extFromName) return extFromName;
 
@@ -69,21 +88,19 @@ function guessExt(mime: string, original: string) {
     return ".jpg";
 }
 
-function normalizePrompt(fields: formidable.Fields) {
-    const p = typeof fields.prompt === "string" ? fields.prompt.trim() : "";
+function normalizePrompt(fields: Fields): string {
+    const raw = fields.prompt;
+    const s =
+        typeof raw === "string"
+            ? raw
+            : Array.isArray(raw) && typeof raw[0] === "string"
+                ? raw[0]
+                : "";
+    const p = s.trim();
     return p || defaultLifeeDemoPrompt();
 }
 
-function shouldEnforceLimits(mode: "live" | "mock") {
-    // ✅ En prod: oui
-    // ✅ En mock/dev: on évite de bloquer ton dev
-    const flag = process.env.LIFEE_ENFORCE_LIMITS;
-    if (flag) return flag.toLowerCase() === "true";
-    if (mode === "mock") return false;
-    return process.env.NODE_ENV === "production";
-}
-
-async function addEvent(jobId: string, type: string, message: string) {
+async function addEvent(jobId: string, type: EventType, message: string) {
     await db.insert(lifeeJobEvents).values({
         id: crypto.randomUUID(),
         jobId,
@@ -93,8 +110,12 @@ async function addEvent(jobId: string, type: string, message: string) {
     });
 }
 
+function errorWithStatus(message: string, statusCode: number) {
+    return Object.assign(new Error(message), { statusCode });
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiOk | ApiErr>) {
-    if (req.method !== "POST") return res.status(405).json({error: "Method not allowed"});
+    if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
     const mode = getProviderMode(); // "mock" | "live"
     const enforceLimits = shouldEnforceLimits(mode);
@@ -106,60 +127,79 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     const ipHash = hashIp(ip);
 
     let jobCreated = false;
+    let ipAttemptReserved = false;
     let predictionCreated = false;
+
+    let tmpFilepath: string | null = null;
 
     try {
         // Anti-flood global: trop de jobs en cours
         if (enforceLimits) await enforceMaxActiveJobsOrThrow();
 
-        // Crée le job dès le début (pour pouvoir informer/poller immédiatement)
+        // Crée le job très tôt pour permettre un polling immédiat
+        const now = new Date();
         await db.insert(lifeeJobs).values({
             id: jobId,
             shareSlug,
             status: "uploading",
             progress: 0.05,
             progressMessage: "Réception de la photo…",
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            createdAt: now,
+            updatedAt: now,
             prompt: defaultLifeeDemoPrompt(),
         });
         jobCreated = true;
         await addEvent(jobId, "info", "Job créé");
 
-        // 1 essai par utilisateur (IP) (prod typiquement)
+        // Limite : 1 génération par IP (en prod typiquement)
         if (enforceLimits) {
-            await enforceOneTryPerIpOrThrow({ipHash, jobId});
+            await enforceOneTryPerIpOrThrow({ ipHash, jobId });
+            ipAttemptReserved = true;
             await addEvent(jobId, "info", "Quota IP réservé (1 essai)");
         }
 
         // Parse multipart
-        const {fields, files} = await parseForm(req);
-        const _files =
-            (files.photo as unknown as formidable.File) ||
-            (files.file as unknown as formidable.File) ||
-            (Object.values(files)[0] as unknown as formidable.File);
-
-        const file = _files[0] as formidable.File;
+        const { fields, files } = await parseForm(req);
+        const file = pickFirstFile(files);
 
         if (!file) {
-            // on libère l’essai si pas de fichier (pas de coût)
-            if (enforceLimits) await releaseIpAttempt({ipHash, jobId});
-            throw Object.assign(new Error("No file uploaded (field: photo|file)"), {statusCode: 400});
+            // Pas de fichier => on ne “consomme” pas un essai
+            if (enforceLimits && ipAttemptReserved) {
+                await releaseIpAttempt({ ipHash, jobId });
+                ipAttemptReserved = false;
+            }
+            throw errorWithStatus("No file uploaded (field: photo|file)", 400);
         }
+
+        tmpFilepath = file.filepath;
 
         const mime = file.mimetype || "";
         if (!mime.startsWith("image/")) {
-            if (enforceLimits) await releaseIpAttempt({ipHash, jobId});
-            throw Object.assign(new Error("Invalid file type (image only)"), {statusCode: 400});
+            if (enforceLimits && ipAttemptReserved) {
+                await releaseIpAttempt({ ipHash, jobId });
+                ipAttemptReserved = false;
+            }
+            throw errorWithStatus("Invalid file type (image only)", 400);
         }
 
         const original = file.originalFilename || "photo";
         const ext = guessExt(mime, original);
+
         const buffer = await fs.readFile(file.filepath);
+
+        // Cleanup tmp dès que possible (best effort)
+        try {
+            await fs.unlink(file.filepath);
+            tmpFilepath = null;
+        } catch {
+            // ignore
+        }
 
         // Stockage photo S3
         const imageKey = `lifee/images/${jobId}${ext}`;
-        await putBufferToS3({key: imageKey, buffer, contentType: mime});
+        await putBufferToS3({ key: imageKey, buffer, contentType: mime });
+
+        const prompt = normalizePrompt(fields);
 
         await db
             .update(lifeeJobs)
@@ -169,13 +209,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                 progress: 0.18,
                 progressMessage: "Photo stockée. Préparation de la génération…",
                 updatedAt: new Date(),
-                prompt: normalizePrompt(fields),
+                prompt,
             })
             .where(eq(lifeeJobs.id, jobId));
 
         await addEvent(jobId, "info", "Photo enregistrée sur S3");
 
-        // MOCK mode (zéro coût Replicate)
+        const base = appUrl(req);
+
+        // MOCK mode : zéro coût Replicate
         if (mode === "mock") {
             await db
                 .update(lifeeJobs)
@@ -191,7 +233,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
             await addEvent(jobId, "info", "Mock mode: Replicate non appelé");
 
-            const base = appUrl(req);
             return res.status(200).json({
                 jobId,
                 shareUrl: `${base}/v/${shareSlug}`,
@@ -199,20 +240,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             });
         }
 
-        // LIVE mode: anti-frais hard-cap journalier
+        // LIVE mode : hard-cap journalier (anti-frais)
         if (enforceLimits) await reserveDailyRunOrThrow();
 
         const startImageUrl = await presignGet(imageKey, 60 * 60);
 
-        const prompt = normalizePrompt(fields);
+        const pred = await createPredictionLive(jobId, {
+            startImageUrl,
+            prompt,
+            version: "demo",
+        });
 
-        const pred = await createPredictionLive(
-            jobId,
-            {
-                startImageUrl,
-                prompt,
-                version: 'demo'
-            });
+        predictionCreated = true;
 
         await db
             .update(lifeeJobs)
@@ -228,21 +267,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
         await addEvent(jobId, "replicate", `Replicate démarré (prediction ${pred.id})`);
 
-        const base = process.env.APP_URL;
-
         return res.status(200).json({
             jobId,
             shareUrl: `${base}/v/${shareSlug}`,
             statusUrl: `${base}/api/lifee/video/${jobId}`,
         });
-    } catch (e: any) {
-        const status = Number(e?.statusCode) || 500;
-        const msg = e?.message || "Internal error";
+    } catch (e: unknown) {
+        const err = e as { statusCode?: number; message?: string };
+        const status = Number(err?.statusCode) || 500;
+        const msg = err?.message || "Internal error";
 
-        // Si on a réservé l’essai IP mais qu’on n’a pas lancé Replicate => on libère (pas de coût)
-        if (enforceLimits && !predictionCreated) {
+        // Cleanup tmp (si pas supprimé plus tôt)
+        if (tmpFilepath) {
             try {
-                await releaseIpAttempt({ipHash, jobId});
+                await fs.unlink(tmpFilepath);
+            } catch {
+                // ignore
+            }
+        }
+
+        // Si on a réservé l’essai IP mais qu’on n’a PAS lancé Replicate => on libère (pas de coût)
+        // ⚠️ Si tu veux “1 essai par IP quoi qu’il arrive (même si erreur upload)”, garde ce release.
+        // ⚠️ Si tu veux “1 essai consommé dès qu’un job est créé”, supprime ce release.
+        if (enforceLimits && ipAttemptReserved && !predictionCreated) {
+            try {
+                await releaseIpAttempt({ ipHash, jobId });
             } catch {
                 // ignore
             }
@@ -268,6 +317,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             }
         }
 
-        return res.status(status).json({error: msg});
+        return res.status(status).json({ error: msg });
     }
 }

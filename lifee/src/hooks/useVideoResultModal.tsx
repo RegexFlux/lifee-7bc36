@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Download, ExternalLink, Film, X } from "lucide-react";
 import { useRouter } from "next/router";
+import {EmailSharePopover} from "@/components/EmailSharePopover";
 
 function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
@@ -74,6 +75,7 @@ export function useVideoResultModal(params: {
 }
 
 export function VideoResultModal(props: Readonly<{
+  jobId: string | null;
   open: boolean;
   mounted: boolean;
   isMobile: boolean;
@@ -139,6 +141,9 @@ export function VideoResultModal(props: Readonly<{
 
   return (
     <div className="fixed inset-0 z-[90]">
+      {props.jobId && (
+      <EmailSharePopover jobId={props.jobId} size="md" label="Envoyer" />)}
+
       {/* Backdrop */}
       <div
         className={[
