@@ -59,6 +59,14 @@ const studioSteps: TourStep[] = [
         placement: "right",
     },
     {
+        id: "playback",
+        target: '[data-tour="playback"]',
+        title: "Prévisualiser",
+        body: "Visionnez chaque vidéo de votre timeline",
+        placement: "left",
+        multi: 'single'
+    },
+    {
         id: "music",
         target: '[data-tour="music"]',
         title: "Ambiance sonore",
@@ -71,13 +79,6 @@ const studioSteps: TourStep[] = [
         title: "Exporter",
         body: "Téléchargez le rendu final quand tout est prêt.",
         tip: "Exportez une première version tôt pour valider le rythme.",
-        placement: "left",
-    },
-    {
-        id: "playback",
-        target: '[data-tour="playback"]',
-        title: "Prévisualiser",
-        body: "Lancez/stoppez la lecture pour vérifier le timing, les transitions et l’intention globale.",
         placement: "left",
     },
 ];

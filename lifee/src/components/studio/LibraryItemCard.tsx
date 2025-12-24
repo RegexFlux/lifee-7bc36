@@ -47,8 +47,8 @@ function normalizeProgress(raw: unknown): number | null {
 
 function formatMeta(item: Asset) {
     const parts: string[] = [];
-    if ((item as any).date) parts.push((item as any).date);
-    if ((item as any).type === "video" && (item as any).duration) parts.push((item as any).duration);
+    if (item.date) parts.push(item.date);
+    if (item.type === "video" && (item as any).duration) parts.push(item.duration);
     return parts.join(" • ");
 }
 
@@ -287,7 +287,7 @@ export function LibraryItemCard(props: Readonly<{
     const isPhoto = item.type === "image";
 
     const status = item.lastJobStatus as JobStatus;
-    const progress01 = normalizeProgress((item as any).progress);
+    const progress01 = normalizeProgress(item.progress);
     const progressPct = progress01 === null ? null : Math.round(progress01 * 100);
 
     const canDrag = isVideo && (!item.isGenerated || status === "succeeded");
@@ -296,7 +296,7 @@ export function LibraryItemCard(props: Readonly<{
     const ui = getStatusUI(status);
 
     // UX: click désactivé si job en cours (évite “double trigger”)
-    const isClickable = isVideo && (!item.isGenerated || status === "succeeded");
+    const isClickable = item.type === "image" ? !isBusy : canDrag && !isBusy;
 
     const ariaLabel = isBusy
         ? `Génération en cours pour ${(item as any).title}${progressPct !== null ? ` : ${progressPct}%` : ""}`

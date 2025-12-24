@@ -15,6 +15,7 @@ import {AIGenModal} from "@/components/studio/aigen/AIGenModal";
 import {CreditModal} from "@/components/studio/modals/CreditModal";
 import {ExportModal} from "@/components/studio/modals/ExportModal";
 import StudioTutorial from "@/components/studio/StudioTutorial";
+import {useRouter} from "next/router";
 
 
 type DragPayload = { item: any; source: "library" | "timeline" };
@@ -362,9 +363,15 @@ export default function StudioApp() {
         }
     };
 
+    const router = useRouter();
+
     const zoomIn = () => setTransform((t) => ({...t, scale: clamp(t.scale + 0.1, 0.2, 2)}));
     const zoomOut = () => setTransform((t) => ({...t, scale: clamp(t.scale - 0.1, 0.2, 2)}));
     const resetView = () => setTransform({x: 0, y: 0, scale: 0.8});
+    const showHelp = () => {
+        localStorage.removeItem('lifee_tour_done_v1');
+        router.reload();
+    }
 
     return (
         <div className="flex h-screen bg-gray-50 font-sans overflow-hidden text-slate-800 select-none relative">
@@ -398,6 +405,7 @@ export default function StudioApp() {
                     onZoomIn={zoomIn}
                     onZoomOut={zoomOut}
                     onResetView={resetView}
+                    onHelp={showHelp}
                 />
 
                 <TimelineCanvas
@@ -443,6 +451,7 @@ export default function StudioApp() {
                 durationSec={genDurationSec}
                 onChangeDurationSec={setGenDurationSec}
                 prompt={genPrompt}
+                onPurchaseCredits={(_) => setIsCreditModalOpen(true)}
                 onChangePrompt={setGenPrompt}
                 onGenerate={handleGenerateAI}
                 onClose={() => {

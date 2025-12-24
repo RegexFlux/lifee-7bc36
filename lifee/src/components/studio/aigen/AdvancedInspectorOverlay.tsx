@@ -135,57 +135,6 @@ function PresetTile(props: {
     );
 }
 
-function Tabs(props: {
-    tab: "styles" | "prompt";
-    onChange: (t: "styles" | "prompt") => void;
-    disabled?: boolean;
-}) {
-    return (
-        <div
-            className="inline-flex items-center rounded-full border border-stone-200 bg-white p-1 shadow-sm"
-            role="tablist"
-            aria-label="Sections avancées"
-        >
-            <button
-                type="button"
-                role="tab"
-                aria-selected={props.tab === "styles"}
-                disabled={props.disabled}
-                onClick={() => props.onChange("styles")}
-                className={cx(
-                    "px-3 py-1.5 rounded-full text-xs font-semibold transition",
-                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-200",
-                    props.tab === "styles" ? "bg-stone-900 text-white" : "text-stone-700 hover:bg-stone-50",
-                    props.disabled && "opacity-60 cursor-not-allowed"
-                )}
-            >
-        <span className="inline-flex items-center gap-2">
-          <SlidersHorizontal size={14} />
-          Styles
-        </span>
-            </button>
-
-            <button
-                type="button"
-                role="tab"
-                aria-selected={props.tab === "prompt"}
-                disabled={props.disabled}
-                onClick={() => props.onChange("prompt")}
-                className={cx(
-                    "px-3 py-1.5 rounded-full text-xs font-semibold transition",
-                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-200",
-                    props.tab === "prompt" ? "bg-stone-900 text-white" : "text-stone-700 hover:bg-stone-50",
-                    props.disabled && "opacity-60 cursor-not-allowed"
-                )}
-            >
-        <span className="inline-flex items-center gap-2">
-          <Type size={14} />
-          Prompt
-        </span>
-            </button>
-        </div>
-    );
-}
 
 export function AdvancedInspectorOverlay(props: {
     open: boolean;
@@ -296,7 +245,7 @@ export function AdvancedInspectorOverlay(props: {
                                     Réglages “film” (sans casser la stabilité)
                                 </div>
                                 <div className="mt-1 text-xs text-stone-500">
-                                    {props.selected.length} styles • Couleur {props.restoreColor ? "ON" : "OFF"} • Prompt{" "}
+                                    {props.selected.length} styles • Couleur {props.restoreColor ? "ON" : "OFF"}
                                     {props.extraPrompt.trim() ? "custom" : "—"}
                                 </div>
                             </div>
@@ -333,13 +282,6 @@ export function AdvancedInspectorOverlay(props: {
                             </div>
                         </div>
 
-                        <div className="mt-3 flex items-center justify-between gap-3">
-                            <Tabs tab={tab} onChange={setTab} disabled={props.disabled} />
-                            <div className="hidden md:flex items-center gap-2 text-[11px] text-stone-500">
-                                <Info size={14} className="text-amber-500" />
-                                Safe by design (anti-flicker / stabilité visage).
-                            </div>
-                        </div>
                     </div>
 
                     {/* Body */}
@@ -347,8 +289,32 @@ export function AdvancedInspectorOverlay(props: {
                         className="relative flex-1 min-h-0 overflow-y-auto p-4"
                         style={{ scrollbarGutter: "stable both-edges" }}
                     >
-                        {tab === "styles" ? (
                             <div className="grid grid-cols-1 gap-4">
+                                <div className="">
+                                    <div className="text-[11px] font-bold uppercase text-stone-500">
+                                        Contexte
+                                    </div>
+
+                                    <label className="sr-only" htmlFor={promptId}>
+                                        Donner un contexte au souvenir
+                                    </label>
+
+                                    <textarea
+                                        id={promptId}
+                                        ref={props.promptRef}
+                                        rows={5}
+                                        disabled={props.disabled}
+                                        value={props.extraPrompt}
+                                        onChange={(e) => props.onChangePrompt(e.target.value)}
+                                        placeholder="Donner un contexte à votre souvenir"
+                                        className={cx(
+                                            "mt-2 w-full rounded-2xl border border-stone-200 bg-white px-3 py-2 text-sm",
+                                            "text-stone-900 placeholder:text-stone-400 outline-none",
+                                            "focus:ring-2 focus:ring-rose-200 focus:border-rose-300",
+                                            props.disabled && "opacity-70 cursor-not-allowed"
+                                        )}
+                                    />
+                                </div>
                                 {/* Color switch */}
                                 <div className="rounded-2xl border border-stone-200 bg-stone-50 px-3 py-2 flex items-center justify-between gap-4">
                                     <div className="min-w-0">
@@ -397,104 +363,6 @@ export function AdvancedInspectorOverlay(props: {
                                     </div>
                                 </div>
                             </div>
-                        ) : (
-                            <div className="space-y-4">
-                                <div className="rounded-2xl border border-stone-200 bg-white shadow-sm overflow-hidden">
-                                    <div className="px-4 py-4 border-b border-stone-100 bg-gradient-to-b from-white to-stone-50">
-                                        <div className="text-sm font-semibold text-stone-900">Director Prompt</div>
-                                        <div className="text-xs text-stone-500">
-                                            Ajoute une direction artistique (court = mieux).
-                                        </div>
-                                    </div>
-
-                                    <div className="p-4">
-                                        <div className="text-[11px] font-bold uppercase text-stone-500">
-                                            Prompt additionnel
-                                        </div>
-
-                                        <label className="sr-only" htmlFor={promptId}>
-                                            Prompt avancé
-                                        </label>
-
-                                        <textarea
-                                            id={promptId}
-                                            ref={props.promptRef}
-                                            rows={5}
-                                            disabled={props.disabled}
-                                            value={props.extraPrompt}
-                                            onChange={(e) => props.onChangePrompt(e.target.value)}
-                                            placeholder="Ex : été 1984, lumière douce, caméra très lente, émotion…"
-                                            className={cx(
-                                                "mt-2 w-full rounded-2xl border border-stone-200 bg-white px-3 py-2 text-sm",
-                                                "text-stone-900 placeholder:text-stone-400 outline-none",
-                                                "focus:ring-2 focus:ring-rose-200 focus:border-rose-300",
-                                                props.disabled && "opacity-70 cursor-not-allowed"
-                                            )}
-                                        />
-
-                                        <div className="mt-2 text-[11px] text-stone-500 flex items-center gap-2">
-                                            <Info size={14} className="text-amber-500" />
-                                            1 ambiance • 1 caméra • 1 émotion.
-                                        </div>
-
-                                        <div className="mt-3 flex flex-wrap gap-2">
-                                            {[
-                                                "lumière dorée, nostalgie",
-                                                "caméra très lente, dolly-in",
-                                                "grain film léger",
-                                                "contre-jour doux",
-                                                "émotion, sourire subtil",
-                                            ].map((s) => (
-                                                <button
-                                                    key={s}
-                                                    type="button"
-                                                    disabled={props.disabled}
-                                                    onClick={() =>
-                                                        props.onChangePrompt(
-                                                            props.extraPrompt.trim()
-                                                                ? `${props.extraPrompt.trim()}, ${s}`
-                                                                : s
-                                                        )
-                                                    }
-                                                    className={cx(
-                                                        "rounded-full border border-stone-200 bg-white px-3 py-1 text-[11px] font-semibold text-stone-700 hover:bg-stone-50 transition",
-                                                        "focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-200",
-                                                        props.disabled && "opacity-60 cursor-not-allowed"
-                                                    )}
-                                                >
-                                                    + {s}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {props.hiddenPromptPreview ? (
-                                    <div className="rounded-2xl border border-stone-200 bg-stone-50 p-3">
-                                        <div className="flex items-center justify-between gap-2">
-                                            <div className="text-[11px] font-bold uppercase text-stone-500">
-                                                Prompt final (preview)
-                                            </div>
-                                            <button
-                                                type="button"
-                                                onClick={() => safeCopy(props.hiddenPromptPreview || "")}
-                                                className={cx(
-                                                    "inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-3 py-1 text-[11px] font-bold text-stone-700 hover:bg-stone-50 transition",
-                                                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-200"
-                                                )}
-                                            >
-                                                <Copy size={14} />
-                                                Copier
-                                            </button>
-                                        </div>
-
-                                        <div className="mt-2 text-[11px] font-mono text-stone-700 leading-snug max-h-36 overflow-auto pr-1">
-                                            {props.hiddenPromptPreview}
-                                        </div>
-                                    </div>
-                                ) : null}
-                            </div>
-                        )}
                     </div>
 
                     {/* Footer */}

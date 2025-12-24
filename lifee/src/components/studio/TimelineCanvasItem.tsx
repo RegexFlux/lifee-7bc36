@@ -74,7 +74,7 @@ function Preview({
 
     return (
         <div
-            data-tour="card"
+            data-tour="playback"
             className="relative rounded-2xl overflow-hidden border bg-white/60 backdrop-blur-sm"
             style={{
                 borderColor: pal.border,
@@ -232,6 +232,7 @@ export function TimelineCanvasItem(props: {
 
             {/* Card */}
             <div
+                data-tour="card"
                 className={
                     "group relative w-[230px] rounded-[22px] border bg-white/82 backdrop-blur " +
                     "p-3.5 flex flex-col text-left transition-all duration-300 " +

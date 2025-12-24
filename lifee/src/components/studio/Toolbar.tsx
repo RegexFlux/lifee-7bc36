@@ -6,6 +6,7 @@ import {
     Music,
     PanelLeftOpen,
     ShipWheel,
+    Info,
     Sparkles,
     ZoomIn,
     ZoomOut,
@@ -28,6 +29,7 @@ export function Toolbar(props: {
     onZoomIn?: () => void;
     onZoomOut?: () => void;
     onResetView?: () => void;
+    onHelp?: () => void;
 }) {
     return (
         <div className="absolute top-4 left-4 right-4 z-30 flex justify-between items-start pointer-events-none">
@@ -65,6 +67,13 @@ export function Toolbar(props: {
                         >
                             <ShipWheel size={18} />
                         </button>
+                        <button
+                            onClick={props.onHelp}
+                            className="p-1.5 hover:bg-gray-100 rounded"
+                            aria-label="Reset view"
+                        >
+                            <Info size={18} />
+                        </button>
                     </div>
                 )}
 
@@ -81,6 +90,7 @@ export function Toolbar(props: {
 
                 <div className="flex gap-2">
                     <button
+                        data-tour="music"
                         onClick={props.onOpenMusic}
                         className={`p-2 rounded-lg shadow-md border transition-colors ${
                             props.hasAudio
@@ -93,6 +103,7 @@ export function Toolbar(props: {
                     </button>
 
                     <button
+                        data-tour="export"
                         onClick={props.onExport}
                         disabled={props.exportDisabled}
                         className="p-2 bg-slate-900 text-white rounded-lg shadow-lg active:scale-95 transition-all disabled:opacity-50"

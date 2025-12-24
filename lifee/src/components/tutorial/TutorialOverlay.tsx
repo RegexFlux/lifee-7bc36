@@ -6,6 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronLeft, ChevronRight, X, Sparkles } from "lucide-react";
 
 type Placement = "auto" | "top" | "bottom" | "left" | "right";
+type MultiMode = "auto" | "single" | "union";
 
 export type TourStep = {
     id: string;
@@ -17,6 +18,7 @@ export type TourStep = {
     padding?: number; // spotlight padding
     radius?: number; // spotlight radius
     showInMap?: boolean; // for “map mode”
+    multi?: MultiMode; // NEW: handle multiple matching targets
 };
 
 type Mode = "walkthrough" | "map";
@@ -40,11 +42,28 @@ function getElRect(el: Element) {
         y: r.top,
         w: r.width,
         h: r.height,
+        left: r.left,
+        top: r.top,
+        right: r.right,
+        bottom: r.bottom,
     };
 }
 
+function isInViewport(r: { left: number; top: number; right: number; bottom: number }) {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    return r.right >= 0 && r.bottom >= 0 && r.left <= vw && r.top <= vh;
+}
+
+function unionRects(rects: Array<{ x: number; y: number; w: number; h: number }>) {
+    const left = Math.min(...rects.map((r) => r.x));
+    const top = Math.min(...rects.map((r) => r.y));
+    const right = Math.max(...rects.map((r) => r.x + r.w));
+    const bottom = Math.max(...rects.map((r) => r.y + r.h));
+    return { x: left, y: top, w: right - left, h: bottom - top };
+}
+
 function pickPlacementAuto(rect: { x: number; y: number; w: number; h: number }) {
-    // Choose the side with more room
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const spaceTop = rect.y;
@@ -90,7 +109,6 @@ function computeCardPosition(args: {
         y = rect.y + rect.h / 2 - cardH / 2;
     }
 
-    // Clamp to viewport with safe margins
     const margin = 14;
     x = clamp(x, margin, vw - cardW - margin);
     y = clamp(y, margin, vh - cardH - margin);
@@ -98,27 +116,50 @@ function computeCardPosition(args: {
     return { x, y };
 }
 
-function useSpotlight(targetSelector: string, padding = 10) {
-    const [rect, setRect] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
+function useTargetRects(selector: string, padding = 10) {
+    const [data, setData] = useState<{
+        elements: Element[];
+        rects: Array<{ x: number; y: number; w: number; h: number }>;
+        union: { x: number; y: number; w: number; h: number } | null;
+    }>({ elements: [], rects: [], union: null });
 
     useLayoutEffect(() => {
+        if (!selector) {
+            setData({ elements: [], rects: [], union: null });
+            return;
+        }
+
         let raf = 0;
+        let ro: ResizeObserver | null = null;
 
         const update = () => {
             cancelAnimationFrame(raf);
             raf = requestAnimationFrame(() => {
-                const el = document.querySelector(targetSelector);
-                if (!el) {
-                    setRect(null);
+                const els = Array.from(document.querySelectorAll(selector));
+                if (els.length === 0) {
+                    setData({ elements: [], rects: [], union: null });
                     return;
                 }
-                const r = getElRect(el);
-                setRect({
-                    x: r.x - padding,
-                    y: r.y - padding,
-                    w: r.w + padding * 2,
-                    h: r.h + padding * 2,
-                });
+
+                const rects = els
+                    .map((el) => getElRect(el))
+                    .filter((r) => r.w > 1 && r.h > 1)
+                    .filter((r) => isInViewport(r))
+                    .map((r) => ({
+                        x: r.x - padding,
+                        y: r.y - padding,
+                        w: r.w + padding * 2,
+                        h: r.h + padding * 2,
+                    }));
+
+                if (rects.length === 0) {
+                    // targets exist but none are visible
+                    setData({ elements: els, rects: [], union: null });
+                    return;
+                }
+
+                const u = unionRects(rects);
+                setData({ elements: els, rects, union: u });
             });
         };
 
@@ -130,28 +171,32 @@ function useSpotlight(targetSelector: string, padding = 10) {
         window.addEventListener("scroll", onScroll, true);
         window.addEventListener("resize", onResize);
 
-        const el = document.querySelector(targetSelector);
-        let ro: ResizeObserver | null = null;
-        if (el && "ResizeObserver" in window) {
+        if ("ResizeObserver" in window) {
             ro = new ResizeObserver(update);
-            ro.observe(el as Element);
+            const els = Array.from(document.querySelectorAll(selector));
+            els.forEach((el) => ro?.observe(el));
         }
 
         return () => {
             cancelAnimationFrame(raf);
             window.removeEventListener("scroll", onScroll, true);
             window.removeEventListener("resize", onResize);
-            if (ro) ro.disconnect();
+            ro?.disconnect();
         };
-    }, [targetSelector, padding]);
+    }, [selector, padding]);
 
-    return rect;
+    return data;
 }
 
-function Pill({ n }: { n: number }) {
+function Pill({ n, sub }: { n: number; sub?: number }) {
     return (
-        <div className="grid h-7 w-7 place-items-center rounded-full bg-white/95 text-[11px] font-semibold text-neutral-900 shadow-[0_10px_30px_rgba(0,0,0,.18)] ring-1 ring-black/10">
+        <div className="relative grid h-7 w-7 place-items-center rounded-full bg-white/95 text-[11px] font-semibold text-neutral-900 shadow-[0_10px_30px_rgba(0,0,0,.18)] ring-1 ring-black/10">
             {n}
+            {typeof sub === "number" && (
+                <div className="absolute -right-1 -top-1 grid h-4 w-4 place-items-center rounded-full bg-neutral-900 text-[9px] font-semibold text-white ring-2 ring-white">
+                    {sub + 1}
+                </div>
+            )}
         </div>
     );
 }
@@ -171,13 +216,32 @@ export function TutorialOverlay({
     const [mode, setMode] = useState<Mode>(defaultMode);
     const [i, setI] = useState(0);
 
+    // NEW: when a step matches multiple elements, we can focus one of them (for scroll + card anchoring).
+    const [matchIndex, setMatchIndex] = useState(0);
+
     const cardRef = useRef<HTMLDivElement | null>(null);
 
     const step = steps[i];
     const pad = step?.padding ?? 12;
     const radius = step?.radius ?? 18;
+    const multi: MultiMode = step?.multi ?? "auto";
 
-    const spotlight = useSpotlight(step?.target ?? "", pad);
+    const targets = useTargetRects(step?.target ?? "", pad);
+
+    // Derived spotlight + anchor
+    const anchorRect = useMemo(() => {
+        const r = targets.rects[matchIndex];
+        return r ?? targets.rects[0] ?? targets.union;
+    }, [targets.rects, targets.union, matchIndex]);
+
+    const spotlightRect = useMemo(() => {
+        if (!targets.union && !anchorRect) return null;
+        const hasMany = targets.rects.length > 1;
+        if (multi === "union") return targets.union ?? anchorRect;
+        if (multi === "single") return anchorRect;
+        // auto:
+        return hasMany ? (targets.union ?? anchorRect) : anchorRect;
+    }, [targets.union, targets.rects.length, anchorRect, multi]);
 
     // open once (unless done)
     useEffect(() => {
@@ -200,6 +264,11 @@ export function TutorialOverlay({
         if (i > steps.length - 1) setI(steps.length - 1);
     }, [i, steps.length]);
 
+    // reset matchIndex when step changes
+    useEffect(() => {
+        setMatchIndex(0);
+    }, [i]);
+
     // focus card
     useEffect(() => {
         if (!open) return;
@@ -209,17 +278,23 @@ export function TutorialOverlay({
         return () => window.clearTimeout(t);
     }, [open, i]);
 
-    // scroll target into view on step change
+    // scroll target into view on step change (use focused match)
     useEffect(() => {
         if (!open) return;
-        const el = document.querySelector(step?.target ?? "");
+        const el =
+            (targets.elements[matchIndex] as Element | undefined) ??
+            (targets.elements[0] as Element | undefined) ??
+            (document.querySelector(step?.target ?? "") as Element | null);
+
         if (!el) return;
+
         try {
             el.scrollIntoView({ block: "center", inline: "center", behavior: reduced ? "auto" : "smooth" });
         } catch {
             // ignore
         }
-    }, [open, i, step?.target, reduced]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, i, matchIndex, step?.target, reduced]);
 
     // keyboard nav
     useEffect(() => {
@@ -259,6 +334,7 @@ export function TutorialOverlay({
     const restart = () => {
         setMode("walkthrough");
         setI(0);
+        setMatchIndex(0);
         setOpen(true);
         try {
             localStorage.removeItem(storageKey);
@@ -271,35 +347,60 @@ export function TutorialOverlay({
     );
 
     const cardSize = { w: 380, h: 220 };
+
     const placement = useMemo(() => {
-        if (!spotlight) return "bottom" as const;
+        if (!anchorRect) return "bottom" as const;
         const wanted = step?.placement ?? "auto";
-        return wanted === "auto" ? pickPlacementAuto(spotlight) : wanted;
-    }, [spotlight, step?.placement]);
+        return wanted === "auto" ? pickPlacementAuto(anchorRect) : wanted;
+    }, [anchorRect, step?.placement]);
 
     const cardPos = useMemo(() => {
-        if (!spotlight) return { x: 24, y: 24 };
+        if (!anchorRect) return { x: 24, y: 24 };
         return computeCardPosition({
-            rect: spotlight,
+            rect: anchorRect,
             placement,
             cardW: cardSize.w,
             cardH: cardSize.h,
             gap: 14,
         });
-    }, [spotlight, placement]);
+    }, [anchorRect, placement]);
 
-    // Map markers positions
+    // Map markers (NEW: supports multiple per step)
     const markers = useMemo(() => {
         if (!open || mode !== "map") return [];
-        return mapSteps
-            .map((s) => {
-                const el = document.querySelector(s.target);
-                if (!el) return null;
-                const r = getElRect(el);
-                return { stepId: s.id, idx: s.idx, x: r.x, y: r.y };
-            })
-            .filter(Boolean) as Array<{ stepId: string; idx: number; x: number; y: number }>;
-    }, [open, mode, mapSteps, i]);
+
+        const all: Array<{
+            stepId: string;
+            stepIdx: number;
+            elIdx: number;
+            x: number;
+            y: number;
+            multiCount: number;
+        }> = [];
+
+        for (const s of mapSteps) {
+            const els = Array.from(document.querySelectorAll(s.target));
+            const visible = els
+                .map((el) => ({ el, r: getElRect(el) }))
+                .filter(({ r }) => r.w > 1 && r.h > 1)
+                .filter(({ r }) => isInViewport(r));
+
+            const count = visible.length;
+
+            visible.forEach(({ r }, elIdx) => {
+                all.push({
+                    stepId: s.id,
+                    stepIdx: s.idx,
+                    elIdx,
+                    x: r.left + r.w / 2,
+                    y: r.top + r.h / 2,
+                    multiCount: count,
+                });
+            });
+        }
+
+        return all;
+    }, [open, mode, mapSteps]);
 
     if (!mounted || !open || steps.length === 0) return null;
 
@@ -319,16 +420,15 @@ export function TutorialOverlay({
                 exit={{ opacity: 0 }}
                 transition={{ duration: reduced ? 0 : 0.18 }}
                 className="absolute inset-0 bg-black/55"
-                onMouseDown={(e) => {
-                    // click outside closes only in walkthrough (map is explorative)
+                onMouseDown={() => {
                     if (mode === "walkthrough") closeTour();
                 }}
             />
 
             {/* Spotlight (walkthrough) */}
-            {mode === "walkthrough" && spotlight && (
+            {mode === "walkthrough" && spotlightRect && (
                 <>
-                    {/* Hole using giant shadow (fast) */}
+                    {/* Hole using giant shadow */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -336,10 +436,10 @@ export function TutorialOverlay({
                         transition={{ duration: reduced ? 0 : 0.22, ease: [0.2, 0.8, 0.2, 1] }}
                         className="absolute"
                         style={{
-                            left: spotlight.x,
-                            top: spotlight.y,
-                            width: spotlight.w,
-                            height: spotlight.h,
+                            left: spotlightRect.x,
+                            top: spotlightRect.y,
+                            width: spotlightRect.w,
+                            height: spotlightRect.h,
                             borderRadius: radius,
                             boxShadow: "0 0 0 9999px rgba(0,0,0,.58)",
                             pointerEvents: "none",
@@ -354,10 +454,10 @@ export function TutorialOverlay({
                         transition={{ duration: reduced ? 0 : 0.26, ease: [0.16, 1, 0.3, 1] }}
                         className="absolute"
                         style={{
-                            left: spotlight.x,
-                            top: spotlight.y,
-                            width: spotlight.w,
-                            height: spotlight.h,
+                            left: spotlightRect.x,
+                            top: spotlightRect.y,
+                            width: spotlightRect.w,
+                            height: spotlightRect.h,
                             borderRadius: radius,
                             pointerEvents: "none",
                         }}
@@ -383,17 +483,20 @@ export function TutorialOverlay({
                 </button>
             </div>
 
-            {/* Map markers */}
+            {/* Map markers (multiple per step supported) */}
             {mode === "map" &&
                 markers.map((m) => (
                     <button
-                        key={m.stepId}
+                        key={`${m.stepId}:${m.elIdx}`}
                         className="absolute -translate-x-1/2 -translate-y-1/2"
                         style={{ left: m.x, top: m.y }}
-                        onClick={() => setI(m.idx)}
-                        aria-label={`Ouvrir l’aide: étape ${m.idx + 1}`}
+                        onClick={() => {
+                            setI(m.stepIdx);
+                            setMatchIndex(m.elIdx);
+                        }}
+                        aria-label={`Ouvrir l’aide: étape ${m.stepIdx + 1}`}
                     >
-                        <Pill n={m.idx + 1} />
+                        <Pill n={m.stepIdx + 1} sub={m.multiCount > 1 ? m.elIdx : undefined} />
                     </button>
                 ))}
 
@@ -427,8 +530,18 @@ export function TutorialOverlay({
                                     </div>
                                     <div className="text-sm font-semibold text-neutral-950">{step.title}</div>
                                 </div>
+
                                 <div className="mt-2 text-sm leading-relaxed text-neutral-700">{step.body}</div>
+
+                                {/* Optional: show “x elements” hint when multiple targets match */}
+                                {targets.rects.length > 1 && (
+                                    <div className="mt-2 text-[11px] text-neutral-500">
+                                        {targets.rects.length} éléments concernés
+                                        {multi === "union" || (multi === "auto" && targets.rects.length > 1) ? " (zone groupée)" : ""}
+                                    </div>
+                                )}
                             </div>
+
                             <div className="text-xs font-medium text-neutral-500">
                                 {i + 1}/{steps.length}
                             </div>
@@ -441,10 +554,7 @@ export function TutorialOverlay({
                         )}
 
                         <div className="mt-4 flex items-center justify-between">
-                            <button
-                                className="text-xs font-medium text-neutral-500 hover:text-neutral-800"
-                                onClick={closeTour}
-                            >
+                            <button className="text-xs font-medium text-neutral-500 hover:text-neutral-800" onClick={closeTour}>
                                 Passer
                             </button>
 
@@ -472,9 +582,7 @@ export function TutorialOverlay({
                             {steps.map((_, idx) => (
                                 <div
                                     key={idx}
-                                    className={`h-1.5 w-1.5 rounded-full ${
-                                        idx === i ? "bg-neutral-900" : "bg-neutral-200"
-                                    }`}
+                                    className={`h-1.5 w-1.5 rounded-full ${idx === i ? "bg-neutral-900" : "bg-neutral-200"}`}
                                 />
                             ))}
                             <div className="ml-auto text-[11px] text-neutral-400">Esc pour fermer • ← → pour naviguer</div>
@@ -485,11 +593,23 @@ export function TutorialOverlay({
 
             <style jsx global>{`
         @keyframes lifeeSweep {
-          0% { transform: translateX(-20%); opacity: 0.0; }
-          20% { opacity: 0.35; }
-          50% { opacity: 0.35; }
-          80% { opacity: 0.15; }
-          100% { transform: translateX(240%); opacity: 0.0; }
+          0% {
+            transform: translateX(-20%);
+            opacity: 0;
+          }
+          20% {
+            opacity: 0.35;
+          }
+          50% {
+            opacity: 0.35;
+          }
+          80% {
+            opacity: 0.15;
+          }
+          100% {
+            transform: translateX(240%);
+            opacity: 0;
+          }
         }
       `}</style>
         </div>
