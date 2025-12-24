@@ -1,42 +1,61 @@
-import { db } from "@/lib/db";
-import { rateLimits } from "@/lib/db/schema";
-import { eq, sql } from "drizzle-orm";
+// lib/security/rateLimit.ts
+import {and, eq, sql} from "drizzle-orm";
+import {db} from "@/lib/db";
+import {rateLimits} from "@/lib/db/schema"; // <- ton schema.rateLimits
 
-export async function consumeRateLimitOrThrow(params: {
+export class HttpError extends Error {
+    statusCode: number;
+    retryAfterSec?: number;
+
+    constructor(statusCode: number, message: string, retryAfterSec?: number) {
+        super(message);
+        this.statusCode = statusCode;
+        this.retryAfterSec = retryAfterSec;
+    }
+}
+
+export async function consumeRateLimit(params: {
     key: string;
-    limit: number;
+    max: number;
     windowSec: number;
-}) {
+}): Promise<void> {
+    const {key, max, windowSec} = params;
     const now = new Date();
-    const resetAt = new Date(now.getTime() + params.windowSec * 1000);
+    const nextReset = new Date(now.getTime() + windowSec * 1000);
 
-    // Upsert: if expired, reset count to 1; else increment
-    const existing = await db.select().from(rateLimits).where(eq(rateLimits.key, params.key)).limit(1);
-    if (existing.length === 0) {
-        await db.insert(rateLimits).values({ key: params.key, count: 1, resetAt });
-        return;
-    }
+    await db.transaction(async (tx) => {
+        const [row] = await tx.select().from(rateLimits).where(eq(rateLimits.key, key));
 
-    const row = existing[0]!;
-    const isExpired = new Date(row.resetAt as any).getTime() <= now.getTime();
+        // 1) première fois
+        if (!row) {
+            await tx.insert(rateLimits).values({key, count: 1, resetAt: nextReset});
+            return;
+        }
 
-    if (isExpired) {
-        await db.update(rateLimits).set({ count: 1, resetAt }).where(eq(rateLimits.key, params.key));
-        return;
-    }
+        // 2) fenêtre expirée -> reset
+        if (row.resetAt <= now) {
+            await tx
+                .update(rateLimits)
+                .set({count: 1, resetAt: nextReset})
+                .where(eq(rateLimits.key, key));
+            return;
+        }
 
-    // increment then check
-    const updated = await db
-        .update(rateLimits)
-        .set({ count: sql`${rateLimits.count} + 1` })
-        .where(eq(rateLimits.key, params.key))
-        .returning({ count: rateLimits.count });
+        // 3) fenêtre active -> incrément atomique si < max
+        const updated = await tx
+            .update(rateLimits)
+            .set({
+                count: sql`${rateLimits.count}
+                + 1`
+            })
+            .where(and(eq(rateLimits.key, key), sql`${rateLimits.count}
+            <
+            ${max}`))
+            .returning({count: rateLimits.count, resetAt: rateLimits.resetAt});
 
-    const count = updated[0]?.count ?? (row.count as any);
-    if (count > params.limit) {
-        const err = new Error("Trop de tentatives. Réessaie plus tard.");
-        // @ts-ignore
-        err.statusCode = 429;
-        throw err;
-    }
+        if (updated.length === 0) {
+            const retryAfterSec = Math.max(1, Math.ceil((row.resetAt.getTime() - now.getTime()) / 1000));
+            throw new HttpError(429, "Trop de exports. Réessayez plus tard.", retryAfterSec);
+        }
+    });
 }

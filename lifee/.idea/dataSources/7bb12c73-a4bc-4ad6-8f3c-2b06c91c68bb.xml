@@ -3,15 +3,7 @@
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.53">
     <root id="1">
       <DateStyle>mdy</DateStyle>
-      <Grants>1||-9223372036854775808|c|G
-1||10|c|G
-1||10|C|G
-1||10|T|G
-4||-9223372036854775808|c|G
-4||10|c|G
-4||10|C|G
-4||10|T|G</Grants>
-      <IntrospectionStateNumber>2084</IntrospectionStateNumber>
+      <IntrospectionStateNumber>2311</IntrospectionStateNumber>
       <ServerVersion>16.11</ServerVersion>
       <StartupTime>1766585017</StartupTime>
       <TimeZones>true ACDT
@@ -704,7 +696,7 @@ false posixrules
 13276||10|C|G
 13276||-9223372036854775808|U|G
 13276||10|U|G</Grants>
-      <IntrospectionStateNumber>2084</IntrospectionStateNumber>
+      <IntrospectionStateNumber>2311</IntrospectionStateNumber>
       <ObjectId>16384</ObjectId>
       <OwnerName>lifee</OwnerName>
     </database>
@@ -4115,8 +4107,8 @@ false posixrules
       <ValidatorSchema>pg_catalog</ValidatorSchema>
     </language>
     <schema id="262" parent="2" name="drizzle">
-      <ObjectId>17328</ObjectId>
-      <StateNumber>1546</StateNumber>
+      <ObjectId>25519</ObjectId>
+      <StateNumber>2308</StateNumber>
       <OwnerName>lifee</OwnerName>
     </schema>
     <schema id="263" parent="2" name="information_schema">
@@ -4136,571 +4128,828 @@ false posixrules
     <schema id="265" parent="2" name="public">
       <AutoIntrospectionLevel>3</AutoIntrospectionLevel>
       <Current>1</Current>
-      <LastIntrospectionL1Xid>2084</LastIntrospectionL1Xid>
-      <LastIntrospectionL2Xid>2084</LastIntrospectionL2Xid>
-      <LastIntrospectionL3Xid>2084</LastIntrospectionL3Xid>
+      <LastIntrospectionL1Xid>2311</LastIntrospectionL1Xid>
+      <LastIntrospectionL2Xid>2311</LastIntrospectionL2Xid>
+      <LastIntrospectionL3Xid>2311</LastIntrospectionL3Xid>
       <LastIntrospectionLevel>3</LastIntrospectionLevel>
-      <LastIntrospectionLocalTimestamp>2025-12-24.14:08:11</LastIntrospectionLocalTimestamp>
-      <ObjectId>17326</ObjectId>
-      <StateNumber>1535</StateNumber>
+      <LastIntrospectionLocalTimestamp>2025-12-24.20:27:51</LastIntrospectionLocalTimestamp>
+      <ObjectId>25518</ObjectId>
+      <StateNumber>2306</StateNumber>
       <OwnerName>lifee</OwnerName>
     </schema>
     <table id="266" parent="265" name="app_users">
       <DetailsLevel>2</DetailsLevel>
-      <ObjectId>17396</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25587</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>lifee</OwnerName>
     </table>
     <table id="267" parent="265" name="auth_email_codes">
       <DetailsLevel>2</DetailsLevel>
-      <ObjectId>17406</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25597</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>lifee</OwnerName>
     </table>
     <table id="268" parent="265" name="auth_sessions">
       <DetailsLevel>2</DetailsLevel>
-      <ObjectId>17416</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25607</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>lifee</OwnerName>
     </table>
-    <table id="269" parent="265" name="email_login_codes">
+    <table id="269" parent="265" name="credit_ledger">
       <DetailsLevel>2</DetailsLevel>
-      <ObjectId>17338</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25672</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>lifee</OwnerName>
     </table>
-    <table id="270" parent="265" name="export_jobs">
+    <table id="270" parent="265" name="credit_purchases">
       <DetailsLevel>2</DetailsLevel>
-      <ObjectId>17443</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25681</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>lifee</OwnerName>
     </table>
-    <table id="271" parent="265" name="lifee_daily_runs">
+    <table id="271" parent="265" name="email_login_codes">
       <DetailsLevel>2</DetailsLevel>
-      <ObjectId>17347</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25529</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>lifee</OwnerName>
     </table>
-    <table id="272" parent="265" name="lifee_ip_attempts">
+    <table id="272" parent="265" name="export_jobs">
       <DetailsLevel>2</DetailsLevel>
-      <ObjectId>17355</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25634</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>lifee</OwnerName>
     </table>
-    <table id="273" parent="265" name="lifee_job_events">
+    <table id="273" parent="265" name="lifee_daily_runs">
       <DetailsLevel>2</DetailsLevel>
-      <ObjectId>17363</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25538</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>lifee</OwnerName>
     </table>
-    <table id="274" parent="265" name="lifee_jobs">
+    <table id="274" parent="265" name="lifee_ip_attempts">
       <DetailsLevel>2</DetailsLevel>
-      <ObjectId>17371</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25546</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>lifee</OwnerName>
     </table>
-    <table id="275" parent="265" name="music_tracks">
+    <table id="275" parent="265" name="lifee_job_events">
       <DetailsLevel>2</DetailsLevel>
-      <ObjectId>17453</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25554</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>lifee</OwnerName>
     </table>
-    <table id="276" parent="265" name="oauth_accounts">
+    <table id="276" parent="265" name="lifee_jobs">
       <DetailsLevel>2</DetailsLevel>
-      <ObjectId>17425</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25562</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>lifee</OwnerName>
     </table>
-    <table id="277" parent="265" name="rate_limits">
+    <table id="277" parent="265" name="music_tracks">
       <DetailsLevel>2</DetailsLevel>
-      <ObjectId>17380</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25644</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>lifee</OwnerName>
     </table>
-    <table id="278" parent="265" name="sessions">
+    <table id="278" parent="265" name="oauth_accounts">
       <DetailsLevel>2</DetailsLevel>
-      <ObjectId>17388</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25616</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>lifee</OwnerName>
     </table>
-    <table id="279" parent="265" name="studio_assets">
+    <table id="279" parent="265" name="rate_limits">
       <DetailsLevel>2</DetailsLevel>
-      <ObjectId>17461</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25571</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>lifee</OwnerName>
     </table>
-    <table id="280" parent="265" name="studio_job_imports">
+    <table id="280" parent="265" name="sessions">
       <DetailsLevel>2</DetailsLevel>
-      <ObjectId>17434</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25579</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>lifee</OwnerName>
     </table>
-    <table id="281" parent="265" name="timeline_clips">
+    <table id="281" parent="265" name="stripe_events">
       <DetailsLevel>2</DetailsLevel>
-      <ObjectId>17471</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25693</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>lifee</OwnerName>
     </table>
-    <column id="282" parent="266" name="id">
+    <table id="282" parent="265" name="studio_assets">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>25652</ObjectId>
+      <StateNumber>2310</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <table id="283" parent="265" name="studio_job_imports">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>25625</ObjectId>
+      <StateNumber>2310</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <table id="284" parent="265" name="timeline_clips">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>25662</ObjectId>
+      <StateNumber>2310</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <column id="285" parent="266" name="id">
       <DefaultExpression>gen_random_uuid()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>uuid|0s</StoredType>
       <TypeId>2950</TypeId>
     </column>
-    <column id="283" parent="266" name="email">
+    <column id="286" parent="266" name="email">
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="284" parent="266" name="credits">
+    <column id="287" parent="266" name="credits">
       <DefaultExpression>3</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>3</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="285" parent="266" name="created_at">
+    <column id="288" parent="266" name="created_at">
       <DefaultExpression>now()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>4</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <index id="286" parent="266" name="app_users_pkey">
+    <index id="289" parent="266" name="app_users_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17404</ObjectId>
+      <ObjectId>25595</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="287" parent="266" name="app_users_email_ux">
+    <index id="290" parent="266" name="app_users_email_ux">
       <ColNames>email</ColNames>
-      <ObjectId>17523</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25753</ObjectId>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <key id="288" parent="266" name="app_users_pkey">
+    <key id="291" parent="266" name="app_users_pkey">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17405</ObjectId>
+      <ObjectId>25596</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
-      <UnderlyingIndexId>17404</UnderlyingIndexId>
+      <StateNumber>2310</StateNumber>
+      <UnderlyingIndexId>25595</UnderlyingIndexId>
     </key>
-    <column id="289" parent="267" name="id">
+    <column id="292" parent="267" name="id">
       <DefaultExpression>gen_random_uuid()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>uuid|0s</StoredType>
       <TypeId>2950</TypeId>
     </column>
-    <column id="290" parent="267" name="email">
+    <column id="293" parent="267" name="email">
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="291" parent="267" name="code_hash">
+    <column id="294" parent="267" name="code_hash">
       <NotNull>1</NotNull>
       <Position>3</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="292" parent="267" name="expires_at">
+    <column id="295" parent="267" name="expires_at">
       <NotNull>1</NotNull>
       <Position>4</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <column id="293" parent="267" name="consumed_at">
+    <column id="296" parent="267" name="consumed_at">
       <Position>5</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <column id="294" parent="267" name="attempts">
+    <column id="297" parent="267" name="attempts">
       <DefaultExpression>0</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>6</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="295" parent="267" name="created_at">
+    <column id="298" parent="267" name="created_at">
       <DefaultExpression>now()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>7</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <index id="296" parent="267" name="auth_email_codes_pkey">
+    <index id="299" parent="267" name="auth_email_codes_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17414</ObjectId>
+      <ObjectId>25605</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="297" parent="267" name="auth_email_codes_email_idx">
+    <index id="300" parent="267" name="auth_email_codes_email_idx">
       <ColNames>email</ColNames>
-      <ObjectId>17524</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25754</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <key id="298" parent="267" name="auth_email_codes_pkey">
+    <key id="301" parent="267" name="auth_email_codes_pkey">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17415</ObjectId>
+      <ObjectId>25606</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
-      <UnderlyingIndexId>17414</UnderlyingIndexId>
+      <StateNumber>2310</StateNumber>
+      <UnderlyingIndexId>25605</UnderlyingIndexId>
     </key>
-    <column id="299" parent="268" name="id">
+    <column id="302" parent="268" name="id">
       <DefaultExpression>gen_random_uuid()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>uuid|0s</StoredType>
       <TypeId>2950</TypeId>
     </column>
-    <column id="300" parent="268" name="user_id">
+    <column id="303" parent="268" name="user_id">
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>uuid|0s</StoredType>
       <TypeId>2950</TypeId>
     </column>
-    <column id="301" parent="268" name="token_hash">
+    <column id="304" parent="268" name="token_hash">
       <NotNull>1</NotNull>
       <Position>3</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="302" parent="268" name="expires_at">
+    <column id="305" parent="268" name="expires_at">
       <NotNull>1</NotNull>
       <Position>4</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <column id="303" parent="268" name="revoked_at">
+    <column id="306" parent="268" name="revoked_at">
       <Position>5</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <column id="304" parent="268" name="created_at">
+    <column id="307" parent="268" name="created_at">
       <DefaultExpression>now()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>6</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <foreign-key id="305" parent="268" name="auth_sessions_user_id_app_users_id_fk">
+    <foreign-key id="308" parent="268" name="auth_sessions_user_id_app_users_id_fk">
       <ColNames>user_id</ColNames>
-      <ObjectId>17481</ObjectId>
+      <ObjectId>25701</ObjectId>
       <OnDelete>cascade</OnDelete>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
-      <RefTableId>17396</RefTableId>
+      <RefTableId>25587</RefTableId>
     </foreign-key>
-    <index id="306" parent="268" name="auth_sessions_pkey">
+    <index id="309" parent="268" name="auth_sessions_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17423</ObjectId>
+      <ObjectId>25614</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="307" parent="268" name="auth_sessions_token_hash_ux">
+    <index id="310" parent="268" name="auth_sessions_token_hash_ux">
       <ColNames>token_hash</ColNames>
-      <ObjectId>17525</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25755</ObjectId>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <index id="308" parent="268" name="auth_sessions_user_idx">
+    <index id="311" parent="268" name="auth_sessions_user_idx">
       <ColNames>user_id</ColNames>
-      <ObjectId>17526</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25756</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="309" parent="268" name="auth_sessions_pkey">
+    <key id="312" parent="268" name="auth_sessions_pkey">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17424</ObjectId>
+      <ObjectId>25615</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
-      <UnderlyingIndexId>17423</UnderlyingIndexId>
+      <StateNumber>2310</StateNumber>
+      <UnderlyingIndexId>25614</UnderlyingIndexId>
     </key>
-    <column id="310" parent="269" name="id">
+    <column id="313" parent="269" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>1548</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
+      <StateNumber>2310</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
     </column>
-    <column id="311" parent="269" name="email">
+    <column id="314" parent="269" name="user_id">
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>1548</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
+      <StateNumber>2310</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
     </column>
-    <column id="312" parent="269" name="code_hash">
+    <column id="315" parent="269" name="delta">
       <NotNull>1</NotNull>
       <Position>3</Position>
-      <StateNumber>1548</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
-    </column>
-    <column id="313" parent="269" name="created_at">
-      <DefaultExpression>now()</DefaultExpression>
-      <NotNull>1</NotNull>
-      <Position>4</Position>
-      <StateNumber>1548</StateNumber>
-      <StoredType>timestamp with time zone|0s</StoredType>
-      <TypeId>1184</TypeId>
-    </column>
-    <column id="314" parent="269" name="expires_at">
-      <NotNull>1</NotNull>
-      <Position>5</Position>
-      <StateNumber>1548</StateNumber>
-      <StoredType>timestamp with time zone|0s</StoredType>
-      <TypeId>1184</TypeId>
-    </column>
-    <column id="315" parent="269" name="used_at">
-      <Position>6</Position>
-      <StateNumber>1548</StateNumber>
-      <StoredType>timestamp with time zone|0s</StoredType>
-      <TypeId>1184</TypeId>
-    </column>
-    <column id="316" parent="269" name="attempts">
-      <DefaultExpression>0</DefaultExpression>
-      <NotNull>1</NotNull>
-      <Position>7</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <index id="317" parent="269" name="email_login_codes_pkey">
+    <column id="316" parent="269" name="reason">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="317" parent="269" name="ref_id">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="318" parent="269" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <foreign-key id="319" parent="269" name="credit_ledger_user_id_app_users_id_fk">
+      <ColNames>user_id</ColNames>
+      <ObjectId>25736</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>2310</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>25587</RefTableId>
+    </foreign-key>
+    <index id="320" parent="269" name="credit_ledger_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17345</ObjectId>
+      <ObjectId>25679</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="321" parent="269" name="credit_ledger_unique_ref">
+      <ColNames>user_id
+reason
+ref_id</ColNames>
+      <ObjectId>25766</ObjectId>
+      <StateNumber>2310</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationIds>
+100
+100</CollationIds>
+      <CollationNames>
+default
+default</CollationNames>
+      <CollationParentNames>
+pg_catalog
+pg_catalog</CollationParentNames>
+    </index>
+    <index id="322" parent="269" name="credit_ledger_user_idx">
+      <ColNames>user_id
+created_at</ColNames>
+      <ObjectId>25765</ObjectId>
+      <StateNumber>2310</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="323" parent="269" name="credit_ledger_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>25680</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2310</StateNumber>
+      <UnderlyingIndexId>25679</UnderlyingIndexId>
+    </key>
+    <column id="324" parent="270" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="325" parent="270" name="user_id">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="326" parent="270" name="pack_id">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="327" parent="270" name="credits_bought">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="328" parent="270" name="bonus_credits">
+      <DefaultExpression>0</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="329" parent="270" name="amount_cents">
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="330" parent="270" name="currency">
+      <DefaultExpression>&apos;eur&apos;::text</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>7</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="331" parent="270" name="status">
+      <DefaultExpression>&apos;created&apos;::text</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>8</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="332" parent="270" name="stripe_checkout_session_id">
+      <Position>9</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="333" parent="270" name="stripe_payment_intent_id">
+      <Position>10</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="334" parent="270" name="stripe_customer_id">
+      <Position>11</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="335" parent="270" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>12</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="336" parent="270" name="paid_at">
+      <Position>13</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <foreign-key id="337" parent="270" name="credit_purchases_user_id_app_users_id_fk">
+      <ColNames>user_id</ColNames>
+      <ObjectId>25741</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>2310</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>25587</RefTableId>
+    </foreign-key>
+    <index id="338" parent="270" name="credit_purchases_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>25691</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2310</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="339" parent="270" name="credit_purchases_checkout_uq">
+      <ColNames>stripe_checkout_session_id</ColNames>
+      <ObjectId>25768</ObjectId>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <index id="318" parent="269" name="email_login_codes_email_idx">
+    <index id="340" parent="270" name="credit_purchases_pi_uq">
+      <ColNames>stripe_payment_intent_id</ColNames>
+      <ObjectId>25769</ObjectId>
+      <StateNumber>2310</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationNames>default</CollationNames>
+      <CollationIds>100</CollationIds>
+      <CollationParentNames>pg_catalog</CollationParentNames>
+    </index>
+    <index id="341" parent="270" name="credit_purchases_user_idx">
+      <ColNames>user_id
+created_at</ColNames>
+      <ObjectId>25767</ObjectId>
+      <StateNumber>2310</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="342" parent="270" name="credit_purchases_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>25692</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2310</StateNumber>
+      <UnderlyingIndexId>25691</UnderlyingIndexId>
+    </key>
+    <column id="343" parent="271" name="id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="344" parent="271" name="email">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="345" parent="271" name="code_hash">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="346" parent="271" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="347" parent="271" name="expires_at">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="348" parent="271" name="used_at">
+      <Position>6</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="349" parent="271" name="attempts">
+      <DefaultExpression>0</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>7</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <index id="350" parent="271" name="email_login_codes_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>25536</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2310</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationNames>default</CollationNames>
+      <CollationIds>100</CollationIds>
+      <CollationParentNames>pg_catalog</CollationParentNames>
+    </index>
+    <index id="351" parent="271" name="email_login_codes_email_idx">
       <ColNames>email
 created_at</ColNames>
-      <ObjectId>17516</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25746</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <key id="319" parent="269" name="email_login_codes_pkey">
+    <key id="352" parent="271" name="email_login_codes_pkey">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17346</ObjectId>
+      <ObjectId>25537</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
-      <UnderlyingIndexId>17345</UnderlyingIndexId>
+      <StateNumber>2310</StateNumber>
+      <UnderlyingIndexId>25536</UnderlyingIndexId>
     </key>
-    <column id="320" parent="270" name="id">
+    <column id="353" parent="272" name="id">
       <DefaultExpression>gen_random_uuid()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>uuid|0s</StoredType>
       <TypeId>2950</TypeId>
     </column>
-    <column id="321" parent="270" name="user_id">
+    <column id="354" parent="272" name="user_id">
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>uuid|0s</StoredType>
       <TypeId>2950</TypeId>
     </column>
-    <column id="322" parent="270" name="status">
+    <column id="355" parent="272" name="status">
       <NotNull>1</NotNull>
       <Position>3</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="323" parent="270" name="progress">
+    <column id="356" parent="272" name="progress">
       <DefaultExpression>0</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>4</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="324" parent="270" name="url">
+    <column id="357" parent="272" name="url">
       <Position>5</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="325" parent="270" name="music_track_id">
+    <column id="358" parent="272" name="music_track_id">
       <Position>6</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="326" parent="270" name="created_at">
+    <column id="359" parent="272" name="created_at">
       <DefaultExpression>now()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>7</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>timestamp with time zone|0s</StoredType>
       <TypeId>1184</TypeId>
     </column>
-    <foreign-key id="327" parent="270" name="export_jobs_user_id_app_users_id_fk">
+    <foreign-key id="360" parent="272" name="export_jobs_user_id_app_users_id_fk">
       <ColNames>user_id</ColNames>
-      <ObjectId>17496</ObjectId>
+      <ObjectId>25716</ObjectId>
       <OnDelete>cascade</OnDelete>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
-      <RefTableId>17396</RefTableId>
+      <RefTableId>25587</RefTableId>
     </foreign-key>
-    <index id="328" parent="270" name="export_jobs_pkey">
+    <index id="361" parent="272" name="export_jobs_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17451</ObjectId>
+      <ObjectId>25642</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="329" parent="270" name="export_jobs_user_idx">
+    <index id="362" parent="272" name="export_jobs_user_idx">
       <ColNames>user_id</ColNames>
-      <ObjectId>17530</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25760</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="330" parent="270" name="export_jobs_pkey">
+    <key id="363" parent="272" name="export_jobs_pkey">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17452</ObjectId>
+      <ObjectId>25643</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
-      <UnderlyingIndexId>17451</UnderlyingIndexId>
+      <StateNumber>2310</StateNumber>
+      <UnderlyingIndexId>25642</UnderlyingIndexId>
     </key>
-    <column id="331" parent="271" name="day">
+    <column id="364" parent="273" name="day">
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="332" parent="271" name="count">
+    <column id="365" parent="273" name="count">
       <DefaultExpression>0</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <index id="333" parent="271" name="lifee_daily_runs_pkey">
+    <index id="366" parent="273" name="lifee_daily_runs_pkey">
       <ColNames>day</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17353</ObjectId>
+      <ObjectId>25544</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <key id="334" parent="271" name="lifee_daily_runs_pkey">
+    <key id="367" parent="273" name="lifee_daily_runs_pkey">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17354</ObjectId>
+      <ObjectId>25545</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
-      <UnderlyingIndexId>17353</UnderlyingIndexId>
+      <StateNumber>2310</StateNumber>
+      <UnderlyingIndexId>25544</UnderlyingIndexId>
     </key>
-    <column id="335" parent="272" name="ip_hash">
+    <column id="368" parent="274" name="ip_hash">
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="336" parent="272" name="scope_key">
+    <column id="369" parent="274" name="scope_key">
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="337" parent="272" name="created_at">
+    <column id="370" parent="274" name="created_at">
       <DefaultExpression>now()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>3</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>timestamp with time zone|0s</StoredType>
       <TypeId>1184</TypeId>
     </column>
-    <column id="338" parent="272" name="job_id">
+    <column id="371" parent="274" name="job_id">
       <NotNull>1</NotNull>
       <Position>4</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <index id="339" parent="272" name="lifee_ip_attempts_ip_hash_scope_key_pk">
+    <index id="372" parent="274" name="lifee_ip_attempts_ip_hash_scope_key_pk">
       <ColNames>ip_hash
 scope_key</ColNames>
-      <ObjectId>17361</ObjectId>
+      <ObjectId>25552</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationIds>100
@@ -4710,344 +4959,341 @@ default</CollationNames>
       <CollationParentNames>pg_catalog
 pg_catalog</CollationParentNames>
     </index>
-    <key id="340" parent="272" name="lifee_ip_attempts_ip_hash_scope_key_pk">
-      <ObjectId>17362</ObjectId>
+    <key id="373" parent="274" name="lifee_ip_attempts_ip_hash_scope_key_pk">
+      <ObjectId>25553</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
-      <UnderlyingIndexId>17361</UnderlyingIndexId>
+      <StateNumber>2310</StateNumber>
+      <UnderlyingIndexId>25552</UnderlyingIndexId>
     </key>
-    <column id="341" parent="273" name="id">
+    <column id="374" parent="275" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="342" parent="273" name="job_id">
+    <column id="375" parent="275" name="job_id">
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="343" parent="273" name="created_at">
+    <column id="376" parent="275" name="created_at">
       <DefaultExpression>now()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>3</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>timestamp with time zone|0s</StoredType>
       <TypeId>1184</TypeId>
     </column>
-    <column id="344" parent="273" name="type">
+    <column id="377" parent="275" name="type">
       <NotNull>1</NotNull>
       <Position>4</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="345" parent="273" name="message">
+    <column id="378" parent="275" name="message">
       <NotNull>1</NotNull>
       <Position>5</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <index id="346" parent="273" name="lifee_job_events_pkey">
+    <index id="379" parent="275" name="lifee_job_events_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17369</ObjectId>
+      <ObjectId>25560</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <index id="347" parent="273" name="lifee_job_events_job_idx">
+    <index id="380" parent="275" name="lifee_job_events_job_idx">
       <ColNames>job_id
 created_at</ColNames>
-      <ObjectId>17517</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25747</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <key id="348" parent="273" name="lifee_job_events_pkey">
+    <key id="381" parent="275" name="lifee_job_events_pkey">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17370</ObjectId>
+      <ObjectId>25561</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
-      <UnderlyingIndexId>17369</UnderlyingIndexId>
+      <StateNumber>2310</StateNumber>
+      <UnderlyingIndexId>25560</UnderlyingIndexId>
     </key>
-    <column id="349" parent="274" name="id">
+    <column id="382" parent="276" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>1548</StateNumber>
-      <StoredType>text|0s</StoredType>
-      <TypeId>25</TypeId>
+      <StateNumber>2310</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
     </column>
-    <column id="350" parent="274" name="share_slug">
+    <column id="383" parent="276" name="share_slug">
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>varchar(32)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="351" parent="274" name="created_at">
+    <column id="384" parent="276" name="created_at">
       <DefaultExpression>now()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>3</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>timestamp with time zone|0s</StoredType>
       <TypeId>1184</TypeId>
     </column>
-    <column id="352" parent="274" name="updated_at">
+    <column id="385" parent="276" name="updated_at">
       <DefaultExpression>now()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>4</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>timestamp with time zone|0s</StoredType>
       <TypeId>1184</TypeId>
     </column>
-    <column id="353" parent="274" name="status">
+    <column id="386" parent="276" name="status">
       <NotNull>1</NotNull>
       <Position>5</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="354" parent="274" name="progress">
+    <column id="387" parent="276" name="progress">
       <Position>6</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>real|0s</StoredType>
       <TypeId>700</TypeId>
     </column>
-    <column id="355" parent="274" name="progress_message">
+    <column id="388" parent="276" name="progress_message">
       <Position>7</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="356" parent="274" name="prompt">
+    <column id="389" parent="276" name="prompt">
       <Position>8</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="357" parent="274" name="email">
+    <column id="390" parent="276" name="email">
       <Position>9</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="358" parent="274" name="replicate_prediction_id">
+    <column id="391" parent="276" name="replicate_prediction_id">
       <Position>10</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="359" parent="274" name="replicate_status">
+    <column id="392" parent="276" name="replicate_status">
       <Position>11</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="360" parent="274" name="replicate_logs">
+    <column id="393" parent="276" name="replicate_logs">
       <Position>12</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="361" parent="274" name="replicate_output_url">
+    <column id="394" parent="276" name="replicate_output_url">
       <Position>13</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="362" parent="274" name="image_key">
+    <column id="395" parent="276" name="image_key">
       <Position>14</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="363" parent="274" name="video_key">
+    <column id="396" parent="276" name="video_key">
       <Position>15</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="364" parent="274" name="error">
+    <column id="397" parent="276" name="error">
       <Position>16</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <index id="365" parent="274" name="lifee_jobs_pkey">
+    <index id="398" parent="276" name="lifee_jobs_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17378</ObjectId>
+      <ObjectId>25569</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
-      <CollationNames>default</CollationNames>
-      <CollationIds>100</CollationIds>
-      <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <index id="366" parent="274" name="lifee_jobs_share_slug_uq">
+    <index id="399" parent="276" name="lifee_jobs_share_slug_uq">
       <ColNames>share_slug</ColNames>
-      <ObjectId>17518</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25748</ObjectId>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <index id="367" parent="274" name="lifee_jobs_created_idx">
+    <index id="400" parent="276" name="lifee_jobs_created_idx">
       <ColNames>created_at</ColNames>
-      <ObjectId>17520</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25750</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="368" parent="274" name="lifee_jobs_status_idx">
+    <index id="401" parent="276" name="lifee_jobs_status_idx">
       <ColNames>status</ColNames>
-      <ObjectId>17519</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25749</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <key id="369" parent="274" name="lifee_jobs_pkey">
+    <key id="402" parent="276" name="lifee_jobs_pkey">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17379</ObjectId>
+      <ObjectId>25570</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
-      <UnderlyingIndexId>17378</UnderlyingIndexId>
+      <StateNumber>2310</StateNumber>
+      <UnderlyingIndexId>25569</UnderlyingIndexId>
     </key>
-    <column id="370" parent="275" name="id">
+    <column id="403" parent="277" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="371" parent="275" name="title">
+    <column id="404" parent="277" name="title">
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="372" parent="275" name="duration">
+    <column id="405" parent="277" name="duration">
       <NotNull>1</NotNull>
       <Position>3</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="373" parent="275" name="genre">
+    <column id="406" parent="277" name="genre">
       <NotNull>1</NotNull>
       <Position>4</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="374" parent="275" name="preview_url">
+    <column id="407" parent="277" name="preview_url">
       <Position>5</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="375" parent="275" name="is_active">
+    <column id="408" parent="277" name="is_active">
       <DefaultExpression>true</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>6</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>boolean|0s</StoredType>
       <TypeId>16</TypeId>
     </column>
-    <index id="376" parent="275" name="music_tracks_pkey">
+    <index id="409" parent="277" name="music_tracks_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17459</ObjectId>
+      <ObjectId>25650</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <key id="377" parent="275" name="music_tracks_pkey">
+    <key id="410" parent="277" name="music_tracks_pkey">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17460</ObjectId>
+      <ObjectId>25651</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
-      <UnderlyingIndexId>17459</UnderlyingIndexId>
+      <StateNumber>2310</StateNumber>
+      <UnderlyingIndexId>25650</UnderlyingIndexId>
     </key>
-    <column id="378" parent="276" name="id">
+    <column id="411" parent="278" name="id">
       <DefaultExpression>gen_random_uuid()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>uuid|0s</StoredType>
       <TypeId>2950</TypeId>
     </column>
-    <column id="379" parent="276" name="provider">
+    <column id="412" parent="278" name="provider">
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="380" parent="276" name="provider_account_id">
+    <column id="413" parent="278" name="provider_account_id">
       <NotNull>1</NotNull>
       <Position>3</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="381" parent="276" name="user_id">
+    <column id="414" parent="278" name="user_id">
       <NotNull>1</NotNull>
       <Position>4</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>uuid|0s</StoredType>
       <TypeId>2950</TypeId>
     </column>
-    <column id="382" parent="276" name="created_at">
+    <column id="415" parent="278" name="created_at">
       <DefaultExpression>now()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>5</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <foreign-key id="383" parent="276" name="oauth_accounts_user_id_app_users_id_fk">
+    <foreign-key id="416" parent="278" name="oauth_accounts_user_id_app_users_id_fk">
       <ColNames>user_id</ColNames>
-      <ObjectId>17486</ObjectId>
+      <ObjectId>25706</ObjectId>
       <OnDelete>cascade</OnDelete>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
-      <RefTableId>17396</RefTableId>
+      <RefTableId>25587</RefTableId>
     </foreign-key>
-    <index id="384" parent="276" name="oauth_accounts_pkey">
+    <index id="417" parent="278" name="oauth_accounts_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17432</ObjectId>
+      <ObjectId>25623</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="385" parent="276" name="oauth_accounts_provider_ux">
+    <index id="418" parent="278" name="oauth_accounts_provider_ux">
       <ColNames>provider
 provider_account_id</ColNames>
-      <ObjectId>17527</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25757</ObjectId>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationIds>100
@@ -5057,304 +5303,344 @@ default</CollationNames>
       <CollationParentNames>pg_catalog
 pg_catalog</CollationParentNames>
     </index>
-    <index id="386" parent="276" name="oauth_accounts_user_idx">
+    <index id="419" parent="278" name="oauth_accounts_user_idx">
       <ColNames>user_id</ColNames>
-      <ObjectId>17528</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25758</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="387" parent="276" name="oauth_accounts_pkey">
+    <key id="420" parent="278" name="oauth_accounts_pkey">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17433</ObjectId>
+      <ObjectId>25624</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
-      <UnderlyingIndexId>17432</UnderlyingIndexId>
+      <StateNumber>2310</StateNumber>
+      <UnderlyingIndexId>25623</UnderlyingIndexId>
     </key>
-    <column id="388" parent="277" name="key">
+    <column id="421" parent="279" name="key">
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="389" parent="277" name="count">
+    <column id="422" parent="279" name="count">
       <DefaultExpression>0</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="390" parent="277" name="reset_at">
+    <column id="423" parent="279" name="reset_at">
       <NotNull>1</NotNull>
       <Position>3</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>timestamp with time zone|0s</StoredType>
       <TypeId>1184</TypeId>
     </column>
-    <index id="391" parent="277" name="rate_limits_pkey">
+    <index id="424" parent="279" name="rate_limits_pkey">
       <ColNames>key</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17386</ObjectId>
+      <ObjectId>25577</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <key id="392" parent="277" name="rate_limits_pkey">
+    <key id="425" parent="279" name="rate_limits_pkey">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17387</ObjectId>
+      <ObjectId>25578</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
-      <UnderlyingIndexId>17386</UnderlyingIndexId>
+      <StateNumber>2310</StateNumber>
+      <UnderlyingIndexId>25577</UnderlyingIndexId>
     </key>
-    <column id="393" parent="278" name="id">
+    <column id="426" parent="280" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="394" parent="278" name="user_id">
+    <column id="427" parent="280" name="user_id">
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>uuid|0s</StoredType>
       <TypeId>2950</TypeId>
     </column>
-    <column id="395" parent="278" name="token_hash">
+    <column id="428" parent="280" name="token_hash">
       <NotNull>1</NotNull>
       <Position>3</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="396" parent="278" name="created_at">
+    <column id="429" parent="280" name="created_at">
       <DefaultExpression>now()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>4</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>timestamp with time zone|0s</StoredType>
       <TypeId>1184</TypeId>
     </column>
-    <column id="397" parent="278" name="expires_at">
+    <column id="430" parent="280" name="expires_at">
       <NotNull>1</NotNull>
       <Position>5</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>timestamp with time zone|0s</StoredType>
       <TypeId>1184</TypeId>
     </column>
-    <index id="398" parent="278" name="sessions_pkey">
+    <index id="431" parent="280" name="sessions_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17394</ObjectId>
+      <ObjectId>25585</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <index id="399" parent="278" name="sessions_token_uq">
+    <index id="432" parent="280" name="sessions_token_uq">
       <ColNames>token_hash</ColNames>
-      <ObjectId>17522</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25752</ObjectId>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <index id="400" parent="278" name="sessions_user_idx">
+    <index id="433" parent="280" name="sessions_user_idx">
       <ColNames>user_id</ColNames>
-      <ObjectId>17521</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25751</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="401" parent="278" name="sessions_pkey">
+    <key id="434" parent="280" name="sessions_pkey">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17395</ObjectId>
+      <ObjectId>25586</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
-      <UnderlyingIndexId>17394</UnderlyingIndexId>
+      <StateNumber>2310</StateNumber>
+      <UnderlyingIndexId>25585</UnderlyingIndexId>
     </key>
-    <column id="402" parent="279" name="id">
+    <column id="435" parent="281" name="id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="436" parent="281" name="processed_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <index id="437" parent="281" name="stripe_events_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>25699</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2310</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationNames>default</CollationNames>
+      <CollationIds>100</CollationIds>
+      <CollationParentNames>pg_catalog</CollationParentNames>
+    </index>
+    <key id="438" parent="281" name="stripe_events_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>25700</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2310</StateNumber>
+      <UnderlyingIndexId>25699</UnderlyingIndexId>
+    </key>
+    <column id="439" parent="282" name="id">
       <DefaultExpression>gen_random_uuid()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>uuid|0s</StoredType>
       <TypeId>2950</TypeId>
     </column>
-    <column id="403" parent="279" name="user_id">
+    <column id="440" parent="282" name="user_id">
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>uuid|0s</StoredType>
       <TypeId>2950</TypeId>
     </column>
-    <column id="404" parent="279" name="type">
+    <column id="441" parent="282" name="type">
       <NotNull>1</NotNull>
       <Position>3</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="405" parent="279" name="title">
+    <column id="442" parent="282" name="title">
       <NotNull>1</NotNull>
       <Position>4</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="406" parent="279" name="month">
+    <column id="443" parent="282" name="month">
       <NotNull>1</NotNull>
       <Position>5</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="407" parent="279" name="year">
+    <column id="444" parent="282" name="year">
       <NotNull>1</NotNull>
       <Position>6</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="408" parent="279" name="duration_sec">
+    <column id="445" parent="282" name="duration_sec">
       <Position>7</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="409" parent="279" name="file_key">
+    <column id="446" parent="282" name="file_key">
       <NotNull>1</NotNull>
       <Position>8</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="410" parent="279" name="thumbnail_key">
+    <column id="447" parent="282" name="thumbnail_key">
       <Position>9</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="411" parent="279" name="is_generated">
+    <column id="448" parent="282" name="is_generated">
       <DefaultExpression>false</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>10</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>boolean|0s</StoredType>
       <TypeId>16</TypeId>
     </column>
-    <column id="412" parent="279" name="context">
+    <column id="449" parent="282" name="context">
       <Position>11</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="413" parent="279" name="created_at">
+    <column id="450" parent="282" name="generated_from_asset_id">
+      <Position>12</Position>
+      <StateNumber>2310</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="451" parent="282" name="created_at">
       <DefaultExpression>now()</DefaultExpression>
       <NotNull>1</NotNull>
-      <Position>12</Position>
-      <StateNumber>1548</StateNumber>
+      <Position>13</Position>
+      <StateNumber>2310</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <foreign-key id="414" parent="279" name="studio_assets_user_id_app_users_id_fk">
+    <foreign-key id="452" parent="282" name="studio_assets_user_id_app_users_id_fk">
       <ColNames>user_id</ColNames>
-      <ObjectId>17501</ObjectId>
+      <ObjectId>25721</ObjectId>
       <OnDelete>cascade</OnDelete>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
-      <RefTableId>17396</RefTableId>
+      <RefTableId>25587</RefTableId>
     </foreign-key>
-    <index id="415" parent="279" name="studio_assets_pkey">
+    <index id="453" parent="282" name="studio_assets_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17469</ObjectId>
+      <ObjectId>25660</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="416" parent="279" name="studio_assets_user_created_idx">
+    <index id="454" parent="282" name="studio_assets_user_created_idx">
       <ColNames>user_id
 created_at</ColNames>
-      <ObjectId>17532</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25762</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="417" parent="279" name="studio_assets_user_idx">
+    <index id="455" parent="282" name="studio_assets_user_idx">
       <ColNames>user_id</ColNames>
-      <ObjectId>17531</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25761</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="418" parent="279" name="studio_assets_pkey">
+    <key id="456" parent="282" name="studio_assets_pkey">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17470</ObjectId>
+      <ObjectId>25661</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
-      <UnderlyingIndexId>17469</UnderlyingIndexId>
+      <StateNumber>2310</StateNumber>
+      <UnderlyingIndexId>25660</UnderlyingIndexId>
     </key>
-    <column id="419" parent="280" name="id">
+    <column id="457" parent="283" name="id">
       <DefaultExpression>gen_random_uuid()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>uuid|0s</StoredType>
       <TypeId>2950</TypeId>
     </column>
-    <column id="420" parent="280" name="user_id">
+    <column id="458" parent="283" name="user_id">
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>uuid|0s</StoredType>
       <TypeId>2950</TypeId>
     </column>
-    <column id="421" parent="280" name="job_id">
+    <column id="459" parent="283" name="job_id">
       <NotNull>1</NotNull>
       <Position>3</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="422" parent="280" name="created_at">
+    <column id="460" parent="283" name="created_at">
       <DefaultExpression>now()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>4</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <foreign-key id="423" parent="280" name="studio_job_imports_user_id_app_users_id_fk">
+    <foreign-key id="461" parent="283" name="studio_job_imports_user_id_app_users_id_fk">
       <ColNames>user_id</ColNames>
-      <ObjectId>17491</ObjectId>
+      <ObjectId>25711</ObjectId>
       <OnDelete>cascade</OnDelete>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
-      <RefTableId>17396</RefTableId>
+      <RefTableId>25587</RefTableId>
     </foreign-key>
-    <index id="424" parent="280" name="studio_job_imports_pkey">
+    <index id="462" parent="283" name="studio_job_imports_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17441</ObjectId>
+      <ObjectId>25632</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="425" parent="280" name="studio_job_imports_ux">
+    <index id="463" parent="283" name="studio_job_imports_ux">
       <ColNames>user_id
 job_id</ColNames>
-      <ObjectId>17529</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25759</ObjectId>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationIds>
@@ -5364,108 +5650,108 @@ pg_catalog</CollationParentNames>
       <CollationNames>
 default</CollationNames>
     </index>
-    <key id="426" parent="280" name="studio_job_imports_pkey">
+    <key id="464" parent="283" name="studio_job_imports_pkey">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17442</ObjectId>
+      <ObjectId>25633</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
-      <UnderlyingIndexId>17441</UnderlyingIndexId>
+      <StateNumber>2310</StateNumber>
+      <UnderlyingIndexId>25632</UnderlyingIndexId>
     </key>
-    <column id="427" parent="281" name="id">
+    <column id="465" parent="284" name="id">
       <DefaultExpression>gen_random_uuid()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>uuid|0s</StoredType>
       <TypeId>2950</TypeId>
     </column>
-    <column id="428" parent="281" name="user_id">
+    <column id="466" parent="284" name="user_id">
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>uuid|0s</StoredType>
       <TypeId>2950</TypeId>
     </column>
-    <column id="429" parent="281" name="asset_id">
+    <column id="467" parent="284" name="asset_id">
       <NotNull>1</NotNull>
       <Position>3</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>uuid|0s</StoredType>
       <TypeId>2950</TypeId>
     </column>
-    <column id="430" parent="281" name="position">
+    <column id="468" parent="284" name="position">
       <NotNull>1</NotNull>
       <Position>4</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="431" parent="281" name="source">
+    <column id="469" parent="284" name="source">
       <DefaultExpression>&apos;library&apos;::text</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>5</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="432" parent="281" name="context">
+    <column id="470" parent="284" name="context">
       <Position>6</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="433" parent="281" name="created_at">
+    <column id="471" parent="284" name="created_at">
       <DefaultExpression>now()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>7</Position>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <foreign-key id="434" parent="281" name="timeline_clips_user_id_app_users_id_fk">
+    <foreign-key id="472" parent="284" name="timeline_clips_user_id_app_users_id_fk">
       <ColNames>user_id</ColNames>
-      <ObjectId>17506</ObjectId>
+      <ObjectId>25726</ObjectId>
       <OnDelete>cascade</OnDelete>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
-      <RefTableId>17396</RefTableId>
+      <RefTableId>25587</RefTableId>
     </foreign-key>
-    <foreign-key id="435" parent="281" name="timeline_clips_asset_id_studio_assets_id_fk">
+    <foreign-key id="473" parent="284" name="timeline_clips_asset_id_studio_assets_id_fk">
       <ColNames>asset_id</ColNames>
-      <ObjectId>17511</ObjectId>
+      <ObjectId>25731</ObjectId>
       <OnDelete>cascade</OnDelete>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
-      <RefTableId>17461</RefTableId>
+      <RefTableId>25652</RefTableId>
     </foreign-key>
-    <index id="436" parent="281" name="timeline_clips_pkey">
+    <index id="474" parent="284" name="timeline_clips_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17479</ObjectId>
+      <ObjectId>25670</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
+      <StateNumber>2310</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="437" parent="281" name="timeline_clips_user_pos_idx">
+    <index id="475" parent="284" name="timeline_clips_user_pos_idx">
       <ColNames>user_id
 position</ColNames>
-      <ObjectId>17534</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25764</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="438" parent="281" name="timeline_clips_user_idx">
+    <index id="476" parent="284" name="timeline_clips_user_idx">
       <ColNames>user_id</ColNames>
-      <ObjectId>17533</ObjectId>
-      <StateNumber>1548</StateNumber>
+      <ObjectId>25763</ObjectId>
+      <StateNumber>2310</StateNumber>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="439" parent="281" name="timeline_clips_pkey">
+    <key id="477" parent="284" name="timeline_clips_pkey">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>17480</ObjectId>
+      <ObjectId>25671</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1548</StateNumber>
-      <UnderlyingIndexId>17479</UnderlyingIndexId>
+      <StateNumber>2310</StateNumber>
+      <UnderlyingIndexId>25670</UnderlyingIndexId>
     </key>
   </database-model>
 </dataSource>

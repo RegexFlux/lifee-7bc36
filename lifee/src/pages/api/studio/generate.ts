@@ -14,6 +14,7 @@ import {presignGet} from "@/lib/s3";
 import {nanoid} from "nanoid";
 import process from "node:process";
 import {createPredictionLive} from "@/lib/replicate/provider";
+import {creditLedger} from "@/lib/db/schema.billing";
 
 function toMMYYYY(month: number, year: number) {
     return `${String(month).padStart(2, "0")}/${year}`;
@@ -96,7 +97,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             prompt: body.prompt,
             negativePrompt: body.negativePrompt,
             aspectRatio: body.aspectRatio,
-            version: 'standard' // TODO CHECK IF HAS CREATOR PACKAGE
+            version: 'demo' // TODO CHECK IF HAS CREATOR PACKAGE
         });
 
     await db.update(lifeeJobs).set({
@@ -127,15 +128,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             fileKey: videoKey,
             isGenerated: true,
             context: body.prompt,
+            generatedFromAssetId: source.id,
         })
         .returning();
 
     // 5) débit crédit (actuel : à la création)
     // Alternative “débit à succeeded” possible, mais nécessite un flag/idempotence DB — je te le fais si tu veux.
-    await db.update(appUsers).set({
-        credits: sql`${appUsers.credits}
-        - 1`
-    }).where(eq(appUsers.id, userId));
+    const debitRef = `job:${jobId}`;
+    const debited = await db.insert(creditLedger)
+        .values({userId, delta: -1, reason: "ai_generate", refId: debitRef})
+        .onConflictDoNothing()
+        .returning({id: creditLedger.id});
+
+    if (debited.length === 0) {
+        // déjà débité (retry), on continue sans redécompter
+    } else {
+        await db.update(appUsers).set({
+            credits: sql`${appUsers.credits}
+            - 1`
+        }).where(eq(appUsers.id, userId));
+    }
 
     return res.status(200).json({
         jobId,

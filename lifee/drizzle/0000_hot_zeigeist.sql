@@ -30,7 +30,7 @@ CREATE TABLE "lifee_job_events" (
 );
 --> statement-breakpoint
 CREATE TABLE "lifee_jobs" (
-	"id" text PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY NOT NULL,
 	"share_slug" varchar(32) NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
@@ -134,6 +134,7 @@ CREATE TABLE "studio_assets" (
 	"thumbnail_key" text,
 	"is_generated" boolean DEFAULT false NOT NULL,
 	"context" text,
+	"generated_from_asset_id" uuid,
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
@@ -147,6 +148,36 @@ CREATE TABLE "timeline_clips" (
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "credit_ledger" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid NOT NULL,
+	"delta" integer NOT NULL,
+	"reason" text NOT NULL,
+	"ref_id" text NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "credit_purchases" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid NOT NULL,
+	"pack_id" text NOT NULL,
+	"credits_bought" integer NOT NULL,
+	"bonus_credits" integer DEFAULT 0 NOT NULL,
+	"amount_cents" integer NOT NULL,
+	"currency" text DEFAULT 'eur' NOT NULL,
+	"status" text DEFAULT 'created' NOT NULL,
+	"stripe_checkout_session_id" text,
+	"stripe_payment_intent_id" text,
+	"stripe_customer_id" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"paid_at" timestamp with time zone
+);
+--> statement-breakpoint
+CREATE TABLE "stripe_events" (
+	"id" text PRIMARY KEY NOT NULL,
+	"processed_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 ALTER TABLE "auth_sessions" ADD CONSTRAINT "auth_sessions_user_id_app_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."app_users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "oauth_accounts" ADD CONSTRAINT "oauth_accounts_user_id_app_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."app_users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "studio_job_imports" ADD CONSTRAINT "studio_job_imports_user_id_app_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."app_users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -154,6 +185,8 @@ ALTER TABLE "export_jobs" ADD CONSTRAINT "export_jobs_user_id_app_users_id_fk" F
 ALTER TABLE "studio_assets" ADD CONSTRAINT "studio_assets_user_id_app_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."app_users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "timeline_clips" ADD CONSTRAINT "timeline_clips_user_id_app_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."app_users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "timeline_clips" ADD CONSTRAINT "timeline_clips_asset_id_studio_assets_id_fk" FOREIGN KEY ("asset_id") REFERENCES "public"."studio_assets"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "credit_ledger" ADD CONSTRAINT "credit_ledger_user_id_app_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."app_users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "credit_purchases" ADD CONSTRAINT "credit_purchases_user_id_app_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."app_users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "email_login_codes_email_idx" ON "email_login_codes" USING btree ("email","created_at");--> statement-breakpoint
 CREATE INDEX "lifee_job_events_job_idx" ON "lifee_job_events" USING btree ("job_id","created_at");--> statement-breakpoint
 CREATE UNIQUE INDEX "lifee_jobs_share_slug_uq" ON "lifee_jobs" USING btree ("share_slug");--> statement-breakpoint
@@ -172,4 +205,9 @@ CREATE INDEX "export_jobs_user_idx" ON "export_jobs" USING btree ("user_id");-->
 CREATE INDEX "studio_assets_user_idx" ON "studio_assets" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "studio_assets_user_created_idx" ON "studio_assets" USING btree ("user_id","created_at");--> statement-breakpoint
 CREATE INDEX "timeline_clips_user_idx" ON "timeline_clips" USING btree ("user_id");--> statement-breakpoint
-CREATE INDEX "timeline_clips_user_pos_idx" ON "timeline_clips" USING btree ("user_id","position");
+CREATE INDEX "timeline_clips_user_pos_idx" ON "timeline_clips" USING btree ("user_id","position");--> statement-breakpoint
+CREATE INDEX "credit_ledger_user_idx" ON "credit_ledger" USING btree ("user_id","created_at");--> statement-breakpoint
+CREATE UNIQUE INDEX "credit_ledger_unique_ref" ON "credit_ledger" USING btree ("user_id","reason","ref_id");--> statement-breakpoint
+CREATE INDEX "credit_purchases_user_idx" ON "credit_purchases" USING btree ("user_id","created_at");--> statement-breakpoint
+CREATE UNIQUE INDEX "credit_purchases_checkout_uq" ON "credit_purchases" USING btree ("stripe_checkout_session_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "credit_purchases_pi_uq" ON "credit_purchases" USING btree ("stripe_payment_intent_id");

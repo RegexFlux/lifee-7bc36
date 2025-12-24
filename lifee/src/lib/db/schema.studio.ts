@@ -11,14 +11,14 @@ import {
     uuid,
     boolean,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import {relations} from "drizzle-orm";
 import {appUsers} from "@/lib/db/schema.auth";
 
 export const studioAssets = pgTable(
     "studio_assets",
     {
         id: uuid("id").primaryKey().defaultRandom(),
-        userId: uuid("user_id").notNull().references(() => appUsers.id, { onDelete: "cascade" }),
+        userId: uuid("user_id").notNull().references(() => appUsers.id, {onDelete: "cascade"}),
 
         type: text("type").notNull(), // "image" | "video"
         title: text("title").notNull(),
@@ -33,6 +33,8 @@ export const studioAssets = pgTable(
         isGenerated: boolean("is_generated").notNull().default(false),
         context: text("context"),
 
+        generatedFromAssetId: uuid("generated_from_asset_id"), // <-- NEW (nullable)
+
         createdAt: timestamp("created_at").notNull().defaultNow(),
     },
     (t) => ({
@@ -45,9 +47,9 @@ export const timelineClips = pgTable(
     "timeline_clips",
     {
         id: uuid("id").primaryKey().defaultRandom(),
-        userId: uuid("user_id").notNull().references(() => appUsers.id, { onDelete: "cascade" }),
+        userId: uuid("user_id").notNull().references(() => appUsers.id, {onDelete: "cascade"}),
 
-        assetId: uuid("asset_id").notNull().references(() => studioAssets.id, { onDelete: "cascade" }),
+        assetId: uuid("asset_id").notNull().references(() => studioAssets.id, {onDelete: "cascade"}),
         position: integer("position").notNull(), // order
 
         source: text("source").notNull().default("library"), // "library"|"generated"
@@ -76,14 +78,14 @@ export const exportJobs = pgTable(
         id: uuid("id").primaryKey().defaultRandom(),
         userId: uuid("user_id")
             .notNull()
-            .references(() => appUsers.id, { onDelete: "cascade" }),
+            .references(() => appUsers.id, {onDelete: "cascade"}),
 
         status: text("status").notNull(),
         progress: integer("progress").notNull().default(0),
         url: text("url"),
         musicTrackId: text("music_track_id"),
 
-        createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+        createdAt: timestamp("created_at", {withTimezone: true}).notNull().defaultNow(),
     },
     (t) => [index("export_jobs_user_idx").on(t.userId)]
 );

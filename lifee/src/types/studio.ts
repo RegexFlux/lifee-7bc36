@@ -1,18 +1,21 @@
 export type AssetType = "image" | "video";
 
 export type Asset = {
-    id: string; // ✅ UUID
+    id: string;
     type: AssetType;
     title: string;
-    date: string; // "MM/YYYY"
-    duration?: string; // "5s"
+    date: string;
+    duration?: string;
     thumbnailUrl?: string;
+
+    videoUrl?: string;
     lastJobStatus?: string;
     progress?: number;
 
     isGenerated?: boolean;
     context?: string;
 };
+
 
 export type TimelineItem = Asset & {
     id: string; // ✅ clipId (UUID)
