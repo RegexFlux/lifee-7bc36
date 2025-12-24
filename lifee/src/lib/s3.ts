@@ -5,7 +5,7 @@ import { Readable } from "node:stream";
 import fs from "node:fs";
 import {Upload} from "@aws-sdk/lib-storage";
 
-export const loadS3Env = () => {
+export const loadS3Env = async () => {
     const client = new S3Client({
         credentials: {
             accessKeyId: process.env.S3_ACCESS_KEY_ID as string,
@@ -24,7 +24,7 @@ export const loadS3Env = () => {
 };
 
 export async function putBufferToS3(params: { key: string; buffer: Buffer; contentType: string }) {
-    const { client, bucket } = loadS3Env();
+    const { client, bucket } = await loadS3Env();
     await client.send(
         new PutObjectCommand({
             Bucket: bucket,
@@ -37,8 +37,8 @@ export async function putBufferToS3(params: { key: string; buffer: Buffer; conte
 
 /** ✅ NEW: upload depuis un fichier (stream) → évite de charger les vidéos en mémoire */
 export async function putFileToS3(params: { key: string; filePath: string; contentType: string }) {
-    if (!params.filePath) throw new Error("putFileToS3: filePath is empty");
-    const { client, bucket } = loadS3Env();
+    try {if (!params.filePath) throw new Error("putFileToS3: filePath is empty");
+    const { client, bucket } = await loadS3Env();
     await client.send(
         new PutObjectCommand({
             Bucket: bucket,
@@ -46,7 +46,10 @@ export async function putFileToS3(params: { key: string; filePath: string; conte
             Body: fs.createReadStream(params.filePath),
             ContentType: params.contentType,
         })
-    );
+    ); }
+    catch (error) {
+        console.error('s3 upload', error.message);
+    }
 }
 
 type PutRemoteUrlToS3Params = {
@@ -67,7 +70,7 @@ export async function putRemoteUrlToS3({
                                            timeoutMs = 120_000,
                                            forceSinglePut = false,
                                        }: PutRemoteUrlToS3Params) {
-    const { client, bucket } = loadS3Env();
+    const { client, bucket } = await loadS3Env();
 
     const controller = new AbortController();
     const t = setTimeout(() => controller.abort(), timeoutMs);
@@ -127,8 +130,8 @@ export async function putRemoteUrlToS3({
     await upload.done();
 }
 
-export async function presignGet(key: string, expiresIn?: number) {
-    const { client, bucket, expiresIn: envExp } = loadS3Env();
+export async function presignGet(key: string, expiresIn: number = 60 * 60) {
+    const { client, bucket, expiresIn: envExp } = await loadS3Env();
     return getSignedUrl(client, new GetObjectCommand({ Bucket: bucket, Key: key }), {
         expiresIn: expiresIn ?? envExp,
     });

@@ -1,11 +1,12 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { asc, desc, eq } from "drizzle-orm";
+import type {NextApiRequest, NextApiResponse} from "next";
+import {asc, desc, eq} from "drizzle-orm";
 
-import { db } from "@/lib/db";
-import { requireUserId } from "./_auth";
-import { musicTracks, studioAssets, timelineClips} from "@/lib/db/schema.studio";
+import {db} from "@/lib/db";
+import {requireUserId} from "./_auth";
+import {musicTracks, studioAssets, timelineClips} from "@/lib/db/schema.studio";
 import {appUsers} from "@/lib/db/schema.auth";
 import {presignGet} from "@/lib/s3";
+import {lifeeJobs} from "@/lib/db/schema";
 
 function toMMYYYY(month: number, year: number) {
     return `${String(month).padStart(2, "0")}/${year}`;
@@ -16,9 +17,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!userId) return;
 
     // ensure user row
-    await db.insert(appUsers).values({ id: userId, email: 'decalere@gmail.com' }).onConflictDoNothing();
+    await db.insert(appUsers).values({id: userId, email: 'decalere@gmail.com'}).onConflictDoNothing();
 
-    const [user] = await db.select({ credits: appUsers.credits }).from(appUsers).where(eq(appUsers.id, userId));
+    const [user] = await db.select({credits: appUsers.credits}).from(appUsers).where(eq(appUsers.id, userId));
     const credits = user?.credits ?? 0;
 
     const libraryRows = await db
@@ -50,14 +51,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const a = map.get(c.assetId);
         if (!a) return null;
         const thumbnailUrl = a.thumbnailKey ? await presignGet(a.thumbnailKey) : undefined;
+        const videoUrl = a.fileKey ? await presignGet(a.fileKey) : undefined;
 
         timeline.push({
-            id: a.id,
+            id: c.id,
+            assetId: a.id,
             type: a.type,
             title: a.title,
             date: toMMYYYY(a.month, a.year),
             duration: a.durationSec ? `${a.durationSec}s` : undefined,
             thumbnailUrl: thumbnailUrl,
+            videoUrl: videoUrl,
             isGenerated: a.isGenerated,
             context: (c.context ?? a.context) ?? undefined,
 
@@ -74,15 +78,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const library = [];
     for (const a of libraryRows) {
         const thumbnailUrl = a.thumbnailKey ? await presignGet(a.thumbnailKey) : undefined;
+        const lastJobStatus = await db.query.lifeeJobs.findFirst({
+            where: eq(lifeeJobs.videoKey, a.fileKey)
+        });
+        const videoUrl = a.fileKey ? await presignGet(a.fileKey) : undefined;
         library.push({
             id: a.id,
-                type: a.type,
-                title: a.title,
-                date: toMMYYYY(a.month, a.year),
-                duration: a.durationSec ? `${a.durationSec}s` : undefined,
-                thumbnailUrl: thumbnailUrl,
-                isGenerated: a.isGenerated,
-                context: a.context ?? undefined,
+            type: a.type,
+            title: a.title,
+            date: toMMYYYY(a.month, a.year),
+            duration: a.durationSec ? `${a.durationSec}s` : undefined,
+            thumbnailUrl: thumbnailUrl,
+            videoUrl: videoUrl,
+            isGenerated: a.isGenerated,
+            context: a.context ?? undefined,
+            lastJobStatus: lastJobStatus?.status,
+            progress: lastJobStatus?.progress
         });
     }
 

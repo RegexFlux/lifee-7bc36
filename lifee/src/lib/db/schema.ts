@@ -57,7 +57,7 @@ export const rateLimits = pgTable("rate_limits", {
 export const lifeeJobs = pgTable(
     "lifee_jobs",
     {
-        id: text("id").primaryKey(), // uuid string (crypto.randomUUID())
+        id: uuid("id").primaryKey(), // uuid string (crypto.randomUUID())
         shareSlug: varchar("share_slug", { length: 32 }).notNull(),
 
         createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

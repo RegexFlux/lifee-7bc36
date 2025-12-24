@@ -40,7 +40,9 @@ export function LibraryList(props: Readonly<{
     const groups = useMemo(() => {
         const map = new Map<string, { yearKey: string; photos: Asset[]; videos: Asset[] }>();
 
+
         for (const item of props.items) {
+            console.log('itemS', item)
             const yearKey = getYearKey(item.date);
             if (!map.has(yearKey)) map.set(yearKey, { yearKey, photos: [], videos: [] });
 

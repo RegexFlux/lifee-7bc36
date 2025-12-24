@@ -4,6 +4,7 @@ import { and, eq, sql, desc } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { requireUserId } from "../../_auth";
 import { studioAssets, timelineClips} from "@/lib/db/schema.studio";
+import {presignGet} from "@/lib/s3";
 
 function toMMYYYY(month: number, year: number) {
     return `${String(month).padStart(2, "0")}/${year}`;
@@ -58,6 +59,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         })
         .returning();
 
+    const thumbnailUrl = asset.thumbnailKey ? await presignGet(asset.thumbnailKey) : undefined;
+    const videoUrl = asset.fileKey ? await presignGet(asset.fileKey) : undefined;
+
     // Return TimelineItem shape
     return res.status(200).json({
         assetId: asset.id,
@@ -65,7 +69,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         title: asset.title,
         date: toMMYYYY(asset.month, asset.year),
         duration: asset.durationSec ? `${asset.durationSec}s` : undefined,
-        thumbnailUrl: asset.thumbnailUrl ?? undefined,
+        thumbnailUrl: thumbnailUrl,
+        videoUrl: videoUrl,
         isGenerated: asset.isGenerated,
         context: asset.context ?? undefined,
 

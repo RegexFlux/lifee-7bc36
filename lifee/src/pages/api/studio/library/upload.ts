@@ -32,8 +32,8 @@ function sanitizeBase(name: string) {
         .replace(/^-|-$/g, "");
 }
 
-function publicUrlFromKey(key: string) {
-    const { bucket } = loadS3Env();
+async function publicUrlFromKey(key: string) {
+    const { bucket } = await loadS3Env();
     const base = (process.env.S3_PUBLIC_BASE_URL || process.env.S3_ENDPOINT || "").replace(/\/$/, "");
     if (!base) return key; // si privé, renvoie la key (tu presign au bootstrap)
     return `${base}/${bucket}/${key}`;
@@ -92,9 +92,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             return res.status(200).json({
                 fileKey: fileKey,
-                fileUrl: publicUrlFromKey(fileKey),
+                fileUrl: await publicUrlFromKey(fileKey),
                 thumbnailKey: thumbKey,
-                thumbnailUrl: thumbKey ? publicUrlFromKey(thumbKey) : undefined,
+                thumbnailUrl: thumbKey ? await publicUrlFromKey(thumbKey) : undefined,
             });
         } catch (e: any) {
             return res.status(500).send(e?.message || "S3 upload failed");

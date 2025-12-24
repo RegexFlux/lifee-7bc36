@@ -66,9 +66,12 @@ function Preview({
     onOpen?: () => void;
 }) {
     const src = useMemo(() => getPreviewSrc(item), [item]);
+
     const { url, loading } = useClipVideoUrl(
         item.type === "video" ? item.id : undefined
     );
+
+    console.log('hh', item)
 
     return (
         <div

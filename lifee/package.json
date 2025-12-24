@@ -18,6 +18,7 @@
     "drizzle-kit": "^0.31.8",
     "drizzle-orm": "^0.45.1",
     "formidable": "^3.5.4",
+    "localtunnel": "^2.0.2",
     "nanoid": "^5.1.6",
     "next": "16.1.0",
     "postgres": "^3.4.7",

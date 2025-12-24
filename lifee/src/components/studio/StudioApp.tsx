@@ -266,12 +266,6 @@ export default function StudioApp() {
             // refresh credits from server (simple et safe)
             await refresh();
 
-            // add generated asset to library UI immediately (optionnel si refresh l’a déjà)
-            setLibrary((prev) => [gen, ...prev]);
-
-            // add to timeline at index
-            await addAssetToTimeline(gen, pendingIndex ?? undefined);
-
             setIsAIOpen(false);
             setPendingAsset(null);
             setPendingIndex(null);

@@ -7,6 +7,8 @@ export type Asset = {
     date: string; // "MM/YYYY"
     duration?: string; // "5s"
     thumbnailUrl?: string;
+    lastJobStatus?: string;
+    progress?: number;
 
     isGenerated?: boolean;
     context?: string;
@@ -14,6 +16,7 @@ export type Asset = {
 
 export type TimelineItem = Asset & {
     id: string; // ✅ clipId (UUID)
+    assetId: string; // assetId
     source: "library" | "generated";
 };
 
