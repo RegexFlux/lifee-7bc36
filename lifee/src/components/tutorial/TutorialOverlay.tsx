@@ -32,8 +32,15 @@ type DeferOpen = {
     /** combien de temps les rects doivent rester stables */
     stableMs?: number;
     /** timeout de sécurité */
-    timeoutMs?: number;
+    // NEW (optionnel): réglages spécifiques aux transitions d'étapes
+    stepStableMs?: number;
+    stepTimeoutMs?: number;
+    stepMinWaitMs?: number; // petite attente pour laisser démarrer une transition (sidebar)
 };
+
+function raf2() {
+    return new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
+}
 
 type Props = {
     steps: TourStep[];
@@ -201,6 +208,7 @@ function computeCardPosition(args: {
     return { x, y };
 }
 
+
 function useTargetRects(selector: string, padding = 10) {
     const [data, setData] = useState<{
         elements: Element[];
@@ -303,11 +311,59 @@ export function TutorialOverlay({
     const [mode, setMode] = useState<Mode>(defaultMode);
     const [i, setI] = useState(0);
 
-    if (onIndexChange) {
-    useEffect(() => {
-        onIndexChange(i)
-    }, [i]);
-    }
+    const [uiSettling, setUiSettling] = useState(false);
+    const settleTokenRef = useRef(0);
+
+    const requestStep = (nextIndex: number, nextMatchIndex = 0) => {
+        if (!open) return;
+
+        const clamped = clamp(nextIndex, 0, steps.length - 1);
+        if (clamped === i && nextMatchIndex === matchIndex) return;
+
+        // Si déjà en settling, on ignore (simple + safe).
+        if (uiSettling) return;
+
+        const token = ++settleTokenRef.current;
+        setUiSettling(true);
+
+        // 1) on déclenche le layout side-effect (ex: sidebar open/close) AVANT de mesurer
+        try {
+            onIndexChange?.(clamped);
+        } catch {}
+
+        (async () => {
+            const stableMs = deferOpen?.stepStableMs ?? deferOpen?.stableMs ?? 30;
+            const timeoutMs = deferOpen?.stepTimeoutMs ?? 30;
+            const minWaitMs = deferOpen?.stepMinWaitMs ?? 30;
+
+            // Laisse React appliquer l’état + commencer les transitions CSS
+            await raf2();
+            if (minWaitMs > 0) await new Promise((r) => setTimeout(r, minWaitMs));
+
+            const sel = steps[clamped]?.target;
+            const selectors = sel ? [sel] : [];
+
+            if (selectors.length) {
+                await waitForLayoutStable({ selectors, stableMs, timeoutMs });
+                await raf2(); // flush final
+            }
+
+            // Cancel si une autre transition a été demandée
+            if (settleTokenRef.current !== token) return;
+
+            setMatchIndex(nextMatchIndex);
+            setI(clamped);
+            setUiSettling(false);
+        })().catch(() => {
+            // fallback: on commit quand même (sans rester bloqué)
+            if (settleTokenRef.current === token) {
+                setMatchIndex(nextMatchIndex);
+                setI(clamped);
+                setUiSettling(false);
+            }
+        });
+    };
+
 
     // NEW: when a step matches multiple elements, we can focus one of them (for scroll + card anchoring).
     const [matchIndex, setMatchIndex] = useState(0);
@@ -397,9 +453,31 @@ export function TutorialOverlay({
             await new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
 
             if (!canceled) {
-                setOpen(true);
-                setPendingAutoOpen(false);
+                // Lance l'état externe AVANT d'ouvrir l'overlay (sidebar etc.)
+                try {
+                    onIndexChange?.(0);
+                } catch {}
+
+                // Laisse démarrer la transition + attends stabilité du step 0
+                const stableMs0 = deferOpen?.stepStableMs ?? deferOpen?.stableMs ?? 220;
+                const timeoutMs0 = deferOpen?.stepTimeoutMs ?? deferOpen?.timeoutMs ?? 5000;
+                const minWaitMs0 = deferOpen?.stepMinWaitMs ?? 120;
+
+                await raf2();
+                if (minWaitMs0 > 0) await new Promise((r) => setTimeout(r, minWaitMs0));
+
+                const s0 = steps[0]?.target ? [steps[0]!.target] : [];
+                if (s0.length) {
+                    await waitForLayoutStable({ selectors: s0, stableMs: stableMs0, timeoutMs: timeoutMs0 });
+                    await raf2();
+                }
+
+                if (!canceled) {
+                    setOpen(true);
+                    setPendingAutoOpen(false);
+                }
             }
+
         })();
 
         return () => {
@@ -457,14 +535,9 @@ export function TutorialOverlay({
                 e.preventDefault();
                 closeTour();
             }
-            if (e.key === "ArrowRight") {
-                e.preventDefault();
-                next();
-            }
-            if (e.key === "ArrowLeft") {
-                e.preventDefault();
-                prev();
-            }
+            if (e.key === "ArrowRight") { e.preventDefault(); next(); }
+            if (e.key === "ArrowLeft") { e.preventDefault(); prev(); }
+
         };
 
         window.addEventListener("keydown", onKey);
@@ -480,8 +553,9 @@ export function TutorialOverlay({
         onClose?.();
     };
 
-    const prev = () => setI((v) => Math.max(0, v - 1));
-    const next = () => setI((v) => Math.min(steps.length - 1, v + 1));
+    const prev = () => requestStep(i - 1, 0);
+    const next = () => requestStep(i + 1, 0);
+
 
     const restart = () => {
         setMode("walkthrough");
@@ -578,7 +652,7 @@ export function TutorialOverlay({
             />
 
             {/* Spotlight (walkthrough) */}
-            {mode === "walkthrough" && spotlightRect && (
+            {mode === "walkthrough" && spotlightRect && !uiSettling && (
                 <>
                     {/* Hole using giant shadow */}
                     <motion.div
@@ -654,7 +728,7 @@ export function TutorialOverlay({
 
             {/* Card */}
             <AnimatePresence mode="wait">
-                <motion.div
+                {!uiSettling && ( <motion.div
                     key={step.id + mode}
                     ref={cardRef}
                     tabIndex={-1}
@@ -740,7 +814,7 @@ export function TutorialOverlay({
                             <div className="ml-auto text-[11px] text-neutral-400">Esc pour fermer • ← → pour naviguer</div>
                         </div>
                     </div>
-                </motion.div>
+                </motion.div>)}
             </AnimatePresence>
 
             <style jsx global>{`
