@@ -21,6 +21,7 @@
     "formidable": "^3.5.4",
     "framer-motion": "^12.23.26",
     "localtunnel": "^2.0.2",
+    "lucide-react": "^0.562.0",
     "nanoid": "^5.1.6",
     "next": "16.1.0",
     "postgres": "^3.4.7",

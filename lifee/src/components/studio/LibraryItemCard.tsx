@@ -516,7 +516,7 @@ export function LibraryItemCard(props: Readonly<{
                         </div>
                     ) : (
                         // placeholder alignement + “status subtil” déjà affiché côté contenu
-                        <div className="hidden md:block w-[40px]" aria-hidden="true" />
+                        <></>
                     )}
                 </div>
             </div>

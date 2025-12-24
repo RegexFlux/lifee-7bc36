@@ -1,7 +1,7 @@
 "use client";
 
 import type { TimelineItem } from "@/types/studio";
-import React, {useEffect, useMemo, useState} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import {
     ArrowLeft,
     ArrowRight,
@@ -17,6 +17,7 @@ import type { YearPalette } from "./TimelineCanvas";
 import {VideoPlayer} from "@/components/VideoPlayer";
 import {studioApi} from "@/lib/studioApi";
 import {useClipVideoUrl} from "@/hooks/useClipVideoUrl";
+import {cx} from "@/components/effects/StudioOpening";
 
 function getYearFromDate(d?: string) {
     return d?.split("/")[1] || d || "";
@@ -172,13 +173,89 @@ export function TimelineCanvasItem(props: {
     const isEven = props.index % 2 === 0;
     const yearStr = getYearFromDate(item.date) || pal.year;
 
-    const icon = item.isGenerated ? (
-        <Wand2 size={16} />
-    ) : item.type === "video" ? (
-        <Video size={16} />
-    ) : (
-        <ImageIcon size={16} />
-    );
+    const icon = item.isGenerated ? <Wand2 size={16} /> : item.type === "video" ? <Video size={16} /> : <ImageIcon size={16} />;
+
+    // ---------------- RESIZE (width) ----------------
+    const MIN_W = 210;
+    const MAX_W = 480;
+
+    const storageKey = `lifee_timeline_item_w_${item.id}`;
+
+    const [cardW, setCardW] = useState<number>(() => {
+        try {
+            const v = localStorage.getItem(storageKey);
+            const n = v ? Number(v) : 230;
+            return Number.isFinite(n) ? Math.max(MIN_W, Math.min(MAX_W, n)) : 230;
+        } catch {
+            return 230;
+        }
+    });
+
+    useEffect(() => {
+        // when item changes, reload persisted size
+        try {
+            const v = localStorage.getItem(storageKey);
+            const n = v ? Number(v) : 230;
+            setCardW(Number.isFinite(n) ? Math.max(MIN_W, Math.min(MAX_W, n)) : 230);
+        } catch {
+            setCardW(230);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [item.id]);
+
+    const resizingRef = useRef(false);
+    const startRef = useRef({ x: 0, w: 230 });
+
+    const onResizePointerDown = (e: React.PointerEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        resizingRef.current = true;
+        startRef.current = { x: e.clientX, w: cardW };
+
+        // capture pointer so the drag stays even if you move fast
+        (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+
+        // make cursor global
+        const prevCursor = document.body.style.cursor;
+        document.body.style.cursor = "nwse-resize";
+
+        const onMove = (ev: PointerEvent) => {
+            const dx = ev.clientX - startRef.current.x;
+            const next = Math.max(MIN_W, Math.min(MAX_W, Math.round(startRef.current.w + dx)));
+            setCardW(next);
+        };
+
+        const onUp = () => {
+            resizingRef.current = false;
+            document.body.style.cursor = prevCursor;
+
+            try {
+                localStorage.setItem(storageKey, String(cardW));
+            } catch {}
+
+            window.removeEventListener("pointermove", onMove);
+            window.removeEventListener("pointerup", onUp);
+            window.removeEventListener("pointercancel", onUp);
+        };
+
+        window.addEventListener("pointermove", onMove, { passive: true });
+        window.addEventListener("pointerup", onUp, { passive: true });
+        window.addEventListener("pointercancel", onUp, { passive: true });
+    };
+
+    // Prevent dragstart while resizing or if drag originates from the handle
+    const onDragStartSafe = (e: React.DragEvent) => {
+        const t = e.target as HTMLElement | null;
+        if (resizingRef.current || t?.closest?.('[data-resize-handle="1"]')) {
+            e.preventDefault();
+            return;
+        }
+        props.onDragStart(e, item);
+    };
+
+    // Keep container wide enough so layout doesn’t collapse when cardW grows
+    const containerMinW = Math.max(210, cardW + 40);
 
     return (
         <div
@@ -197,12 +274,12 @@ export function TimelineCanvasItem(props: {
                 props.onSelect(props.isSelected ? null : item.id);
             }}
             draggable
-            onDragStart={(e) => props.onDragStart(e, item)}
+            onDragStart={onDragStartSafe}
             className={
-                "timeline-item interactive-area relative mx-5 md:mx-8 flex justify-center transition-transform duration-300 translate-y-72" +
-                (props.isSelected ? "z-20 scale-[1.05]" : "z-10")
+                "timeline-item interactive-area relative mx-5 md:mx-8 flex justify-center transition-transform duration-300 -translate-y-3.5" +
+                (props.isSelected ? " z-20 scale-[1.05]" : " z-10")
             }
-            style={{ minWidth: "210px" }}
+            style={{ minWidth: `${containerMinW}px` }}
         >
             {/* Connector */}
             <div
@@ -224,21 +301,19 @@ export function TimelineCanvasItem(props: {
                 >
                     {yearStr}
                 </div>
-                <div
-                    className="w-3.5 h-3.5 rounded-full border border-white shadow-md"
-                    style={{ backgroundColor: pal.dot, boxShadow: `0 0 0 7px ${pal.ring}` }}
-                />
+                <div className="w-3.5 h-3.5 rounded-full border border-white shadow-md" style={{ backgroundColor: pal.dot, boxShadow: `0 0 0 7px ${pal.ring}` }} />
             </div>
 
             {/* Card */}
             <div
                 data-tour="card"
                 className={
-                    "group relative w-[230px] rounded-[22px] border bg-white/82 backdrop-blur " +
+                    "group relative rounded-[22px] border bg-white/82 backdrop-blur " +
                     "p-3.5 flex flex-col text-left transition-all duration-300 " +
                     "hover:-translate-y-0.5"
                 }
                 style={{
+                    width: `${cardW}px`,
                     transform: isEven ? "translateY(250px)" : "translateY(-250px)",
                     borderColor: pal.border,
                     boxShadow: props.isSelected
@@ -251,11 +326,7 @@ export function TimelineCanvasItem(props: {
                     item={item}
                     pal={pal}
                     isSelected={props.isSelected}
-                    onOpen={
-                        props.onOpenAsset
-                            ? () => props.onOpenAsset?.((item as any).assetId || item.id)
-                            : undefined
-                    }
+                    onOpen={props.onOpenAsset ? () => props.onOpenAsset?.((item as any).assetId || item.id) : undefined}
                 />
 
                 {/* Header row */}
@@ -274,24 +345,17 @@ export function TimelineCanvasItem(props: {
                         </div>
 
                         <div className="min-w-0">
-                            <div
-                                className="text-[12px] font-semibold leading-snug truncate"
-                                style={{ color: pal.text }}
-                                title={item.title}
-                            >
+                            <div className="text-[12px] font-semibold leading-snug truncate" style={{ color: pal.text }} title={item.title}>
                                 {item.title || "Sans titre"}
                             </div>
                             <div className="text-[10px] text-slate-500 mt-0.5">
                                 <span className="font-medium">{yearStr}</span>
                                 <span className="opacity-70"> • </span>
-                                <span className="opacity-90">
-                  {item.type === "video" ? "Vidéo" : "Photo"}
-                </span>
+                                <span className="opacity-90">{item.type === "video" ? "Vidéo" : "Photo"}</span>
                             </div>
                         </div>
                     </div>
 
-                    {/* Primary action (delete) on selected */}
                     {props.isSelected && (
                         <button
                             onClick={(e) => {
@@ -337,14 +401,8 @@ export function TimelineCanvasItem(props: {
                     )}
                 </div>
 
-                {/* Secondary actions (appear on hover, always visible when selected) */}
-                <div
-                    className={
-                        "mt-3 flex items-center justify-between gap-2 transition-opacity " +
-                        (props.isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100")
-                    }
-                >
-                    {/* Move left */}
+                {/* Secondary actions */}
+                <div className={"mt-3 flex items-center justify-between gap-2 transition-opacity " + (props.isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
@@ -353,9 +411,7 @@ export function TimelineCanvasItem(props: {
                         disabled={props.isFirst}
                         className={
                             "p-2 rounded-full shadow-md transition-all border " +
-                            (props.isFirst
-                                ? "bg-white/60 text-slate-300 border-slate-200 cursor-not-allowed"
-                                : "bg-slate-900 text-white border-slate-900 hover:bg-slate-800")
+                            (props.isFirst ? "bg-white/60 text-slate-300 border-slate-200 cursor-not-allowed" : "bg-slate-900 text-white border-slate-900 hover:bg-slate-800")
                         }
                         aria-label="Déplacer à gauche"
                         title="Déplacer à gauche"
@@ -363,7 +419,6 @@ export function TimelineCanvasItem(props: {
                         <ArrowLeft size={14} />
                     </button>
 
-                    {/* Middle: duplicate / replace (optional) */}
                     <div className="flex items-center gap-2">
                         {props.onDuplicateItem && (
                             <button
@@ -396,7 +451,6 @@ export function TimelineCanvasItem(props: {
                         )}
                     </div>
 
-                    {/* Move right */}
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
@@ -405,15 +459,37 @@ export function TimelineCanvasItem(props: {
                         disabled={props.isLast}
                         className={
                             "p-2 rounded-full shadow-md transition-all border " +
-                            (props.isLast
-                                ? "bg-white/60 text-slate-300 border-slate-200 cursor-not-allowed"
-                                : "bg-slate-900 text-white border-slate-900 hover:bg-slate-800")
+                            (props.isLast ? "bg-white/60 text-slate-300 border-slate-200 cursor-not-allowed" : "bg-slate-900 text-white border-slate-900 hover:bg-slate-800")
                         }
                         aria-label="Déplacer à droite"
                         title="Déplacer à droite"
                     >
                         <ArrowRight size={14} />
                     </button>
+                </div>
+
+                {/* ✅ Resize handle (only when selected or hover) */}
+                <div
+                    data-resize-handle="1"
+                    onPointerDown={onResizePointerDown}
+                    className={cx(
+                        "absolute -bottom-2 -right-2 z-30",
+                        "h-8 w-8 rounded-2xl",
+                        "grid place-items-center",
+                        "bg-white/85 ring-1 ring-slate-200 shadow-lg",
+                        "backdrop-blur",
+                        "cursor-nwse-resize touch-none select-none",
+                        props.isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                    )}
+                    aria-label="Redimensionner"
+                    title="Redimensionner"
+                >
+                    {/* nice diagonal grip */}
+                    <div className="h-4 w-4 rotate-45 opacity-70">
+                        <div className="h-[2px] w-full bg-slate-400 rounded-full mb-[3px]" />
+                        <div className="h-[2px] w-full bg-slate-400 rounded-full mb-[3px]" />
+                        <div className="h-[2px] w-full bg-slate-400 rounded-full" />
+                    </div>
                 </div>
 
                 {/* Caret */}
@@ -434,3 +510,4 @@ export function TimelineCanvasItem(props: {
         </div>
     );
 }
+
