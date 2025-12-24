@@ -1,18 +1,18 @@
 // pages/api/lifee/video/index.ts
-import type { NextApiRequest, NextApiResponse } from "next";
+import type {NextApiRequest, NextApiResponse} from "next";
 import formidable from "formidable";
 import fs from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
-import { nanoid } from "nanoid";
-import { eq } from "drizzle-orm";
+import {nanoid} from "nanoid";
+import {eq} from "drizzle-orm";
 
-import { db } from "@/lib/db";
-import { lifeeJobs, lifeeJobEvents } from "@/lib/db/schema";
+import {db} from "@/lib/db";
+import {lifeeJobs, lifeeJobEvents} from "@/lib/db/schema";
 
-import { putBufferToS3 } from "@/lib/s3";
+import {presignGet, putBufferToS3} from "@/lib/s3";
 
-import { getClientIp, hashIp } from "@/lib/security/ip";
+import {getClientIp, hashIp} from "@/lib/security/ip";
 import {
     enforceMaxActiveJobsOrThrow,
     enforceOneTryPerIpOrThrow,
@@ -20,11 +20,11 @@ import {
     reserveDailyRunOrThrow,
 } from "@/lib/security/limits";
 
-import { getProviderMode, createPredictionLive } from "@/lib/replicate/provider";
-import { defaultLifeePrompt } from "@/lib/replicate";
+import {getProviderMode, createPredictionLive} from "@/lib/replicate/provider";
+import {defaultLifeeDemoPrompt} from "@/lib/replicate";
 
 export const config = {
-    api: { bodyParser: false },
+    api: {bodyParser: false},
 };
 
 type ApiOk = {
@@ -37,7 +37,7 @@ type ApiErr = {
     error: string;
 };
 
-function appUrl(req: NextApiRequest) {
+export function appUrl(req: NextApiRequest) {
     const u = process.env.APP_URL;
     if (u) return u.replace(/\/$/, "");
     const proto = (req.headers["x-forwarded-proto"] as string) || "http";
@@ -55,7 +55,7 @@ function parseForm(req: NextApiRequest) {
     });
 
     return new Promise<{ fields: formidable.Fields; files: formidable.Files }>((resolve, reject) => {
-        form.parse(req, (err, fields, files) => (err ? reject(err) : resolve({ fields, files })));
+        form.parse(req, (err, fields, files) => (err ? reject(err) : resolve({fields, files})));
     });
 }
 
@@ -71,7 +71,7 @@ function guessExt(mime: string, original: string) {
 
 function normalizePrompt(fields: formidable.Fields) {
     const p = typeof fields.prompt === "string" ? fields.prompt.trim() : "";
-    return p || defaultLifeePrompt();
+    return p || defaultLifeeDemoPrompt();
 }
 
 function shouldEnforceLimits(mode: "live" | "mock") {
@@ -94,7 +94,7 @@ async function addEvent(jobId: string, type: string, message: string) {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiOk | ApiErr>) {
-    if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+    if (req.method !== "POST") return res.status(405).json({error: "Method not allowed"});
 
     const mode = getProviderMode(); // "mock" | "live"
     const enforceLimits = shouldEnforceLimits(mode);
@@ -121,19 +121,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             progressMessage: "Réception de la photo…",
             createdAt: new Date(),
             updatedAt: new Date(),
-            prompt: defaultLifeePrompt(),
+            prompt: defaultLifeeDemoPrompt(),
         });
         jobCreated = true;
         await addEvent(jobId, "info", "Job créé");
 
         // 1 essai par utilisateur (IP) (prod typiquement)
         if (enforceLimits) {
-            await enforceOneTryPerIpOrThrow({ ipHash, jobId });
+            await enforceOneTryPerIpOrThrow({ipHash, jobId});
             await addEvent(jobId, "info", "Quota IP réservé (1 essai)");
         }
 
         // Parse multipart
-        const { fields, files } = await parseForm(req);
+        const {fields, files} = await parseForm(req);
         const _files =
             (files.photo as unknown as formidable.File) ||
             (files.file as unknown as formidable.File) ||
@@ -143,14 +143,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
         if (!file) {
             // on libère l’essai si pas de fichier (pas de coût)
-            if (enforceLimits) await releaseIpAttempt({ ipHash, jobId });
-            throw Object.assign(new Error("No file uploaded (field: photo|file)"), { statusCode: 400 });
+            if (enforceLimits) await releaseIpAttempt({ipHash, jobId});
+            throw Object.assign(new Error("No file uploaded (field: photo|file)"), {statusCode: 400});
         }
 
         const mime = file.mimetype || "";
         if (!mime.startsWith("image/")) {
-            if (enforceLimits) await releaseIpAttempt({ ipHash, jobId });
-            throw Object.assign(new Error("Invalid file type (image only)"), { statusCode: 400 });
+            if (enforceLimits) await releaseIpAttempt({ipHash, jobId});
+            throw Object.assign(new Error("Invalid file type (image only)"), {statusCode: 400});
         }
 
         const original = file.originalFilename || "photo";
@@ -159,7 +159,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
         // Stockage photo S3
         const imageKey = `lifee/images/${jobId}${ext}`;
-        await putBufferToS3({ key: imageKey, buffer, contentType: mime });
+        await putBufferToS3({key: imageKey, buffer, contentType: mime});
 
         await db
             .update(lifeeJobs)
@@ -202,19 +202,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         // LIVE mode: anti-frais hard-cap journalier
         if (enforceLimits) await reserveDailyRunOrThrow();
 
-        // Lance Replicate (Kling 2.5 Turbo Pro) via provider
-        const base = appUrl(req);
-        const webhookUrl = `${base}/api/webhooks/replicate?jobId=${encodeURIComponent(jobId)}`;
+        const startImageUrl = await presignGet(imageKey, 60 * 60);
 
         const prompt = normalizePrompt(fields);
 
-        const pred = await createPredictionLive({
-            startImageBuffer: buffer,
-            prompt,
-            webhookUrl,
-        });
-
-        predictionCreated = true;
+        const pred = await createPredictionLive(
+            jobId,
+            {
+                startImageUrl,
+                prompt,
+                version: 'demo'
+            });
 
         await db
             .update(lifeeJobs)
@@ -230,6 +228,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
         await addEvent(jobId, "replicate", `Replicate démarré (prediction ${pred.id})`);
 
+        const base = process.env.APP_URL;
+
         return res.status(200).json({
             jobId,
             shareUrl: `${base}/v/${shareSlug}`,
@@ -242,7 +242,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         // Si on a réservé l’essai IP mais qu’on n’a pas lancé Replicate => on libère (pas de coût)
         if (enforceLimits && !predictionCreated) {
             try {
-                await releaseIpAttempt({ ipHash, jobId });
+                await releaseIpAttempt({ipHash, jobId});
             } catch {
                 // ignore
             }
@@ -268,6 +268,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             }
         }
 
-        return res.status(status).json({ error: msg });
+        return res.status(status).json({error: msg});
     }
 }

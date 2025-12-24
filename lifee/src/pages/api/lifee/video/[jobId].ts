@@ -41,6 +41,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         videoSource = "replicate";
     }
 
+    if (job.status === 'processing') {
+        const videoKey = `lifee/videos/${jobId}.mp4`;
+        // TODO CHECK IF VIDEO EXISTS ON S3 and FETCH REPLICATE TO CHECK IF STATUS MATCH (job.replicatePredictionId)
+        // IF ITS SUCCEEDED ON REPLICATE THEN => FEtCH FROM replicate output url and save in s3 at videoKey
+        if (videoUrl) {
+            await db.update(lifeeJobs).set({
+                videoKey,
+                status: 'succeeded',
+                progress: 1,
+                updatedAt: new Date(),
+            }).where(eq(lifeeJobs.id, jobId));
+        }
+        console.log('vv', videoUrl);
+    }
+
 
     let thumbnailUrl: string | null = null;
     if (job.imageKey) {

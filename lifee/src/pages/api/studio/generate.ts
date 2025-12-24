@@ -1,19 +1,19 @@
 // pages/api/studio/generateKling.ts
-import type { NextApiRequest, NextApiResponse } from "next";
+import type {NextApiRequest, NextApiResponse} from "next";
 import crypto from "node:crypto";
-import { and, eq, sql } from "drizzle-orm";
+import {and, eq, sql} from "drizzle-orm";
 
-import { db } from "@/lib/db";
-import { requireUserId} from "@/pages/api/studio/_auth";
-import { appUsers } from "@/lib/db/schema.auth";
-import { studioAssets } from "@/lib/db/schema.studio";
-import { lifeeJobs, lifeeJobEvents } from "@/lib/db/schema";
+import {db} from "@/lib/db";
+import {requireUserId} from "@/pages/api/studio/_auth";
+import {appUsers} from "@/lib/db/schema.auth";
+import {studioAssets} from "@/lib/db/schema.studio";
+import {lifeeJobs, lifeeJobEvents} from "@/lib/db/schema";
 
-import { replicate, getLatestVersionId} from "@/lib/replicate/replicateClient";
+import {replicate, getLatestVersionId} from "@/lib/replicate/replicateClient";
 import {presignGet} from "@/lib/s3";
 import {nanoid} from "nanoid";
-
-const localtunnel = require("localtunnel");
+import process from "node:process";
+import {createPredictionLive} from "@/lib/replicate/provider";
 
 function toMMYYYY(month: number, year: number) {
     return `${String(month).padStart(2, "0")}/${year}`;
@@ -31,7 +31,6 @@ function getAppUrlFromReq(req: NextApiRequest) {
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const userId = await requireUserId(req, res);
     if (!userId) return;
-
 
 
     if (req.method !== "POST") return res.status(405).send("Method not allowed");
@@ -52,7 +51,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).send("Missing fields");
     }
 
-    const [user] = await db.select({ credits: appUsers.credits }).from(appUsers).where(eq(appUsers.id, userId));
+    const [user] = await db.select({credits: appUsers.credits}).from(appUsers).where(eq(appUsers.id, userId));
     if ((user?.credits ?? 0) <= 0) return res.status(402).send("No credits");
 
     const [source] = await db
@@ -90,38 +89,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // 2) pre-signed url S3 -> start_image
     const startImageUrl = await presignGet(source.fileKey, 60 * 60);
 
-    // 3) récupérer version id + create prediction (community model -> version requis) :contentReference[oaicite:5]{index=5}
-    const owner = "kwaivgi";
-    const name = "kling-v2.5-turbo-pro";
-    const version = await getLatestVersionId(owner, name);
-
-    // TODO need to be cleaned
-    const tunnelWeb = await localtunnel({ port: 3000 });
-
-    console.log(tunnelWeb.url);
-
-    tunnelWeb.on('close', () => console.log("closed", tunnelWeb.url));
-    // const webhookUrl = `${getAppUrlFromReq(req)}/api/webhooks/replicate?jobId=${encodeURIComponent(jobId)}`;
-    const webhookUrl = `${tunnelWeb.url}/api/webhooks/replicate?jobId=${encodeURIComponent(jobId)}`;
-
-    // input schema (start_image, prompt, duration, aspect_ratio, negative_prompt)
-    const input: Record<string, any> = {
-        start_image: startImageUrl,
+    const prediction = await createPredictionLive(
+        jobId,
+        {
+        startImageUrl,
         prompt: body.prompt,
-        duration: 1,
-    };
-
-    if (body.negativePrompt) input.negative_prompt = body.negativePrompt;
-    // aspect_ratio ignoré si start_image est fourni (mais tu peux le garder pour futur T2V)
-    if (body.aspectRatio) input.aspect_ratio = body.aspectRatio;
-
-    // TODO ENABLE PREDICTION
-    // const prediction = await replicate.predictions.create({
-    //     version,
-    //     input,
-    //     webhook: webhookUrl,
-    //     webhook_events_filter: ["start", "logs", "completed"], // valeurs supportées :contentReference[oaicite:6]{index=6}
-    // });
+        negativePrompt: body.negativePrompt,
+        aspectRatio: body.aspectRatio,
+            version: 'standard' // TODO CHECK IF HAS CREATOR PACKAGE
+    });
 
     await db.update(lifeeJobs).set({
         replicatePredictionId: prediction.id,
@@ -156,7 +132,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // 5) débit crédit (actuel : à la création)
     // Alternative “débit à succeeded” possible, mais nécessite un flag/idempotence DB — je te le fais si tu veux.
-    await db.update(appUsers).set({ credits: sql`${appUsers.credits} - 1` }).where(eq(appUsers.id, userId));
+    await db.update(appUsers).set({
+        credits: sql`${appUsers.credits}
+        - 1`
+    }).where(eq(appUsers.id, userId));
 
     return res.status(200).json({
         jobId,

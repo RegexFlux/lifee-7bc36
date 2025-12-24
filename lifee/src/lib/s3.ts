@@ -1,5 +1,5 @@
 // lib/s3.ts
-import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import {S3Client, PutObjectCommand, GetObjectCommand, HeadObjectCommand} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Readable } from "node:stream";
 import fs from "node:fs";
@@ -135,4 +135,18 @@ export async function presignGet(key: string, expiresIn: number = 60 * 60) {
     return getSignedUrl(client, new GetObjectCommand({ Bucket: bucket, Key: key }), {
         expiresIn: expiresIn ?? envExp,
     });
+}
+
+export async function s3Exists(key: string): Promise<boolean> {
+    try {
+        const { client, bucket } = await loadS3Env();
+        await client.send(new HeadObjectCommand({ Bucket: bucket, Key: key }));
+        return true;
+    } catch (e: any) {
+        // AWS v3: NotFound/NoSuchKey selon config
+        const name = e?.name || "";
+        const code = e?.$metadata?.httpStatusCode;
+        if (name === "NotFound" || name === "NoSuchKey" || code === 404) return false;
+        throw e;
+    }
 }

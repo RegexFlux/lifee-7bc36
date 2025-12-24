@@ -1,6 +1,10 @@
-import { replicate, getKlingVersionId } from "@/lib/replicate"; // ton wrapper live existant
-import { defaultLifeePrompt } from "@/lib/replicate";
+import {replicate, getDemoModel, getKlingInput, getWanInput, getKlingModel} from "@/lib/replicate"; // ton wrapper live existant
+import { defaultLifeeDemoPrompt } from "@/lib/replicate";
 import type { NextApiRequest } from "next";
+import * as process from "node:process";
+const localtunnel = require("localtunnel");
+import {match} from 'ts-pattern';
+
 
 export type ProviderMode = "live" | "mock";
 
@@ -25,25 +29,52 @@ export function mockVideoAbsoluteUrl(req: NextApiRequest) {
     return `${proto}://${host}${rel}`;
 }
 
-export async function createPredictionLive(params: {
-    startImageBuffer: Buffer;
+export async function createPredictionLive(jobId: string, params: {
+    startImageUrl: string;
     prompt?: string;
-    webhookUrl: string;
+    negativePrompt?: string;
+    aspectRatio?: string;
+    version: 'demo' | 'standard' | 'pro';
 }) {
     guardNoLiveInDev();
 
-    const version = await getKlingVersionId();
-    const input: Record<string, unknown> = {
-        prompt: params.prompt ?? defaultLifeePrompt(),
-        start_image: params.startImageBuffer,
-        duration: 3,
-        aspect_ratio: "16:9",
-    };
+    // const base = process.env.APP_URL;
+
+    const tunnelWeb = await localtunnel({port: 3000});
+    tunnelWeb.on('close', () => console.log("closed", tunnelWeb.url));
+
+    const processDuration = process.env["IA-DURATION"];
+    const duration = (!processDuration || +processDuration > 5) ? 5 : +processDuration;
+    const webhookUrl = `${tunnelWeb.url}/api/webhooks/replicate?jobId=${encodeURIComponent(jobId)}`;
+    const {model, input} = match(params.version)
+        .with('demo', () => ({
+            model: getDemoModel(),
+            input: getWanInput(
+                params.prompt ?? null,
+                params.startImageUrl,
+                duration,
+                params.aspectRatio,
+                params.negativePrompt
+            )
+        }))
+        .otherwise(() => ({
+            model: getKlingModel(),
+            input: getKlingInput(
+                params.prompt ?? null,
+                params.startImageUrl,
+                duration,
+                params.aspectRatio,
+                params.negativePrompt,
+                params.version as 'pro' | 'standard'
+            )
+        }))
+
+    console.log('model', await model, input)
 
     return replicate.predictions.create({
-        version,
+        version: await model,
         input,
-        webhook: params.webhookUrl,
+        webhook: webhookUrl,
         webhook_events_filter: ["start", "logs", "completed"],
     });
 }

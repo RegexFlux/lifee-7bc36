@@ -4,7 +4,6 @@ import { eq } from "drizzle-orm";
 import crypto from "node:crypto";
 import type { NextApiRequest } from "next";
 import { mockVideoAbsoluteUrl } from "@/lib/replicate/provider";
-import {createVideoKey} from "@/pages/api/webhooks/replicate";
 
 const TOTAL_MS = Number(process.env.MOCK_TOTAL_MS || "6000");
 
@@ -32,8 +31,7 @@ export async function advanceMockJobIfNeeded(params: { jobId: string; req: NextA
     // si on change d’état, on écrit en DB + event
     if (job.status !== next.status) {
         const outUrl = next.status === "succeeded" ? mockVideoAbsoluteUrl(params.req) : job.replicateOutputUrl;
-        console.log('oo, ou', outUrl);
-        const videoKey = await createVideoKey(job.id, outUrl ?? "");
+        const videoKey = job.videoKey;
 
 
         await db.update(lifeeJobs).set({
