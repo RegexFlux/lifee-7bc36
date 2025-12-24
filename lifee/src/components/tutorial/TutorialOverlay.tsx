@@ -23,13 +23,96 @@ export type TourStep = {
 
 type Mode = "walkthrough" | "map";
 
+type DeferOpen = {
+    /** attend que tous ces selectors existent + aient un rect valide */
+    selectors?: string[];
+    /** attend aussi un event window (utile si tu veux signaler “sidebar settled”) */
+    eventName?: string;
+    /** combien de temps les rects doivent rester stables */
+    stableMs?: number;
+    /** timeout de sécurité */
+    timeoutMs?: number;
+};
+
 type Props = {
     steps: TourStep[];
     storageKey?: string; // remembers completion
     defaultMode?: Mode;
     forceOpen?: boolean; // for debugging
     onClose?: () => void;
+    deferOpen?: DeferOpen;
 };
+
+function rectSigForSelectors(selectors: string[]) {
+    const sig: number[] = [];
+    for (const sel of selectors) {
+        const els = Array.from(document.querySelectorAll(sel));
+        if (els.length === 0) return { ok: false as const, sig: [] as number[] };
+
+        // On concatène les rects “visibles” (w/h > 1). Pas besoin d’être dans le viewport.
+        const rects = els
+            .map((el) => el.getBoundingClientRect())
+            .filter((r) => r.width > 1 && r.height > 1);
+
+        if (rects.length === 0) return { ok: false as const, sig: [] as number[] };
+
+        // signature simple
+        for (const r of rects) {
+            sig.push(
+                Math.round(r.left),
+                Math.round(r.top),
+                Math.round(r.width),
+                Math.round(r.height)
+            );
+        }
+    }
+    return { ok: true as const, sig };
+}
+
+function sigEqual(a: number[], b: number[]) {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+    return true;
+}
+
+async function waitForLayoutStable(opts: {
+    selectors: string[];
+    stableMs: number;
+    timeoutMs: number;
+}) {
+    const { selectors, stableMs, timeoutMs } = opts;
+
+    const start = performance.now();
+    let lastSig: number[] | null = null;
+    let stableSince = 0;
+
+    return await new Promise<void>((resolve) => {
+        const tick = () => {
+            const now = performance.now();
+            if (now - start > timeoutMs) return resolve();
+
+            const { ok, sig } = rectSigForSelectors(selectors);
+            if (!ok) {
+                lastSig = null;
+                stableSince = 0;
+                requestAnimationFrame(tick);
+                return;
+            }
+
+            if (lastSig && sigEqual(lastSig, sig)) {
+                if (!stableSince) stableSince = now;
+                if (now - stableSince >= stableMs) return resolve();
+            } else {
+                lastSig = sig;
+                stableSince = 0;
+            }
+
+            requestAnimationFrame(tick);
+        };
+
+        requestAnimationFrame(tick);
+    });
+}
 
 function clamp(n: number, min: number, max: number) {
     return Math.max(min, Math.min(max, n));
@@ -206,6 +289,7 @@ export function TutorialOverlay({
                                     storageKey = "lifee_tour_done_v1",
                                     defaultMode = "walkthrough",
                                     forceOpen = false,
+    deferOpen,
                                     onClose,
                                 }: Props) {
     const reduced = useReducedMotion();
@@ -243,20 +327,76 @@ export function TutorialOverlay({
         return hasMany ? (targets.union ?? anchorRect) : anchorRect;
     }, [targets.union, targets.rects.length, anchorRect, multi]);
 
-    // open once (unless done)
+    const [pendingAutoOpen, setPendingAutoOpen] = useState(false);
+
     useEffect(() => {
         setMounted(true);
+
         if (forceOpen) {
             setOpen(true);
             return;
         }
+
         try {
             const done = localStorage.getItem(storageKey) === "1";
-            if (!done) setOpen(true);
+            if (!done) setPendingAutoOpen(true);
         } catch {
-            setOpen(true);
+            setPendingAutoOpen(true);
         }
     }, [storageKey, forceOpen]);
+
+    useEffect(() => {
+        if (!mounted) return;
+        if (!pendingAutoOpen) return;
+        if (open) return;
+
+        let canceled = false;
+
+        (async () => {
+            const stableMs = deferOpen?.stableMs ?? 220;
+            const timeoutMs = deferOpen?.timeoutMs ?? 5000;
+
+            // 1) attendre fonts (souvent ça bouge les rects)
+            try {
+                await document.fonts?.ready;
+            } catch {}
+
+            // 2) attendre event optionnel
+            if (deferOpen?.eventName) {
+                await new Promise<void>((res) => {
+                    const t = window.setTimeout(res, timeoutMs);
+                    const onEvt = () => {
+                        window.clearTimeout(t);
+                        window.removeEventListener(deferOpen!.eventName!, onEvt);
+                        res();
+                    };
+                    window.addEventListener(deferOpen.eventName!, onEvt, { once: true });
+                });
+            }
+
+            // 3) attendre stabilité des rects (selectors)
+            const selectors =
+                deferOpen?.selectors?.length
+                    ? deferOpen.selectors
+                    : [steps[0]?.target].filter(Boolean) as string[];
+
+            if (selectors.length) {
+                await waitForLayoutStable({ selectors, stableMs, timeoutMs });
+            }
+
+            // 4) double RAF = “layout flush”
+            await new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
+
+            if (!canceled) {
+                setOpen(true);
+                setPendingAutoOpen(false);
+            }
+        })();
+
+        return () => {
+            canceled = true;
+        };
+    }, [mounted, pendingAutoOpen, open, deferOpen, steps]);
 
     // keep index valid
     useEffect(() => {

@@ -86,7 +86,13 @@ const studioSteps: TourStep[] = [
 export default function StudioTutorial() {
     return (
         <>
-            <TutorialOverlay steps={studioSteps} />
+            <TutorialOverlay steps={studioSteps}
+                             deferOpen={{
+                                 selectors: studioSteps.map(s => s.target),
+                                 stableMs: 220,
+                                 timeoutMs: 6000,
+                             }}
+            />
         </>
     );
 }

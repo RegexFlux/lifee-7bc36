@@ -47,7 +47,7 @@ export function Sidebar(props: Readonly<{
     const [sidebarW, setSidebarW] = usePersistedState<number>("lifee.sidebar.width", DEFAULT_W);
     useEffect(() => {
         try {
-            const isTutorial = localStorage.getItem("lifee_tour_done_v1");
+            const isTutorial = !localStorage.getItem("lifee_tour_done_v1");
             if (isTutorial) {
                 setSidebarW(DEFAULT_W);
             }
