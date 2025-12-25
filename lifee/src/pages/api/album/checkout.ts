@@ -1,6 +1,6 @@
 // pages/api/album/checkout.ts
 import type {NextApiRequest, NextApiResponse} from "next";
-import {and, eq} from "drizzle-orm";
+import {and, asc, eq} from "drizzle-orm";
 import {db} from "@/lib/db";
 import {requireUserId} from "@/pages/api/studio/_auth";
 import {albumDraftItems, albumDrafts} from "@/lib/db/schema.album";
@@ -9,6 +9,7 @@ import {creditPurchases} from "@/lib/db/schema.billing";
 import {CheckoutBodySchema, type CheckoutResponse} from "@/types/billing";
 import {getPackForUser} from "@/lib/album/packs.server";
 import {resolvePromo, computeQuote} from "@/lib/album/promos.server";
+import {studioAssets} from "@/lib/db/schema.studio";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<CheckoutResponse>) {
     const userId = await requireUserId(req, res);
@@ -24,16 +25,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
 
     const [draft] = await db
-        .select({id: albumDrafts.id, userId: albumDrafts.userId, requiredCredits: albumDrafts.requiredCredits})
+        .select({id: albumDrafts.id, userId: albumDrafts.userId})
         .from(albumDrafts)
         .where(and(eq(albumDrafts.id, body.draftId), eq(albumDrafts.userId, userId)));
 
     if (!draft) return res.status(404).json({ok: false, error: "Draft not found"});
 
     const items = await db
-        .select({assetId: albumDraftItems.assetId})
+        .select({
+            assetId: albumDraftItems.assetId,
+            type: studioAssets.type,
+        })
         .from(albumDraftItems)
+        .innerJoin(studioAssets, and(eq(studioAssets.id, albumDraftItems.assetId)))
         .where(eq(albumDraftItems.draftId, body.draftId));
+
+    const requiredCredits = items.filter(x => x.type === 'image').length; // 1 photo -> 1 vidéo IA (dans ce flow)
 
     if (items.length === 0) return res.status(400).json({ok: false, error: "Draft empty"});
 
@@ -41,8 +48,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     if (!pack) return res.status(400).json({ok: false, error: "Invalid pack"});
 
     // Option sécurité: empêcher achat pack insuffisant pour ce draft
-    if (pack.credits < draft.requiredCredits) {
-        return res.status(400).json({ok: false, error: `Pack insuffisant (>= ${draft.requiredCredits} requis)`});
+    if (pack.credits < requiredCredits) {
+        return res.status(400).json({ok: false, error: `Pack insuffisant (>= ${requiredCredits} requis)`});
     }
 
     // Validate promo (server side)

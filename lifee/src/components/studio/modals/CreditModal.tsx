@@ -1,4 +1,4 @@
-//components/modals/creditModal.tsx
+// components/modals/CreditModal.tsx
 "use client";
 
 import React, {useEffect, useMemo, useRef, useState} from "react";
@@ -16,39 +16,21 @@ import {
     Percent,
 } from "lucide-react";
 
-type Tier = "standard" | "creator";
+import type {
+    Tier,
+    PackDTO,
+    Promo,
+    PacksResponse,
+    ValidatePromoResponse,
+    SpinPromoResponse
+} from "@/types/billing";
 
-type PromoEffect =
-    | { kind: "percent"; percent: number }
-    | { kind: "credits"; extraCredits: number }
-    | { kind: "unknown" };
-
-type Promo = {
-    code: string;
-    label: string;
-    rarity: "common" | "uncommon" | "rare" | "jackpot";
-    effect: PromoEffect;
-};
-
-type Pack = {
-    id: string;
-    tier: Tier;
-    name: string;
-    subtitle: string;
-    credits: number;
-    priceEur: number;
-    includedExtraCredits?: number;
-    badge?: string;
-    highlight?: boolean;
-    benefits: string[];
-};
-
+/** ---------------- utils ---------------- */
 function cx(...v: Array<string | false | null | undefined>) {
     return v.filter(Boolean).join(" ");
 }
 
 function formatEUR(n: number) {
-    // fr friendly
     return n.toFixed(2).replace(".", ",") + "€";
 }
 
@@ -56,143 +38,13 @@ function clamp(n: number, min: number, max: number) {
     return Math.max(min, Math.min(max, n));
 }
 
-/** ---------- Business constraints ---------- */
-const COST_PER_GEN = 0.35;
-const MIN_CREDITS_PER_PURCHASE = 20;
-
-/** Packs: lumineux, simples, “sale ready” */
-const PACKS: Pack[] = [
-    {
-        id: "std_20",
-        tier: "standard",
-        name: "Starter",
-        subtitle: "Pour tester",
-        credits: 20,
-        priceEur: 15,
-        badge: "Simple",
-        benefits: ["720p", "Rendu stable", "Musique (sélection)"],
-    },
-    {
-        id: "std_50",
-        tier: "standard",
-        name: "Plus",
-        subtitle: "Meilleure valeur",
-        credits: 50,
-        priceEur: 32,
-        badge: "⭐ Value",
-        highlight: true,
-        benefits: ["720p", "Support standard", "Musique (sélection)"],
-    },
-    {
-        id: "cr_40",
-        tier: "creator",
-        name: "Créateur",
-        subtitle: "1080p + plus rapide",
-        credits: 40,
-        priceEur: 29,
-        includedExtraCredits: 5,
-        badge: "Populaire",
-        benefits: ["1080p", "Service plus rapide", "Support avancé", "Musique illimitée", "Rendu amélioré", "+5 crédits offerts"],
-    },
-    {
-        id: "cr_80",
-        tier: "creator",
-        name: "Studio Pro",
-        subtitle: "Priorité + gros bonus",
-        credits: 80,
-        priceEur: 49,
-        includedExtraCredits: 10,
-        badge: "🔥 Best",
-        highlight: true,
-        benefits: ["1080p", "Priorité rendu", "Support avancé", "Musique illimitée", "Rendu amélioré", "+10 crédits offerts"],
-    },
-];
-
-/** Promo catalog (roulette + code manuel). Roulette => toujours un code de cette liste. */
-const PROMOS: Promo[] = [
-    {code: "LUCKY5", label: "-5% immédiat", rarity: "common", effect: {kind: "percent", percent: 5}},
-    {code: "LUCKY10", label: "-10% (nice)", rarity: "uncommon", effect: {kind: "percent", percent: 5}},
-    {code: "LUCKY15", label: "-15% (gros win)", rarity: "rare", effect: {kind: "percent", percent: 5}},
-    {code: "FLASH20", label: "-20% (flash)", rarity: "rare", effect: {kind: "percent", percent: 15}},
-    {code: "JACKPOT25", label: "-25% (jackpot)", rarity: "jackpot", effect: {kind: "percent", percent: 25}},
-    {code: "JACKPOT20", label: "-25% (jackpot)", rarity: "jackpot", effect: {kind: "percent", percent: 20}},
-    {code: "BONUS10", label: "+10 crédits offerts", rarity: "uncommon", effect: {kind: "credits", extraCredits: 10}},
-    {code: "BONUS20", label: "+20 crédits offerts", rarity: "jackpot", effect: {kind: "credits", extraCredits: 20}},
-];
-
-function promoPill(r: Promo["rarity"]) {
-    switch (r) {
-        case "common":
-            return "bg-slate-100 text-slate-700 ring-1 ring-slate-200";
-        case "uncommon":
-            return "bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200";
-        case "rare":
-            return "bg-amber-50 text-amber-800 ring-1 ring-amber-200";
-        case "jackpot":
-            return "bg-rose-50 text-rose-800 ring-1 ring-rose-200";
+async function safeJson<T>(res: Response): Promise<T> {
+    const txt = await res.text();
+    try {
+        return JSON.parse(txt) as T;
+    } catch {
+        throw new Error(txt || `HTTP ${res.status}`);
     }
-}
-
-function promoWeight(p: Promo) {
-    // casino-ish, mais pas “trop”. Bonus: tiers creator => odds un peu meilleures.
-    switch (p.rarity) {
-        case "common":
-            return 55;
-        case "uncommon":
-            return 26;
-        case "rare":
-            return 14;
-        case "jackpot":
-            return 5;
-    }
-}
-
-function pickWeightedPromo(promos: Promo[], tier: Tier) {
-    // Creator: petit boost sur rare/jackpot
-    const weighted = promos.map((p) => {
-        const base = promoWeight(p);
-        const boost = tier === "creator" ? (p.rarity === "rare" ? 4 : p.rarity === "jackpot" ? 2 : 0) : 0;
-        return {p, w: base + boost};
-    });
-
-    const total = weighted.reduce((a, b) => a + b.w, 0);
-    const r = Math.random() * total;
-    let acc = 0;
-    for (const it of weighted) {
-        acc += it.w;
-        if (r <= acc) return it.p;
-    }
-    return weighted[weighted.length - 1]!.p;
-}
-
-function resolvePromo(codeRaw: string): Promo | null {
-    const code = codeRaw.trim().toUpperCase();
-    if (!code) return null;
-    return PROMOS.find((p) => p.code === code) ?? null;
-}
-
-function effectiveCredits(pack: Pack, promo: Promo | null) {
-    const base = pack.credits + (pack.includedExtraCredits ?? 0);
-    if (!promo) return base;
-    if (promo.effect.kind === "credits") return base + promo.effect.extraCredits;
-    return base;
-}
-
-function discountedPrice(pack: Pack, promo: Promo | null) {
-    const base = pack.priceEur;
-    if (!promo) return base;
-    if (promo.effect.kind === "percent") return clamp(base * (1 - promo.effect.percent / 100), 0, base);
-    return base;
-}
-
-function savingsText(pack: Pack, promo: Promo | null) {
-    if (!promo) return null;
-    if (promo.effect.kind === "percent") {
-        const saved = pack.priceEur - discountedPrice(pack, promo);
-        return saved > 0.009 ? `Économie ${formatEUR(saved)}` : null;
-    }
-    if (promo.effect.kind === "credits") return `+${promo.effect.extraCredits} crédits`;
-    return null;
 }
 
 function useLockBodyScroll(locked: boolean) {
@@ -228,9 +80,71 @@ function useBumpTrigger(dep: string | number) {
     return bump;
 }
 
-/** ---------- Roulette (super simple, flashy, 1 spin max per open) ---------- */
+/** ---------------- promo helpers (UI only) ---------------- */
+function promoPill(r: Promo["rarity"]) {
+    switch (r) {
+        case "common":
+            return "bg-slate-100 text-slate-700 ring-1 ring-slate-200";
+        case "uncommon":
+            return "bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200";
+        case "rare":
+            return "bg-amber-50 text-amber-800 ring-1 ring-amber-200";
+        case "jackpot":
+            return "bg-rose-50 text-rose-800 ring-1 ring-rose-200";
+    }
+}
+
+function baseCredits(pack: PackDTO) {
+    return pack.credits + (pack.includedExtraCredits ?? 0);
+}
+
+function effectiveCredits(pack: PackDTO, promo: Promo | null) {
+    const base = baseCredits(pack);
+    if (!promo) return base;
+    if (promo.effect.kind === "credits") return base + promo.effect.extraCredits;
+    return base;
+}
+
+function discountedPrice(pack: PackDTO, promo: Promo | null) {
+    const base = pack.priceEur;
+    if (!promo) return base;
+    if (promo.effect.kind === "percent") return clamp(base * (1 - promo.effect.percent / 100), 0, base);
+    return base;
+}
+
+function savingsText(pack: PackDTO, promo: Promo | null) {
+    if (!promo) return null;
+    if (promo.effect.kind === "percent") {
+        const saved = pack.priceEur - discountedPrice(pack, promo);
+        return saved > 0.009 ? `Économie ${formatEUR(saved)}` : null;
+    }
+    if (promo.effect.kind === "credits") return `+${promo.effect.extraCredits} crédits`;
+    return null;
+}
+
+/** ---------------- Roulette (server result) ---------------- */
+export type ReelItem = {
+    label: string;
+    code: string;
+    rarity: Promo["rarity"];
+};
+
+export function randomTeaser(): ReelItem {
+    const teasers: ReelItem[] = [
+        {label: "-5% immédiat", code: "—", rarity: "common"},
+        {label: "-10% (nice)", code: "—", rarity: "uncommon"},
+        {label: "-15% (gros win)", code: "—", rarity: "rare"},
+        {label: "-20% (flash)", code: "—", rarity: "rare"},
+        {label: "-25% (jackpot)", code: "—", rarity: "jackpot"},
+        {label: "+10 crédits offerts", code: "—", rarity: "uncommon"},
+        {label: "+20 crédits offerts", code: "—", rarity: "jackpot"},
+    ];
+    return teasers[Math.floor(Math.random() * teasers.length)]!;
+}
+
 function PromoRoulette(props: {
     tier: Tier;
+    packId: string | null;
     disabled: boolean;
     hasSpun: boolean;
     onResult: (promo: Promo) => void;
@@ -240,48 +154,62 @@ function PromoRoulette(props: {
     const centerIndex = 1;
 
     const [spinning, setSpinning] = useState(false);
-    const [reel, setReel] = useState<Promo[]>(() => PROMOS);
+    const [reel, setReel] = useState<ReelItem[]>(() => Array.from({length: 8}, () => randomTeaser()));
     const [y, setY] = useState(0);
 
-    const canSpin = !props.disabled && !props.hasSpun && !spinning;
+    const canSpin = !props.disabled && !props.hasSpun && !spinning && !!props.packId;
 
     const prefersReducedMotion = useMemo(() => {
         if (typeof window === "undefined") return false;
         return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
     }, []);
 
-    function spin() {
-        if (!canSpin) return;
+    async function spin() {
+        if (!canSpin || !props.packId) return;
 
-        const result = pickWeightedPromo(PROMOS, props.tier);
-
-        // build reel: random sequence + result near the end so it “lands”
-        const seq: Promo[] = [];
-        for (let i = 0; i < 18; i++) {
-            seq.push(PROMOS[Math.floor(Math.random() * PROMOS.length)]!);
-        }
-        // put result at index 18, keep 1 item after
-        seq.push(result);
-        seq.push(PROMOS[Math.floor(Math.random() * PROMOS.length)]!);
-
-        setReel(seq);
         setSpinning(true);
-
-        // reset position
         setY(0);
 
-        const resultIndex = 18; // where we placed it
+        // 1) Ask server for the real result (safe)
+        let promo: Promo | null = null;
+        try {
+            const r = await fetch("/api/album/promo/spin", {
+                method: "POST",
+                credentials: "include",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({tier: props.tier, packId: props.packId}),
+            });
+
+            const data = await safeJson<SpinPromoResponse>(r);
+            if (!data.ok || !data.quote?.promo) throw new Error(data.ok ? "Promo introuvable" : data.error);
+
+            promo = data.quote.promo;
+        } catch {
+            // fail silently UX-wise; stop spin
+            setSpinning(false);
+            return;
+        }
+
+        // 2) Build reel with the real result near the end
+        const seq: ReelItem[] = [];
+        for (let i = 0; i < 18; i++) seq.push(randomTeaser());
+        seq.push({label: promo.label, code: promo.code, rarity: promo.rarity});
+        seq.push(randomTeaser());
+
+        setReel(seq);
+
+        const resultIndex = 18;
         const targetY = -((resultIndex - centerIndex) * ITEM_H);
 
-        // allow layout, then animate
-        window.setTimeout(() => {
-            setY(targetY);
-        }, 30);
+        window.setTimeout(() => setY(targetY), 30);
 
-        window.setTimeout(() => {
-            setSpinning(false);
-            props.onResult(result);
-        }, prefersReducedMotion ? 120 : 1650);
+        window.setTimeout(
+            () => {
+                setSpinning(false);
+                props.onResult(promo!);
+            },
+            prefersReducedMotion ? 120 : 1650
+        );
     }
 
     return (
@@ -303,8 +231,7 @@ function PromoRoulette(props: {
                 1 tour offert
               </span>
                         </div>
-                        <div className="mt-1 text-[12px] text-slate-600">
-                            Tourne et on applique directement le code promo au paiement.
+                        <div className="mt-1 text-[12px] text-slate-600">Tirage serveur → appliqué automatiquement.
                         </div>
                     </div>
 
@@ -314,9 +241,7 @@ function PromoRoulette(props: {
                         disabled={!canSpin}
                         className={cx(
                             "shrink-0 rounded-2xl px-4 py-3 text-[14px] font-black transition-all focus:outline-none focus:ring-2 focus:ring-rose-200",
-                            canSpin
-                                ? "bg-slate-900 text-white hover:opacity-95 active:scale-[0.99]"
-                                : "bg-slate-100 text-slate-400 cursor-not-allowed"
+                            canSpin ? "bg-slate-900 text-white hover:opacity-95 active:scale-[0.99]" : "bg-slate-100 text-slate-400 cursor-not-allowed"
                         )}
                     >
                         {spinning ? (
@@ -336,7 +261,7 @@ function PromoRoulette(props: {
                 </div>
 
                 <div className="mt-4 rounded-3xl border border-slate-200 bg-slate-50 overflow-hidden">
-                    <div className="relative" style={{height: VISIBLE * ITEM_H}}>
+                    <div className="relative" style={{height: 3 * 44}}>
                         <div
                             className="pointer-events-none absolute inset-x-3 top-1/2 -translate-y-1/2 h-[44px] rounded-2xl bg-white/80 ring-1 ring-slate-200 backdrop-blur"
                             aria-hidden="true"
@@ -354,7 +279,7 @@ function PromoRoulette(props: {
                             }}
                         >
                             {reel.map((p, idx) => (
-                                <div key={`${p.code}-${idx}`}
+                                <div key={`${p.label}-${idx}`}
                                      className="h-[44px] px-5 flex items-center justify-between">
                                     <div className="min-w-0">
                                         <div className="truncate text-sm font-black text-slate-900">{p.label}</div>
@@ -378,12 +303,15 @@ function PromoRoulette(props: {
     );
 }
 
-/** ---------- Main modal ---------- */
+/** ---------------- Main modal ---------------- */
 export function CreditModal(props: {
     open: boolean;
     credits: number;
     purchasing: boolean;
     onClose: () => void;
+
+    /** optionnel mais utile pour recommendedPackId côté back */
+    draftId?: string | null;
 
     onPurchase: (
         amount: number,
@@ -401,72 +329,147 @@ export function CreditModal(props: {
     const closeRef = useRef<HTMLButtonElement | null>(null);
 
     const [tier, setTier] = useState<Tier>("creator");
-    const [selectedPackId, setSelectedPackId] = useState<string>("cr_80");
+    const [selectedPackId, setSelectedPackId] = useState<string | null>(null);
+
+    // packs from back
+    const [packs, setPacks] = useState<PackDTO[]>([]);
+    const [packsLoading, setPacksLoading] = useState(false);
 
     // promo
     const [promoInput, setPromoInput] = useState("");
     const [appliedPromo, setAppliedPromo] = useState<Promo | null>(null);
     const [promoSource, setPromoSource] = useState<"manual" | "roulette" | null>(null);
 
-    // roulette: always 1 spin per open
+    // roulette: 1 spin per open
     const [hasSpun, setHasSpun] = useState(false);
 
     // small UX messages
     const [toast, setToast] = useState<string | null>(null);
 
+    const hasStandard = useMemo(() => packs.some((p) => p.tier === "standard"), [packs]);
+    const hasCreator = useMemo(() => packs.some((p) => p.tier === "creator"), [packs]);
+
+    const visiblePacks = useMemo(() => packs.filter((p) => p.tier === tier), [packs, tier]);
+
+    const selectedPack = useMemo(() => {
+        const found = selectedPackId ? packs.find((p) => p.id === selectedPackId) : null;
+        if (found && found.tier === tier) return found;
+
+        // fallback: pick best in this tier
+        const inTier = packs.filter((p) => p.tier === tier);
+        if (inTier.length) return inTier.find((p) => p.highlight) ?? inTier[0]!;
+        // fallback any
+        return packs[0] ?? null;
+    }, [packs, selectedPackId, tier]);
+
+    // keep selection valid
+    useEffect(() => {
+        if (!selectedPack) return;
+        if (selectedPackId !== selectedPack.id) setSelectedPackId(selectedPack.id);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tier, packs]);
+
+    // pricing (UI)
+    const finalPrice = selectedPack ? discountedPrice(selectedPack, appliedPromo) : 0;
+    const finalCredits = selectedPack ? effectiveCredits(selectedPack, appliedPromo) : 0;
+    const priceBump = useBumpTrigger(finalPrice);
+    const creditsBump = useBumpTrigger(finalCredits);
+
+    const loadPacks = async () => {
+        setPacksLoading(true);
+        try {
+            const qs = props.draftId ? `?draftId=${encodeURIComponent(props.draftId)}` : "";
+            const r = await fetch(`/api/album/packs${qs}`, {credentials: "include"});
+            if (!r.ok) throw new Error(await r.text());
+            const data = await safeJson<PacksResponse>(r);
+
+            setPacks(data.packs);
+
+            // choose tier default + selected pack
+            const preferTier: Tier = data.packs.some((p) => p.tier === "creator") ? "creator" : "standard";
+            setTier(preferTier);
+
+            const rec = data.recommendedPackId;
+            const pick =
+                (rec && data.packs.find((p) => p.id === rec)) ||
+                data.packs.find((p) => p.tier === preferTier && p.highlight) ||
+                data.packs.find((p) => p.tier === preferTier) ||
+                data.packs[0] ||
+                null;
+
+            setSelectedPackId(pick?.id ?? null);
+        } catch {
+            setPacks([]);
+            setSelectedPackId(null);
+        } finally {
+            setPacksLoading(false);
+        }
+    };
+
     useEffect(() => {
         if (!props.open) return;
+
         window.setTimeout(() => closeRef.current?.focus(), 0);
 
-        // reset roulette each open for “1 tour offert”
+        // reset roulette each open
         setHasSpun(false);
 
-        // keep promo if you want; but conversion-wise it’s better to reset:
+        // reset promo each open (conversion-friendly)
         setAppliedPromo(null);
         setPromoSource(null);
         setPromoInput("");
 
-        // default: creator / best value selected
-        setTier("creator");
-        setSelectedPackId("cr_80");
+        void loadPacks();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.open]);
 
-    const packs = useMemo(() => PACKS.filter((p) => p.credits >= MIN_CREDITS_PER_PURCHASE), []);
-    const visiblePacks = useMemo(() => packs.filter((p) => p.tier === tier), [packs, tier]);
-
-    const selectedPack = useMemo(() => {
-        const p = packs.find((x) => x.id === selectedPackId);
-        // If tier changed and selectedPack mismatched, auto pick first of tier
-        if (p && p.tier === tier) return p;
-        const fallback = packs.find((x) => x.tier === tier) ?? packs[0]!;
-        return fallback;
-    }, [packs, selectedPackId, tier]);
-
-    // ensure selection stays valid
+    // toast lifecycle
     useEffect(() => {
-        if (selectedPack && selectedPack.id !== selectedPackId) setSelectedPackId(selectedPack.id);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [tier]);
+        if (!toast) return;
+        const t = window.setTimeout(() => setToast(null), 1400);
+        return () => window.clearTimeout(t);
+    }, [toast]);
 
-    const finalPrice = discountedPrice(selectedPack, appliedPromo);
-    const finalCredits = effectiveCredits(selectedPack, appliedPromo);
-    const baseCredits = selectedPack.credits + (selectedPack.includedExtraCredits ?? 0);
+    async function applyPromo(code: string, source: "manual" | "roulette") {
+        const raw = code.trim().toUpperCase();
+        if (!raw) return;
 
-    const priceBump = useBumpTrigger(finalPrice);
-    const creditsBump = useBumpTrigger(finalCredits);
-
-    function applyPromo(code: string, source: "manual" | "roulette") {
-        const found = resolvePromo(code);
-        if (!found) {
-            setToast("Code inconnu — on vérifiera au checkout.");
-            // keep the raw code so you can still pass it to Stripe if you want,
-            // but here we keep it simple: don't apply unknown.
+        if (!selectedPack) {
+            setToast("Choisis un pack d’abord.");
             return;
         }
-        setAppliedPromo(found);
-        setPromoSource(source);
-        setPromoInput(found.code);
-        setToast(source === "roulette" ? "Promo appliquée 🎉" : "Code promo appliqué ✅");
+
+        if (source === "manual") {
+            try {
+                const r = await fetch("/api/album/promo/validate", {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({code: raw, packId: selectedPack.id, tier}),
+                });
+
+                const data = await safeJson<ValidatePromoResponse>(r);
+                if (!data.ok || !data.quote?.promo) throw new Error(data.ok ? "Code invalide" : data.error);
+
+                setAppliedPromo(data.quote.promo);
+                setPromoSource("manual");
+                setPromoInput(data.quote.promo.code);
+                setToast("Code promo appliqué ✅");
+            } catch {
+                setToast("Code invalide");
+            }
+            return;
+        }
+
+        // roulette: promo already validated on server by /spin
+        // this path is applied via onResult(promo) -> call below
+    }
+
+    function applyPromoFromRoulette(promo: Promo) {
+        setAppliedPromo(promo);
+        setPromoSource("roulette");
+        setPromoInput(promo.code);
+        setToast("Promo appliquée 🎉");
     }
 
     function clearPromo() {
@@ -475,12 +478,6 @@ export function CreditModal(props: {
         setPromoInput("");
         setToast("Promo retirée");
     }
-
-    useEffect(() => {
-        if (!toast) return;
-        const t = window.setTimeout(() => setToast(null), 1400);
-        return () => window.clearTimeout(t);
-    }, [toast]);
 
     if (!props.open) return null;
 
@@ -498,7 +495,7 @@ export function CreditModal(props: {
                 className="bottom-0 absolute w-screen md:relative md:rounded-b-4xl rounded-t-4xl h-[90dvh] bg-white shadow-2xl overflow-scroll"
                 onMouseDown={(e) => e.stopPropagation()}
             >
-                {/* HEADER (bright, dynamic) */}
+                {/* HEADER */}
                 <div
                     className="px-6 py-5 text-white"
                     style={{
@@ -524,7 +521,9 @@ export function CreditModal(props: {
                                             className="ml-1 inline-flex items-center rounded-xl bg-white/12 px-2 py-0.5 font-black">
                       {props.credits}
                     </span>
-                                        <span className="ml-3 hidden md:inline text-white/65">Tire la roulette pour débloquer des bonus</span>
+                                        <span className="ml-3 hidden md:inline text-white/65">
+                      Tire la roulette pour débloquer des bonus
+                    </span>
                                     </div>
                                 </div>
                             </div>
@@ -545,10 +544,11 @@ export function CreditModal(props: {
                         <button
                             type="button"
                             onClick={() => setTier("standard")}
-                            disabled={props.purchasing}
+                            disabled={props.purchasing || !hasStandard}
                             className={cx(
                                 "rounded-2xl px-4 py-2 text-xs font-black transition-colors",
-                                tier === "standard" ? "bg-white text-slate-900" : "text-white/80 hover:text-white"
+                                tier === "standard" ? "bg-white text-slate-900" : "text-white/80 hover:text-white",
+                                !hasStandard && "opacity-40 cursor-not-allowed"
                             )}
                         >
                             Standard · 720p
@@ -556,10 +556,11 @@ export function CreditModal(props: {
                         <button
                             type="button"
                             onClick={() => setTier("creator")}
-                            disabled={props.purchasing}
+                            disabled={props.purchasing || !hasCreator}
                             className={cx(
                                 "rounded-2xl px-4 py-2 text-xs font-black transition-colors inline-flex items-center gap-2",
-                                tier === "creator" ? "bg-white text-slate-900" : "text-white/80 hover:text-white"
+                                tier === "creator" ? "bg-white text-slate-900" : "text-white/80 hover:text-white",
+                                !hasCreator && "opacity-40 cursor-not-allowed"
                             )}
                         >
                             <Crown className="h-4 w-4 text-rose-600"/>
@@ -571,9 +572,9 @@ export function CreditModal(props: {
                 {/* BODY */}
                 <div className="bg-slate-50">
                     <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-4 p-4 md:p-5">
-                        {/* LEFT: packs + promo input */}
+                        {/* LEFT */}
                         <div className="space-y-4">
-                            {/* PACKS (big CTA cards, lots of value cues) */}
+                            {/* PACKS */}
                             <div className="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
                                 <div className="px-5 py-4 flex items-start justify-between gap-3">
                                     <div className="min-w-0">
@@ -592,161 +593,165 @@ export function CreditModal(props: {
                   </span>
                                 </div>
 
-                                <div className="px-4 pb-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-                                    {visiblePacks.map((p) => {
-                                        const selected = p.id === selectedPackId;
+                                {packsLoading ? (
+                                    <div className="px-5 pb-5 text-sm text-slate-600 flex items-center gap-2">
+                                        <Loader2 className="h-4 w-4 animate-spin"/>
+                                        Chargement des packs…
+                                    </div>
+                                ) : visiblePacks.length === 0 ? (
+                                    <div className="px-5 pb-5 text-sm text-slate-600">Aucun pack disponible.</div>
+                                ) : (
+                                    <div className="px-4 pb-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        {visiblePacks.map((p) => {
+                                            const selected = p.id === selectedPackId;
 
-                                        const base = p.priceEur;
-                                        const withPromo = discountedPrice(p, appliedPromo);
-                                        const hasDiscount = withPromo < base - 0.005;
+                                            const base = p.priceEur;
+                                            const withPromo = discountedPrice(p, appliedPromo);
+                                            const hasDiscount = withPromo < base - 0.005;
 
-                                        const credits = effectiveCredits(p, appliedPromo);
-                                        const creditBase = p.credits + (p.includedExtraCredits ?? 0);
+                                            const credits = effectiveCredits(p, appliedPromo);
+                                            const creditBase = baseCredits(p);
 
-                                        return (
-                                            <button
-                                                key={p.id}
-                                                type="button"
-                                                onClick={() => setSelectedPackId(p.id)}
-                                                disabled={props.purchasing}
-                                                className={cx(
-                                                    "relative text-left rounded-3xl p-4 border transition-all overflow-hidden",
-                                                    selected ? "border-slate-900 shadow-md" : "border-slate-200 hover:border-slate-300 hover:shadow-sm",
-                                                    p.highlight && !selected && "ring-1 ring-amber-200"
-                                                )}
-                                            >
-                                                {/* colorful corner */}
-                                                <div
-                                                    className="absolute -top-10 -right-10 h-28 w-28 rounded-full blur-2xl opacity-70"
-                                                    style={{
-                                                        background: p.tier === "creator"
-                                                            ? "radial-gradient(circle, rgba(244,63,94,0.55), transparent 60%)"
-                                                            : "radial-gradient(circle, rgba(245,158,11,0.55), transparent 60%)",
-                                                    }}
-                                                    aria-hidden="true"
-                                                />
+                                            return (
+                                                <button
+                                                    key={p.id}
+                                                    type="button"
+                                                    onClick={() => setSelectedPackId(p.id)}
+                                                    disabled={props.purchasing}
+                                                    className={cx(
+                                                        "relative text-left rounded-3xl p-4 border transition-all overflow-hidden",
+                                                        selected ? "border-slate-900 shadow-md" : "border-slate-200 hover:border-slate-300 hover:shadow-sm",
+                                                        p.highlight && !selected && "ring-1 ring-amber-200"
+                                                    )}
+                                                >
+                                                    <div
+                                                        className="absolute -top-10 -right-10 h-28 w-28 rounded-full blur-2xl opacity-70"
+                                                        style={{
+                                                            background:
+                                                                p.tier === "creator"
+                                                                    ? "radial-gradient(circle, rgba(244,63,94,0.55), transparent 60%)"
+                                                                    : "radial-gradient(circle, rgba(245,158,11,0.55), transparent 60%)",
+                                                        }}
+                                                        aria-hidden="true"
+                                                    />
 
-                                                {/* badge */}
-                                                {p.badge ? (
-                                                    <div className="absolute top-3 right-3">
-                            <span
-                                className={cx(
-                                    "rounded-full px-2 py-1 text-[10px] font-black",
-                                    selected
-                                        ? "bg-slate-900 text-white"
-                                        : p.highlight
-                                            ? "bg-amber-50 text-amber-800 ring-1 ring-amber-200"
-                                            : "bg-slate-100 text-slate-700 ring-1 ring-slate-200"
+                                                    {p.badge ? (
+                                                        <div className="absolute top-3 right-3">
+                              <span
+                                  className={cx(
+                                      "rounded-full px-2 py-1 text-[10px] font-black",
+                                      selected
+                                          ? "bg-slate-900 text-white"
+                                          : p.highlight
+                                              ? "bg-amber-50 text-amber-800 ring-1 ring-amber-200"
+                                              : "bg-slate-100 text-slate-700 ring-1 ring-slate-200"
+                                  )}
+                              >
+                                {p.badge}
+                              </span>
+                                                        </div>
+                                                    ) : null}
+
+                                                    <div className="relative">
+                                                        <div
+                                                            className="text-[14px] font-black text-slate-900">{p.name}</div>
+                                                        <div
+                                                            className="mt-0.5 text-[12px] font-semibold text-slate-500">{p.subtitle}</div>
+
+                                                        <div className="mt-3 flex items-end justify-between gap-3">
+                                                            <div>
+                                                                <div
+                                                                    className="text-[28px] leading-none font-black text-slate-900">
+                                                                    {credits}
+                                                                    <span
+                                                                        className="ml-1 text-[12px] font-black text-slate-500">crédits</span>
+                                                                </div>
+
+                                                                {credits > creditBase ? (
+                                                                    <div
+                                                                        className="mt-1 inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-black text-emerald-800 ring-1 ring-emerald-200">
+                                                                        +{credits - creditBase} via promo
+                                                                    </div>
+                                                                ) : p.includedExtraCredits ? (
+                                                                    <div
+                                                                        className="mt-1 inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-black text-emerald-800 ring-1 ring-emerald-200">
+                                                                        +{p.includedExtraCredits} offerts
+                                                                    </div>
+                                                                ) : null}
+                                                            </div>
+
+                                                            <div className="text-right">
+                                                                {hasDiscount ? (
+                                                                    <div
+                                                                        className="text-[12px] font-black text-slate-400 line-through">{formatEUR(base)}</div>
+                                                                ) : null}
+                                                                <div
+                                                                    className={cx("text-[22px] font-black text-slate-900", selected && "drop-shadow-sm")}>
+                                                                    {formatEUR(withPromo)}
+                                                                </div>
+                                                                {hasDiscount ? (
+                                                                    <div
+                                                                        className="mt-1 inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-black text-rose-800 ring-1 ring-rose-200">
+                                                                        <Percent className="h-3.5 w-3.5"/>
+                                                                        {savingsText(p, appliedPromo)}
+                                                                    </div>
+                                                                ) : null}
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="mt-3 space-y-1">
+                                                            {p.benefits.slice(0, 3).map((b, i) => (
+                                                                <div key={i}
+                                                                     className="text-[12px] text-slate-600 flex items-center gap-2">
+                                                                    <CheckCircle2 className="h-4 w-4 text-emerald-600"/>
+                                                                    <span className="truncate">{b}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+
+                                                        <div className="mt-3 flex items-center justify-between">
+                              <span
+                                  className={cx("text-[12px] font-black", selected ? "text-slate-900" : "text-slate-500")}>
+                                {selected ? "Sélectionné" : "Choisir"}
+                              </span>
+                                                            <ChevronRight
+                                                                className={cx("h-5 w-5", selected ? "text-slate-900" : "text-slate-400")}/>
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
                                 )}
-                            >
-                              {p.badge}
-                            </span>
-                                                    </div>
-                                                ) : null}
-
-                                                <div className="relative">
-                                                    <div
-                                                        className="text-[14px] font-black text-slate-900">{p.name}</div>
-                                                    <div
-                                                        className="mt-0.5 text-[12px] font-semibold text-slate-500">{p.subtitle}</div>
-
-                                                    <div className="mt-3 flex items-end justify-between gap-3">
-                                                        {/* credits */}
-                                                        <div>
-                                                            <div
-                                                                className="text-[28px] leading-none font-black text-slate-900">
-                                                                {credits}
-                                                                <span
-                                                                    className="ml-1 text-[12px] font-black text-slate-500">crédits</span>
-                                                            </div>
-                                                            {credits > creditBase ? (
-                                                                <div
-                                                                    className="mt-1 inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-black text-emerald-800 ring-1 ring-emerald-200">
-                                                                    +{credits - creditBase} via promo
-                                                                </div>
-                                                            ) : p.includedExtraCredits ? (
-                                                                <div
-                                                                    className="mt-1 inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-black text-emerald-800 ring-1 ring-emerald-200">
-                                                                    +{p.includedExtraCredits} offerts
-                                                                </div>
-                                                            ) : null}
-                                                        </div>
-
-                                                        {/* price */}
-                                                        <div className="text-right">
-                                                            {hasDiscount ? (
-                                                                <div
-                                                                    className="text-[12px] font-black text-slate-400 line-through">
-                                                                    {formatEUR(base)}
-                                                                </div>
-                                                            ) : null}
-                                                            <div
-                                                                className={cx("text-[22px] font-black text-slate-900", selected && "drop-shadow-sm")}>
-                                                                {formatEUR(withPromo)}
-                                                            </div>
-                                                            {hasDiscount ? (
-                                                                <div
-                                                                    className="mt-1 inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-black text-rose-800 ring-1 ring-rose-200">
-                                                                    <Percent className="h-3.5 w-3.5"/>
-                                                                    {savingsText(p, appliedPromo)}
-                                                                </div>
-                                                            ) : null}
-                                                        </div>
-                                                    </div>
-
-                                                    {/* quick benefits */}
-                                                    <div className="mt-3 space-y-1">
-                                                        {p.benefits.slice(0, 3).map((b, i) => (
-                                                            <div key={i}
-                                                                 className="text-[12px] text-slate-600 flex items-center gap-2">
-                                                                <CheckCircle2 className="h-4 w-4 text-emerald-600"/>
-                                                                <span className="truncate">{b}</span>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-
-                                                    <div className="mt-3 flex items-center justify-between">
-                            <span
-                                className={cx("text-[12px] font-black", selected ? "text-slate-900" : "text-slate-500")}>
-                              {selected ? "Sélectionné" : "Choisir"}
-                            </span>
-                                                        <ChevronRight
-                                                            className={cx("h-5 w-5", selected ? "text-slate-900" : "text-slate-400")}/>
-                                                    </div>
-                                                </div>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
                             </div>
 
+                            {/* PROMO + ROULETTE */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {/* PROMO (simple: code OR roulette). Highlight savings immediately. */}
+                                {/* Promo code */}
                                 <div className="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
                                     <div className="px-5 py-4">
                                         <div className="text-[15px] font-black text-slate-900">Réduction</div>
                                         <div className="mt-1 text-[12px] text-slate-600">
-                                            Tu peux entrer un code promo <span className="font-black">ou</span> tourner
-                                            la roulette (1 fois).
+                                            Entre un code promo <span className="font-black">ou</span> tourne la
+                                            roulette (1 fois).
                                         </div>
 
-                                        {/* Applied */}
                                         {appliedPromo ? (
                                             <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <span
-                          className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 text-white px-3 py-2 text-[12px] font-black">
-                        <Gift className="h-4 w-4"/>
-                          {appliedPromo.code}
-                          <span
-                              className={cx("rounded-full px-2 py-0.5 text-[10px] font-black", promoPill(appliedPromo.rarity))}>
-                          {promoSource === "roulette" ? "ROULETTE" : "CODE"}
+                        <span
+                            className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 text-white px-3 py-2 text-[12px] font-black">
+                          <Gift className="h-4 w-4"/>
+                            {appliedPromo.code}
+                            <span
+                                className={cx("rounded-full px-2 py-0.5 text-[10px] font-black", promoPill(appliedPromo.rarity))}>
+                            {promoSource === "roulette" ? "ROULETTE" : "CODE"}
+                          </span>
                         </span>
-                      </span>
 
                                                 <span
                                                     className="inline-flex items-center rounded-2xl bg-emerald-50 px-3 py-2 text-[12px] font-black text-emerald-800 ring-1 ring-emerald-200">
-                        {savingsText(selectedPack, appliedPromo) ?? "Avantage appliqué"}
-                      </span>
+                          {selectedPack ? savingsText(selectedPack, appliedPromo) ?? "Avantage appliqué" : "Avantage appliqué"}
+                        </span>
 
                                                 <button
                                                     type="button"
@@ -759,7 +764,6 @@ export function CreditModal(props: {
                                             </div>
                                         ) : null}
 
-                                        {/* Input */}
                                         <div className="mt-3 flex flex-col md:flex-row gap-2">
                                             <div className="relative flex-1">
                                                 <Gift
@@ -775,11 +779,11 @@ export function CreditModal(props: {
 
                                             <button
                                                 type="button"
-                                                disabled={props.purchasing || promoInput.trim().length < 4}
+                                                disabled={props.purchasing || promoInput.trim().length < 4 || !selectedPack}
                                                 onClick={() => applyPromo(promoInput, "manual")}
                                                 className={cx(
                                                     "rounded-2xl px-4 py-3 text-[14px] font-black transition-all",
-                                                    promoInput.trim().length >= 4 && !props.purchasing
+                                                    promoInput.trim().length >= 4 && !props.purchasing && !!selectedPack
                                                         ? "bg-slate-900 text-white hover:opacity-95 active:scale-[0.99]"
                                                         : "bg-slate-100 text-slate-400 cursor-not-allowed"
                                                 )}
@@ -788,7 +792,6 @@ export function CreditModal(props: {
                                             </button>
                                         </div>
 
-                                        {/* “lots of discounts” hint */}
                                         <div className="mt-3 flex flex-wrap gap-2">
                                             {[
                                                 {
@@ -810,27 +813,29 @@ export function CreditModal(props: {
                                             ].map((x, i) => (
                                                 <span key={i}
                                                       className={cx("rounded-full px-3 py-1 text-[11px] font-black", x.tone)}>
-                        {x.label}
-                      </span>
+                          {x.label}
+                        </span>
                                             ))}
                                         </div>
                                     </div>
                                 </div>
+
+                                {/* Roulette */}
                                 <PromoRoulette
                                     tier={tier}
-                                    disabled={props.purchasing || hasSpun}
+                                    packId={selectedPack?.id ?? null}
+                                    disabled={props.purchasing || hasSpun || !selectedPack}
                                     hasSpun={hasSpun}
                                     onResult={(promo) => {
                                         setHasSpun(true);
-                                        applyPromo(promo.code, "roulette"); // ✅ roulette result => applied as promo code
+                                        applyPromoFromRoulette(promo);
                                     }}
                                 />
                             </div>
                         </div>
 
-                        {/* RIGHT: roulette + sticky checkout */}
+                        {/* RIGHT: total + sticky checkout */}
                         <div className="space-y-4">
-                            {/* Fast checkout (sticky-ish inside column) */}
                             <div className="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
                                 <div className="px-5 py-4">
                                     <div className="flex items-start justify-between gap-3">
@@ -858,7 +863,7 @@ export function CreditModal(props: {
                                             <div className="min-w-0">
                                                 <div className="text-[12px] font-bold text-slate-500">Pack</div>
                                                 <div className="mt-1 text-[15px] font-black text-slate-900">
-                                                    {selectedPack.name} · {selectedPack.credits} crédits
+                                                    {selectedPack ? `${selectedPack.name} · ${selectedPack.credits} crédits` : "—"}
                                                 </div>
 
                                                 <div className="mt-2 flex flex-wrap gap-2">
@@ -869,7 +874,7 @@ export function CreditModal(props: {
                                   "bg-white/80 text-slate-900 ring-1 ring-slate-200"
                               )}
                           >
-                            Total crédits : {finalCredits}
+                            Total crédits : {selectedPack ? finalCredits : 0}
                           </span>
 
                                                     {appliedPromo ? (
@@ -887,7 +892,7 @@ export function CreditModal(props: {
                                             </div>
 
                                             <div className="text-right">
-                                                {appliedPromo && finalPrice < selectedPack.priceEur - 0.005 ? (
+                                                {selectedPack && appliedPromo && finalPrice < selectedPack.priceEur - 0.005 ? (
                                                     <div className="text-[12px] font-black text-slate-400 line-through">
                                                         {formatEUR(selectedPack.priceEur)}
                                                     </div>
@@ -900,10 +905,10 @@ export function CreditModal(props: {
                                                     )}
                                                     aria-live="polite"
                                                 >
-                                                    {formatEUR(finalPrice)}
+                                                    {formatEUR(selectedPack ? finalPrice : 0)}
                                                 </div>
 
-                                                {appliedPromo ? (
+                                                {appliedPromo && selectedPack ? (
                                                     <div
                                                         className="mt-2 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-[11px] font-black text-emerald-800 ring-1 ring-emerald-200">
                                                         <CheckCircle2 className="h-4 w-4"/>
@@ -922,8 +927,9 @@ export function CreditModal(props: {
 
                                     <button
                                         type="button"
-                                        disabled={props.purchasing}
+                                        disabled={props.purchasing || !selectedPack}
                                         onClick={() => {
+                                            if (!selectedPack) return;
                                             props.onPurchase(selectedPack.credits, {
                                                 packId: selectedPack.id,
                                                 tier: selectedPack.tier,
@@ -934,7 +940,7 @@ export function CreditModal(props: {
                                         className={cx(
                                             "mt-4 w-full rounded-3xl px-4 py-4 text-[16px] font-black transition-all",
                                             "focus:outline-none focus:ring-2 focus:ring-rose-200",
-                                            props.purchasing
+                                            props.purchasing || !selectedPack
                                                 ? "bg-slate-200 text-slate-500 cursor-not-allowed"
                                                 : "bg-slate-900 text-white hover:opacity-95 active:scale-[0.99]"
                                         )}
@@ -956,7 +962,6 @@ export function CreditModal(props: {
                                 </div>
                             </div>
 
-                            {/* micro social proof */}
                             <div className="rounded-3xl border border-slate-200 bg-white shadow-sm p-4">
                                 <div className="text-[12px] font-black text-slate-900">Pourquoi ça vaut le coup</div>
                                 <div className="mt-2 grid grid-cols-1 gap-2">

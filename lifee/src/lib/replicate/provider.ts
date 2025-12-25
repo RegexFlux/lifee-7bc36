@@ -1,7 +1,8 @@
 import {replicate, getDemoModel, getKlingInput, getWanInput, getKlingModel} from "@/lib/replicate"; // ton wrapper live existant
-import { defaultLifeeDemoPrompt } from "@/lib/replicate";
-import type { NextApiRequest } from "next";
+import {defaultLifeeDemoPrompt} from "@/lib/replicate";
+import type {NextApiRequest} from "next";
 import * as process from "node:process";
+
 const localtunnel = require("localtunnel");
 import {match} from 'ts-pattern';
 
@@ -35,8 +36,13 @@ export async function createPredictionLive(jobId: string, params: {
     negativePrompt?: string;
     aspectRatio?: string;
     version: 'demo' | 'standard' | 'pro';
-}) {
+}, draftId?: string) {
     guardNoLiveInDev();
+
+    console.log('PREDICTION LIVE', {
+        ...params
+    });
+    return;
 
     // const base = process.env.APP_URL;
 
@@ -44,8 +50,11 @@ export async function createPredictionLive(jobId: string, params: {
     tunnelWeb.on('close', () => console.log("closed", tunnelWeb.url));
 
     const processDuration = process.env["IA-DURATION"];
-    const duration = (!processDuration || +processDuration > 5) ? 5 : +processDuration;
-    const webhookUrl = `${tunnelWeb.url}/api/webhooks/replicate?jobId=${encodeURIComponent(jobId)}`;
+    const duration = (!processDuration || +processDuration! > 5) ? 5 : +processDuration!;
+    let webhookUrl = `${tunnelWeb.url}/api/webhooks/replicate?jobId=${encodeURIComponent(jobId)}`;
+    if (draftId) {
+        webhookUrl += `&draftId=${encodeURIComponent(draftId!)}`;
+    }
     const {model, input} = match(params.version)
         .with('demo', () => ({
             model: getDemoModel(),

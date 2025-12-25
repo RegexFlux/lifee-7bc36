@@ -10,14 +10,14 @@ import {
     Loader2,
     Upload,
     Trash2,
-    RefreshCw,
+    RefreshCw, Percent, Gift,
 } from "lucide-react";
 import {useRouter} from "next/router";
 import {type Pack} from "@/hooks/useVideoResultModal";
 import AlbumShowCase from "@/components/album/AlbumShowcase";
 
-import type {PackDTO, AppliedPromoQuote, ValidatePromoResponse, PacksResponse} from "@/types/billing";
-import {PromoRoulette} from "@/components/PromoRoulette";
+import type {PackDTO, AppliedPromoQuote, ValidatePromoResponse, PacksResponse, Tier} from "@/types/billing";
+import PromoRoulette from "@/components/PromoRoulette";
 import {recommendPackId} from "@/lib/album/packs.server";
 
 
@@ -46,7 +46,7 @@ type OrderStatusDTO = {
     error: string | null;
 };
 
-async function safeJson<T>(res: Response): Promise<T> {
+export async function safeJson<T>(res: Response): Promise<T> {
     const txt = await res.text();
     try {
         return JSON.parse(txt) as T;
@@ -68,6 +68,72 @@ function reindex(items: DraftItem[]) {
 
 type SaveState = "idle" | "saving" | "saved" | "error";
 
+type PromoEffect =
+    | { kind: "percent"; percent: number }
+    | { kind: "credits"; extraCredits: number }
+    | { kind: "unknown" };
+
+type Promo = {
+    code: string;
+    label: string;
+    rarity: "common" | "uncommon" | "rare" | "jackpot";
+    effect: PromoEffect;
+};
+
+function formatEUR(n: number) {
+    return n.toFixed(2).replace(".", ",") + "€";
+}
+
+function clamp(n: number, min: number, max: number) {
+    return Math.max(min, Math.min(max, n));
+}
+
+function cx(...v: Array<string | false | null | undefined>) {
+    return v.filter(Boolean).join(" ");
+}
+
+export function promoPill(r: Promo["rarity"]) {
+    switch (r) {
+        case "common":
+            return "bg-slate-100 text-slate-700 ring-1 ring-slate-200";
+        case "uncommon":
+            return "bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200";
+        case "rare":
+            return "bg-amber-50 text-amber-800 ring-1 ring-amber-200";
+        case "jackpot":
+            return "bg-rose-50 text-rose-800 ring-1 ring-rose-200";
+    }
+}
+
+function baseCredits(pack: Pack) {
+    return pack.credits + (pack.includedExtraCredits ?? 0);
+}
+
+function effectiveCredits(pack: Pack, promo: Promo | null) {
+    const base = baseCredits(pack);
+    if (!promo) return base;
+    if (promo.effect.kind === "credits") return base + promo.effect.extraCredits;
+    return base;
+}
+
+function discountedPrice(pack: Pack, promo: Promo | null) {
+    const base = pack.priceEur;
+    if (!promo) return base;
+    if (promo.effect.kind === "percent") return clamp(base * (1 - promo.effect.percent / 100), 0, base);
+    return base;
+}
+
+function savingsText(pack: Pack, promo: Promo | null) {
+    if (!promo) return null;
+    if (promo.effect.kind === "percent") {
+        const saved = pack.priceEur - discountedPrice(pack, promo);
+        return saved > 0.009 ? `Économie ${formatEUR(saved)}` : null;
+    }
+    if (promo.effect.kind === "credits") return `+${promo.effect.extraCredits} crédits`;
+    return null;
+}
+
+
 export function AlbumSimple(props: { onRequireAuth?: () => void }) {
     const router = useRouter();
     const jobId = useMemo(() => normalizeJobId(router.query.jobId), [router.query.jobId]);
@@ -76,14 +142,37 @@ export function AlbumSimple(props: { onRequireAuth?: () => void }) {
 
     const [draft, setDraft] = useState<DraftDTO | null>(null);
 
-    const [packs, setPacks] = useState<PackDTO[]>([]);
+    const [packs, setPacks] = useState<PackDTO[]>(draft?.quote.packs ?? []);
     const [packsLoading, setPacksLoading] = useState(false);
 
+    // --- promo / roulette (AlbumSimple) ---
+
+    const [promoCode, setPromoCode] = useState<string | null>(null);
+    const [promoSource, setPromoSource] = useState<"manual" | "roulette" | null>(null);
+    const [promoByPackId, setPromoByPackId] = useState<Record<string, Promo | null>>({});
+    const [promoBusy, setPromoBusy] = useState(false);
+
+    const [promoToast, setPromoToast] = useState<string | null>(null);
+
+
     const [promoInput, setPromoInput] = useState("");
-    const [promoQuote, setPromoQuote] = useState<AppliedPromoQuote | null>(null);
-    const [promoError, setPromoError] = useState<string | null>(null);
-    const [promoLoading, setPromoLoading] = useState(false);
     const [hasSpun, setHasSpun] = useState(false);
+
+    useEffect(() => {
+        if (!promoToast) return;
+        const t = window.setTimeout(() => setPromoToast(null), 1400);
+        return () => window.clearTimeout(t);
+    }, [promoToast]);
+
+    useEffect(() => {
+        // reset promo when job changes or first load
+        setPromoInput("");
+        setPromoCode(null);
+        setPromoSource(null);
+        setPromoByPackId({});
+        setHasSpun(false);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [jobId]);
 
 
     // ✅ On stocke l’ordre comme un tableau déjà ordonné (position = index)
@@ -96,7 +185,7 @@ export function AlbumSimple(props: { onRequireAuth?: () => void }) {
     const [checkoutLoading, setCheckoutLoading] = useState(false);
 
     const [order, setOrder] = useState<OrderStatusDTO | null>(null);
-    const pollRef = useRef<any>(null);
+    const pollRef = useRef<unknown>(null);
 
     // --- reorder engine (no reload) ---
     const [saveState, setSaveState] = useState<SaveState>("idle");
@@ -374,8 +463,6 @@ export function AlbumSimple(props: { onRequireAuth?: () => void }) {
         setCheckoutLoading(true);
         try {
             const base = window.location.origin;
-            const promoCode = promoQuote?.promo?.code ?? null;
-            const promoSource = promoQuote?.promo ? (promoQuote.promoSource ?? null) : null;
 
             const r = await fetch("/api/album/checkout", {
                 method: "POST",
@@ -400,44 +487,67 @@ export function AlbumSimple(props: { onRequireAuth?: () => void }) {
     };
 
 
-    const applyPromoManual = async () => {
-        if (!selectedPackId || !draft) return;
-        setPromoLoading(true);
-        setPromoError(null);
-        try {
-            const r = await fetch("/api/album/promo/validate", {
-                method: "POST",
-                credentials: "include",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    packId: selectedPackId,
-                    tier: (packs.find(p => p.id === selectedPackId)?.tier ?? "standard"),
-                    code: promoInput
-                }),
-            });
-            const data = (await r.json()) as ValidatePromoResponse;
-            if (!data.ok) throw new Error(data.error);
-
-            setPromoQuote(data.quote);
-        } catch (e: any) {
-            setPromoQuote(null);
-            setPromoError(e?.message || "Code invalide");
-        } finally {
-            setPromoLoading(false);
-        }
-    };
-
     const clearPromo = () => {
-        setPromoQuote(null);
-        setPromoError(null);
         setPromoInput("");
+        setPromoCode(null);
+        setPromoSource(null);
+        setPromoByPackId({});
+        setPromoToast("Promo retirée");
     };
 
-    useEffect(() => {
-        setPromoQuote(null);
-        setPromoError(null);
-        setHasSpun(false); // tu peux décider de conserver, mais UX-wise souvent on reset quand pack change
-    }, [selectedPackId]);
+    async function validatePromoForPack(code: string, pack: Pack): Promise<Promo | null> {
+        const r = await fetch("/api/album/promo/validate", {
+            method: "POST",
+            credentials: "include",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({code, packId: pack.id, tier: pack.tier}),
+        });
+        if (!r.ok) return null;
+        const data = await safeJson<ValidatePromoResponse>(r);
+        console.log('dd', data);
+        if (!data.ok) return null;
+        return data.quote.promo;
+    }
+
+    async function applyPromoAll(codeRaw: string, source: "manual" | "roulette") {
+        if (!draft) return;
+        const code = codeRaw.trim().toUpperCase();
+        if (!code) return;
+
+        setPromoBusy(true);
+        try {
+            const packs = draft.quote.packs;
+
+            const results = await Promise.all(
+                packs.map(async (p) => {
+                    const promo = await validatePromoForPack(code, p);
+                    console.log('pp', promo)
+                    return [p.id, promo] as const;
+                })
+            );
+
+            const map: Record<string, Promo | null> = {};
+            let anyOk = false;
+            for (const [id, promo] of results) {
+                map[id] = promo;
+                if (promo) anyOk = true;
+            }
+
+            console.log('isAnyOk', results, anyOk);
+            if (!anyOk) {
+                setPromoToast("Code invalide");
+                return;
+            }
+
+            setPromoByPackId(map);
+            setPromoCode(code);
+            setPromoSource(source);
+            setPromoInput(code);
+            setPromoToast(source === "roulette" ? "Promo appliquée 🎉" : "Code promo appliqué ✅");
+        } finally {
+            setPromoBusy(false);
+        }
+    }
 
     const header = (
         <div className="flex items-start justify-between gap-4 py-4">
@@ -526,9 +636,14 @@ export function AlbumSimple(props: { onRequireAuth?: () => void }) {
 
     const showcaseItem = items.find((x) => x.thumbnailUrl && x.videoUrl);
 
-    // selected pack warning
+
     const selectedPack = packs.find((p) => p.id === selectedPackId) ?? null;
-    const selectedTooSmall = !!selectedPack && selectedPack.credits < draft.requiredCredits;
+    const promoForSelected = selectedPack ? (promoCode ? promoByPackId[selectedPack.id] ?? null : null) : null;
+
+// ✅ important: pour “insuffisant”, on compte les bonus crédits promo si présents
+    const selectedEffectiveCredits = selectedPack ? effectiveCredits(selectedPack, promoForSelected) : 0;
+    const selectedTooSmall = !!selectedPack && selectedEffectiveCredits < draft.requiredCredits;
+
 
     return (
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -693,118 +808,197 @@ export function AlbumSimple(props: { onRequireAuth?: () => void }) {
                 )}
             </div>
 
-            {/* PROMO + ROULETTE */}
+            {/* Promo + roulette */}
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="rounded-2xl border border-slate-200 bg-white p-4">
                     <div className="text-sm font-black text-slate-900">Réduction</div>
-                    <div className="text-xs text-slate-600 mt-1">Code promo (validé côté serveur) :</div>
-
-                    <div className="mt-3 flex gap-2">
-                        <input
-                            value={promoInput}
-                            onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
-                            placeholder="Code (ex: LUCKY10)"
-                            className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm font-bold outline-none focus:ring-2 focus:ring-rose-200"
-                        />
-                        <button
-                            onClick={applyPromoManual}
-                            disabled={promoLoading || promoInput.trim().length < 4 || !selectedPackId}
-                            className="px-4 py-2 rounded-xl bg-slate-900 text-white font-black disabled:opacity-40"
-                        >
-                            {promoLoading ? "..." : "Appliquer"}
-                        </button>
+                    <div className="text-xs text-slate-600 mt-1">
+                        Entre un code promo <span className="font-black">ou</span> tente la roulette (1 fois).
                     </div>
 
-                    {promoError ? (
-                        <div className="mt-2 text-xs text-rose-700">{promoError}</div>
-                    ) : null}
+                    {promoCode && promoForSelected ? (
+                        <div className="mt-3 flex flex-wrap items-center gap-2">
+        <span
+            className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 text-white px-3 py-2 text-[12px] font-black">
+          <Gift className="h-4 w-4"/>
+            {promoCode}
+            <span className={cx("rounded-full px-2 py-0.5 text-[10px] font-black", promoPill(promoForSelected.rarity))}>
+            {promoSource === "roulette" ? "ROULETTE" : "CODE"}
+          </span>
+        </span>
 
-                    {promoQuote?.promo ? (
-                        <div className="mt-3 text-xs font-bold text-emerald-700">
-                            Appliqué : {promoQuote.promo.code} — prix {promoQuote.finalPriceEur.toFixed(2)}€ •
-                            crédits {promoQuote.finalCredits}
-                            <button onClick={clearPromo} className="ml-3 underline text-slate-700">retirer</button>
+                            <span
+                                className="inline-flex items-center rounded-2xl bg-emerald-50 px-3 py-2 text-[12px] font-black text-emerald-800 ring-1 ring-emerald-200">
+          {selectedPack ? (savingsText(selectedPack, promoForSelected) ?? "Avantage appliqué") : "Avantage appliqué"}
+        </span>
+
+                            <button
+                                type="button"
+                                onClick={clearPromo}
+                                disabled={checkoutLoading || promoBusy}
+                                className="inline-flex items-center rounded-2xl bg-slate-100 px-3 py-2 text-[12px] font-black text-slate-700 hover:bg-slate-200"
+                            >
+                                Retirer
+                            </button>
                         </div>
                     ) : null}
+
+                    <div className="mt-3 flex gap-2">
+                        <div className="relative flex-1">
+                            <Gift className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400"/>
+                            <input
+                                value={promoInput}
+                                onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                                placeholder="Code promo (ex: LUCKY10)"
+                                className="w-full rounded-2xl border border-slate-200 bg-white pl-10 pr-3 py-3 text-[14px] font-bold outline-none focus:ring-2 focus:ring-rose-200"
+                                disabled={checkoutLoading || promoBusy}
+                            />
+                        </div>
+
+                        <button
+                            type="button"
+                            disabled={checkoutLoading || promoBusy || promoInput.trim().length < 4}
+                            onClick={() => void applyPromoAll(promoInput, "manual")}
+                            className={cx(
+                                "rounded-2xl px-4 py-3 text-[14px] font-black transition-all",
+                                promoInput.trim().length >= 4 && !checkoutLoading && !promoBusy
+                                    ? "bg-slate-900 text-white hover:opacity-95 active:scale-[0.99]"
+                                    : "bg-slate-100 text-slate-400 cursor-not-allowed"
+                            )}
+                        >
+                            {promoBusy ? "…" : "Appliquer"}
+                        </button>
+                    </div>
                 </div>
 
                 <PromoRoulette
-                    tier={(packs.find(p => p.id === selectedPackId)?.tier ?? "standard")}
-                    packId={selectedPackId ?? ""}
+                    tier={(selectedPack?.tier ?? "standard") as Tier}
+                    disabled={checkoutLoading || promoBusy || hasSpun}
                     hasSpun={hasSpun}
-                    disabled={!selectedPackId}
-                    onApplied={(quote) => {
+                    packId={selectedPackId}
+                    onResult={(promo) => {
                         setHasSpun(true);
-                        setPromoInput(quote.promo?.code ?? "");
-                        setPromoQuote(quote);
-                        setPromoError(null);
+                        void applyPromoAll(promo.code, "roulette");
                     }}
                 />
             </div>
+
+            {/* Packs — cards avec prix live */}
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                {packs.map((p) => {
+                    const selected = selectedPackId === p.id;
+
+                    // promo propre à ce pack (cache validé back)
+                    const promoForPack = promoCode ? promoByPackId[p.id] ?? null : null;
+
+                    const base = p.priceEur;
+                    const withPromo = discountedPrice(p, promoForPack);
+                    const hasDiscount = withPromo < base - 0.005;
+
+                    const credits = effectiveCredits(p, promoForPack);
+                    const creditBase = baseCredits(p);
+
+                    const tooSmall = credits < draft.requiredCredits;
+
+                    return (
+                        <button
+                            key={p.id}
+                            onClick={() => setSelectedPackId(p.id)}
+                            className={cx(
+                                "relative text-left rounded-2xl border p-4 transition overflow-hidden",
+                                selected ? "border-slate-900 bg-white shadow-sm" : "border-slate-200 bg-white hover:bg-slate-50",
+                                p.highlight && !selected && "ring-1 ring-amber-200",
+                                tooSmall && "opacity-70"
+                            )}
+                        >
+                            {/* badge */}
+                            {p.badge ? (
+                                <div className="absolute top-3 right-3">
+            <span
+                className={cx(
+                    "rounded-full px-2 py-1 text-[10px] font-black",
+                    selected
+                        ? "bg-slate-900 text-white"
+                        : p.highlight
+                            ? "bg-amber-50 text-amber-800 ring-1 ring-amber-200"
+                            : "bg-slate-100 text-slate-700 ring-1 ring-slate-200"
+                )}
+            >
+              {p.badge}
+            </span>
+                                </div>
+                            ) : null}
+
+                            <div className="text-sm font-black text-slate-900">{p.name}</div>
+                            <div className="text-xs text-slate-500 mt-1">{p.subtitle}</div>
+
+                            <div className="mt-3 flex items-end justify-between gap-3">
+                                {/* credits */}
+                                <div>
+                                    <div className="text-[26px] leading-none font-black text-slate-900">
+                                        {credits}
+                                        <span className="ml-1 text-[12px] font-black text-slate-500">crédits</span>
+                                    </div>
+
+                                    {credits > creditBase ? (
+                                        <div
+                                            className="mt-1 inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-black text-emerald-800 ring-1 ring-emerald-200">
+                                            +{credits - creditBase} via promo
+                                        </div>
+                                    ) : p.includedExtraCredits ? (
+                                        <div
+                                            className="mt-1 inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-black text-emerald-800 ring-1 ring-emerald-200">
+                                            +{p.includedExtraCredits} offerts
+                                        </div>
+                                    ) : null}
+                                </div>
+
+                                {/* price */}
+                                <div className="text-right">
+                                    {hasDiscount ? (
+                                        <div
+                                            className="text-[12px] font-black text-slate-400 line-through">{formatEUR(base)}</div>
+                                    ) : null}
+                                    <div className="text-[22px] font-black text-slate-900">{formatEUR(withPromo)}</div>
+
+                                    {promoForPack ? (
+                                        <div
+                                            className="mt-1 inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-black text-rose-800 ring-1 ring-rose-200">
+                                            <Percent className="h-3.5 w-3.5"/>
+                                            {savingsText(p, promoForPack) ?? "Avantage appliqué"}
+                                        </div>
+                                    ) : null}
+                                </div>
+                            </div>
+
+                            <div className="mt-3 text-[11px] text-slate-600 space-y-1">
+                                {p.benefits.slice(0, 3).map((b) => (
+                                    <div key={b}>• {b}</div>
+                                ))}
+                            </div>
+
+                            {tooSmall ? (
+                                <div className="mt-2 text-[11px] text-rose-700 font-semibold">
+                                    Insuffisant pour {draft.requiredCredits} vidéo(s)
+                                </div>
+                            ) : null}
+                        </button>
+                    );
+                })}
+            </div>
+
+            {promoToast ? (
+                <div className="mt-3 text-center">
+    <span className="inline-flex rounded-full bg-slate-900 text-white px-4 py-2 text-[12px] font-black">
+      {promoToast}
+    </span>
+                </div>
+            ) : null}
 
 
             {/* Checkout */}
             <div className="mt-4 rounded-2xl border border-slate-200 p-5 bg-slate-50">
                 <div className="text-sm font-black text-slate-900">3) Valider la commande</div>
-
-                <div className="mt-2 text-xs text-slate-600">
-                    {draft.requiredCredits} photo(s) → {items.length} vidéo(s) IA
-                </div>
-
-                {selectedTooSmall ? (
-                    <div className="mt-3 text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-2xl p-3">
-                        Le pack sélectionné est trop petit ({selectedPack?.credits} crédits). Choisissez un pack avec
-                        ≥ {draft.requiredCredits}.
-                    </div>
-                ) : null}
-
-                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {packs.map((p) => {
-                        const selected = selectedPackId === p.id;
-                        const tooSmall = p.credits < draft.requiredCredits;
-                        return (
-                            <button
-                                key={p.id}
-                                onClick={() => setSelectedPackId(p.id)}
-                                className={[
-                                    "text-left rounded-2xl border p-4 transition",
-                                    selected ? "border-slate-900 bg-white" : "border-slate-200 bg-white hover:bg-slate-50",
-                                    p.highlight ? "shadow-sm" : "",
-                                    tooSmall ? "opacity-60" : "",
-                                ].join(" ")}
-                            >
-                                <div className="flex items-start justify-between gap-3">
-                                    <div>
-                                        <div className="text-sm font-black text-slate-900">{p.name}</div>
-                                        <div className="text-xs text-slate-500 mt-1">{p.subtitle}</div>
-                                    </div>
-                                    <div className="text-sm font-black text-slate-900">{p.priceEur}€</div>
-                                </div>
-
-                                <div className="mt-3 text-xs text-slate-700 font-semibold">{p.credits} crédits</div>
-
-                                <div className="mt-2 text-[11px] text-slate-600 space-y-1">
-                                    {p.benefits.slice(0, 4).map((b) => (
-                                        <div key={b}>• {b}</div>
-                                    ))}
-                                </div>
-
-                                {p.tier === "creator" ? (
-                                    <div className="mt-3 text-[11px] text-slate-700 font-semibold">1080p • plus stable •
-                                        couleurs restaurées</div>
-                                ) : (
-                                    <div className="mt-3 text-[11px] text-slate-500">720p • idéal pour tester</div>
-                                )}
-
-                                {tooSmall ? (
-                                    <div className="mt-2 text-[11px] text-rose-700 font-semibold">
-                                        Insuffisant pour {draft.requiredCredits} vidéo(s)
-                                    </div>
-                                ) : null}
-                            </button>
-                        );
-                    })}
-                </div>
 
                 <button
                     onClick={() => void proceedToCheckout()}

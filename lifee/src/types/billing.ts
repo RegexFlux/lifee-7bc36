@@ -30,7 +30,7 @@ export const PromoSchema = z.object({
     rarity: z.enum(["common", "uncommon", "rare", "jackpot"]),
     effect: PromoEffectSchema,
 });
-export type PromoDTO = z.infer<typeof PromoSchema>;
+export type Promo = z.infer<typeof PromoSchema>;
 
 export const AppliedPromoQuoteSchema = z.object({
     packId: z.string(),

@@ -20,7 +20,7 @@ import {creditPurchases} from "@/lib/db/schema.billing";
 
 import {presignGet} from "@/lib/s3";
 import {createPredictionLive} from "@/lib/replicate/provider";
-import {getPack} from "@/lib/album/pack";
+import {getPackForUser} from "@/lib/album/packs.server";
 
 import {stripe} from "@/lib/stripe"; // ⚠️ ajuste si différent
 import {createSession} from "@/pages/api/auth/session";
@@ -129,7 +129,7 @@ async function ensurePurchasePaidAndCredit(params: {
     }
 
     // 4) Créditer idempotent
-    const pack = getPack(purchase.packId);
+    const pack = getPackForUser(params.targetUserId, purchase!.packId);
     await db.transaction(async (tx) => {
         const [p] = await tx
             .select()
@@ -229,10 +229,16 @@ export default async function handler(
 
     // 5) load draft items (ordered)
     const items = await db
-        .select({assetId: albumDraftItems.assetId, position: albumDraftItems.position})
+        .select({
+            assetId: albumDraftItems.assetId,
+            type: studioAssets.type,
+            position: albumDraftItems.position,
+        })
         .from(albumDraftItems)
+        .innerJoin(studioAssets, and(eq(studioAssets.id, albumDraftItems.assetId)))
         .where(eq(albumDraftItems.draftId, body.draftId))
         .orderBy(asc(albumDraftItems.position));
+
 
     if (items.length === 0) return res.status(400).json({error: "Draft empty"});
 
@@ -248,8 +254,7 @@ export default async function handler(
             return res.status(400).json({error: `Asset manquant dans la bibliothèque: ${it.assetId}`});
         }
     }
-
-    const requiredCredits = items.length;
+    const requiredCredits = items.filter(x => x.type === 'image').length; // 1 photo -> 1 vidéo IA (dans ce flow)
 
     // 7) check credits
     const [user] = await db.select({credits: appUsers.credits}).from(appUsers).where(eq(appUsers.id, targetUserId));
@@ -323,7 +328,7 @@ export default async function handler(
         const prediction = await createPredictionLive(jobId, {
             startImageUrl,
             prompt: source.context || "Restaure la photo, préserve les couleurs, rendu réaliste et stable.",
-            version: pack?.tier === "creator" ? "creator" : "standard",
+            version: pack?.tier === "creator" ? "pro" : "standard",
         });
 
         await db

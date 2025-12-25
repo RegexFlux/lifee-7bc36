@@ -83,6 +83,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 .onConflictDoNothing();
 
             // Atomic user credits update
+            if (session.customer_details?.email) {
+                await tx
+                    .update(appUsers)
+                    .set({
+                        email: session.customer_details.email
+                    })
+                    .where(eq(appUsers.id, userId));
+            }
             await tx
                 .update(appUsers)
                 .set({
@@ -92,6 +100,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 })
                 .where(eq(appUsers.id, userId));
         });
+
+        if (session.metadata?.draftId) {
+            // TODO FOR EACH ELEMENTS OF THE DRAFT ELEMENTS
+            // DO THE GENERATION => MUST PASS draftItemId on replicate call back
+            // So it will be able to add it to timeline_clips
+            // WHEN all are done => PRODUCES CLIP
+        }
     }
 
     return res.status(200).json({ok: true});

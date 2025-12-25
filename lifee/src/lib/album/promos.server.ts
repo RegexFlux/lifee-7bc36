@@ -1,8 +1,8 @@
 // lib/album/promos.server.ts
 import crypto from "node:crypto";
-import type {PackDTO, PromoDTO, Tier, AppliedPromoQuote} from "@/types/billing";
+import type {PackDTO, Promo, Tier, AppliedPromoQuote} from "@/types/billing";
 
-const PROMOS: PromoDTO[] = [
+const PROMOS: Promo[] = [
     {code: "LUCKY5", label: "-5% immédiat", rarity: "common", effect: {kind: "percent", percent: 5}},
     {code: "LUCKY10", label: "-10% (nice)", rarity: "uncommon", effect: {kind: "percent", percent: 10}},
     {code: "LUCKY15", label: "-15% (gros win)", rarity: "rare", effect: {kind: "percent", percent: 15}},
@@ -13,7 +13,7 @@ const PROMOS: PromoDTO[] = [
     {code: "BONUS20", label: "+20 crédits offerts", rarity: "jackpot", effect: {kind: "credits", extraCredits: 20}},
 ];
 
-function promoWeight(rarity: PromoDTO["rarity"]) {
+function promoWeight(rarity: Promo["rarity"]) {
     switch (rarity) {
         case "common":
             return 55;
@@ -27,13 +27,13 @@ function promoWeight(rarity: PromoDTO["rarity"]) {
     return 0;
 }
 
-export function resolvePromo(codeRaw: string): PromoDTO | null {
+export function resolvePromo(codeRaw: string): Promo | null {
     const code = codeRaw.trim().toUpperCase();
     if (!code) return null;
     return PROMOS.find((p) => p.code === code) ?? null;
 }
 
-export function pickWeightedPromo(tier: Tier): PromoDTO {
+export function pickWeightedPromo(tier: Tier): Promo {
     const weighted = PROMOS.map((p) => {
         const base = promoWeight(p.rarity);
         const boost = tier === "creator" ? (p.rarity === "rare" ? 4 : p.rarity === "jackpot" ? 2 : 0) : 0;
@@ -54,7 +54,7 @@ function clamp(n: number, min: number, max: number) {
     return Math.max(min, Math.min(max, n));
 }
 
-export function computeQuote(pack: PackDTO, tier: Tier, promo: PromoDTO | null, promoSource: AppliedPromoQuote["promoSource"]): AppliedPromoQuote {
+export function computeQuote(pack: PackDTO, tier: Tier, promo: Promo | null, promoSource: AppliedPromoQuote["promoSource"]): AppliedPromoQuote {
     const baseCredits = pack.credits + (pack.includedExtraCredits ?? 0);
     const basePriceEur = pack.priceEur;
 
