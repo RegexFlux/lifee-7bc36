@@ -208,6 +208,9 @@ export const assets = pgTable(
         month: integer("month").notNull(),
         year: integer("year").notNull(),
 
+        thumbnailKey: text("thumbnail_key"),
+        deletedAt: timestamp("deleted_at", {withTimezone: true}),
+
         createdAt: timestamp("created_at", {withTimezone: true})
             .notNull()
             .defaultNow(),
@@ -415,6 +418,7 @@ export const creditPacks = pgTable(
         credits: integer("credits").notNull(),
         priceEur: integer("price_eur").notNull(),
 
+        isActive: boolean("is_active").notNull().default(true),
         badge: text("badge"),
 
         benefits: text("benefits")
