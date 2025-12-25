@@ -6,17 +6,20 @@
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/api/handler.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/handler.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/auth/crypto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/auth/crypto.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/auth/viewer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/auth/viewer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/auth/code/request.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/auth/code/request.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/auth/code/verify.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/auth/code/verify.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/auth/email/link.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/auth/email/link.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/auth/logout.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/auth/logout.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/auth/me.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/auth/me.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/auth/merge/confirm.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/auth/merge/confirm.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
-  <component name="ChangesViewManager">
-    <option name="groupingKeys">
-      <option value="directory" />
-      <option value="repository" />
-    </option>
   </component>
   <component name="FormatOnSaveOptions">
     <option name="myAllFileTypesSelected" value="true" />
@@ -118,7 +121,7 @@
       <workItem from="1766482629813" duration="43111000" />
       <workItem from="1766584822328" duration="272000" />
       <workItem from="1766585104258" duration="176000" />
-      <workItem from="1766585287848" duration="55094000" />
+      <workItem from="1766585287848" duration="55566000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
@@ -351,6 +354,12 @@
           <line>250</line>
           <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="92" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/pages/api/auth/code/verify.ts</url>
+          <line>1</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="93" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

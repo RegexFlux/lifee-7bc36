@@ -6,12 +6,13 @@ export function apiHandler(methods: Partial<Record<string, NextApiHandler>>) {
     return async (req: NextApiRequest, res: NextApiResponse) => {
         const fn = methods[req.method || ""];
         if (!fn) return fail(res, 405, "Method not allowed");
-
         try {
             return await fn(req, res);
         } catch (e: any) {
-            console.error("[API]", req.url, e);
-            return fail(res, 500, e?.message || "Server error");
+            const status = typeof e?.status === "number" ? e.status : 500;
+            console.error("[API]", req.method, req.url, e);
+            return fail(res, status, e?.message || "Server error");
         }
     };
 }
+

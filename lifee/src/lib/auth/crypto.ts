@@ -25,5 +25,5 @@ export function verifySignedValue(signed: string, secret: string) {
     const sig = signed.slice(idx + 1);
     const expected = hmacSha256Base64Url(value, secret);
     const ok = crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected));
-    return {ok: ok as const, value};
+    return {ok, value};
 }
