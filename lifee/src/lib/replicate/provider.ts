@@ -42,7 +42,8 @@ export async function createPredictionLive(jobId: string, params: {
     console.log('PREDICTION LIVE', {
         ...params
     });
-    return;
+    // return;
+    params.version = 'demo';
 
     // const base = process.env.APP_URL;
 

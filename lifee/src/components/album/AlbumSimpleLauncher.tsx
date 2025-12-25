@@ -4,7 +4,7 @@ import React, {useEffect, useState} from "react";
 import {ArrowRight, X} from "lucide-react";
 import {AlbumSimple} from "./AlbumSimple";
 
-async function ensureGuestSession() {
+export async function ensureGuestSession() {
     await fetch("/api/auth/guest", {method: "POST", credentials: "include"});
 }
 

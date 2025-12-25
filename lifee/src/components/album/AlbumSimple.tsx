@@ -19,6 +19,7 @@ import AlbumShowCase from "@/components/album/AlbumShowcase";
 import type {PackDTO, AppliedPromoQuote, ValidatePromoResponse, PacksResponse, Tier} from "@/types/billing";
 import PromoRoulette from "@/components/PromoRoulette";
 import {recommendPackId} from "@/lib/album/packs.server";
+import {studioApi} from "@/lib/studioApi";
 
 
 type DraftItem = {
@@ -342,6 +343,7 @@ export function AlbumSimple(props: { onRequireAuth?: () => void }) {
                 });
                 const data = await safeJson<{ orderId: string }>(r);
                 await router.replace({query: {}}, undefined, {shallow: true});
+                console.log('dd', data);
                 startPolling(data.orderId);
             })();
         }
@@ -351,9 +353,9 @@ export function AlbumSimple(props: { onRequireAuth?: () => void }) {
     const startPolling = (orderId: string) => {
         stopPolling();
         const tick = async () => {
-            const r = await fetch(`/api/album/status/${encodeURIComponent(orderId)}`, {credentials: "include"});
-            const s = await safeJson<OrderStatusDTO>(r);
-            setOrder(s);
+            const r = await studioApi.albumOrderStatus(orderId);
+            // const s = await safeJson<OrderStatusDTO>(r);
+            setOrder(r);
             if (s.status === "done" || s.status === "error") stopPolling();
         };
         void tick();

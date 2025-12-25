@@ -104,8 +104,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (session.metadata?.draftId) {
             // TODO FOR EACH ELEMENTS OF THE DRAFT ELEMENTS
             // DO THE GENERATION => MUST PASS draftItemId on replicate call back
-            // So it will be able to add it to timeline_clips
-            // WHEN all are done => PRODUCES CLIP
+            // WHEN all are done => PRODUCES CLIP and send by email + information about studio (link) + link to studio with parameter to clean studio clips and display this draft
         }
     }
 

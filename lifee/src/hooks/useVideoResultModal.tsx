@@ -5,7 +5,8 @@ import {Download, ExternalLink, Film, Sparkles, X, Zap, CheckCircle2, Crown} fro
 import {useRouter} from "next/router";
 import {AnimatePresence, motion} from "framer-motion";
 import {EmailSharePopover} from "@/components/EmailSharePopover";
-import {AlbumSimpleLauncher} from "@/components/album/AlbumSimpleLauncher";
+import {AlbumSimpleLauncher, ensureGuestSession} from "@/components/album/AlbumSimpleLauncher";
+import {fetchUser} from "@/components/studio/StudioApp";
 
 /** Packs: lumineux, simples, “sale ready” */
 type PackTier = "standard" | "creator";
@@ -115,7 +116,17 @@ export function useVideoResultModal(params: {
     const close = () => setOpen(false);
 
     const goToStudio = async () => {
-        if (params.onGoToStudio) return params.onGoToStudio();
+        if (params.onGoToStudio) {
+            params.onGoToStudio();
+            return;
+        }
+
+        try {
+            await fetchUser();
+        } catch (e) {
+            await ensureGuestSession();
+        }
+
         const path = params.studioPath || "/studio";
         await router.push(path);
     };

@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useEffect, useMemo, useState} from "react";
+import React, {useEffect, useMemo, useReducer, useRef, useState} from "react";
 import type {Asset, MusicTrack, TimelineItem} from "@/types/studio";
 import {studioApi} from "@/lib/studioApi";
 import {useToast} from "@/components/ui/ToastProvider";
@@ -17,6 +17,7 @@ import {ExportModal} from "@/components/studio/modals/ExportModal";
 import StudioTutorial from "@/components/studio/StudioTutorial";
 import {useRouter} from "next/router";
 import {StudioOpening} from "@/components/effects/StudioOpening";
+import {GuestLinkAccountNudgeModal} from "@/components/studio/modals/GuestLinkAccountNudgeModal";
 
 
 type DragPayload = { item: any; source: "library" | "timeline" };
@@ -29,6 +30,19 @@ function formatMMYYYY(monthIndex0: number, year: number) {
     const mm = String(monthIndex0 + 1).padStart(2, "0");
     return `${mm}/${year}`;
 }
+
+export const fetchUser = async () => {
+    const r = await fetch("/api/auth", {
+        method: "GET"
+    });
+
+    const data = await r.json().catch(() => ({} as any));
+    console.log("user", data);
+
+    if (!r.ok) throw new Error(data?.error || "Récupération impossible");
+
+    return data;
+};
 
 export default function StudioApp() {
     const {push} = useToast();
@@ -374,13 +388,27 @@ export default function StudioApp() {
         router.reload();
     }
 
+    const [userEmail, setUserEmail] = useState<{ email: string } | null>(null);
+
+    useEffect(() => {
+        const ac = new AbortController();
+        fetchUser()
+            .then(result => setUserEmail(result.user.email))
+            .catch((e) => {
+                if (e?.name !== "AbortError") console.error(e);
+            });
+
+        return () => ac.abort();
+    }, []);
+
+
     return (
         <div className="flex h-screen bg-gray-50 font-sans overflow-hidden text-slate-800 select-none relative">
             <StudioTutorial
-            setSidebarState={(state) => {
-                console.log('re', state, isSidebarOpen)
-                setIsSidebarOpen(state)
-            }}
+                setSidebarState={(state) => {
+                    console.log('re', state, isSidebarOpen)
+                    setIsSidebarOpen(state)
+                }}
             />
             <Sidebar
                 open={isSidebarOpen}
@@ -429,16 +457,20 @@ export default function StudioApp() {
 
             {/* Modals */}
             <UploadModal open={isUploadOpen} onClose={() => setIsUploadOpen(false)} onSubmit={handleUploadSubmit}/>
+            <GuestLinkAccountNudgeModal email={userEmail}/>
 
             <MusicModal
                 open={isMusicOpen}
                 tracks={musicPresets}
                 selectedId={audioTrack?.id ?? null}
-                onUploadCustom={async (file: File) => {return {
-                    id: '1',
-                    title: 'yes'
-                } as CustomTrack}}
-                onSelectCustom={(track) => {}}
+                onUploadCustom={async (file: File) => {
+                    return {
+                        id: '1',
+                        title: 'yes'
+                    } as CustomTrack
+                }}
+                onSelectCustom={(track) => {
+                }}
                 onSelect={(t) => {
                     setAudioTrack(t);
                     push({

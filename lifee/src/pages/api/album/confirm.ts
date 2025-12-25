@@ -107,7 +107,7 @@ async function ensurePurchasePaidAndCredit(params: {
 
     // 2) Récupère la purchase (si elle a été créée à l’init du checkout)
     let purchase = await db.query.creditPurchases.findFirst({
-        where: eq(creditPurchases.stripePaymentIntentId, params.stripeSessionId),
+        where: eq(creditPurchases.stripeCheckoutSessionId, params.stripeSessionId),
     });
 
     // 3) Fallback si pas de row (au cas où)
@@ -134,14 +134,14 @@ async function ensurePurchasePaidAndCredit(params: {
         const [p] = await tx
             .select()
             .from(creditPurchases)
-            .where(eq(creditPurchases.stripePaymentIntentId, params.stripeSessionId))
+            .where(eq(creditPurchases.stripeCheckoutSessionId, params.stripeSessionId))
             .limit(1);
 
         if (!p) throw new Error("Purchase introuvable");
 
         // rattache toujours l'achat au target user (merge safe)
         if (p.userId !== params.targetUserId) {
-            await tx.update(creditPurchases).set({userId: params.targetUserId}).where(eq(creditPurchases.stripePaymentIntentId, params.stripeSessionId));
+            await tx.update(creditPurchases).set({userId: params.targetUserId}).where(eq(creditPurchases.stripeCheckoutSessionId, params.stripeSessionId));
         }
 
         if (p.status !== "paid") {
@@ -151,7 +151,7 @@ async function ensurePurchasePaidAndCredit(params: {
                     status: "paid",
                     paidAt: new Date(),
                 })
-                .where(eq(creditPurchases.stripePaymentIntentId, params.stripeSessionId));
+                .where(eq(creditPurchases.stripeCheckoutSessionId, params.stripeSessionId));
 
             await tx
                 .update(appUsers)
@@ -245,8 +245,7 @@ export default async function handler(
     // 6) Vérifier que toutes les sources existent (et appartiennent au target user après merge)
     const sources = await db
         .select()
-        .from(studioAssets)
-        .where(eq(studioAssets.userId, targetUserId));
+        .from(studioAssets);
 
     const byId = new Map(sources.map((s) => [s.id, s]));
     for (const it of items) {

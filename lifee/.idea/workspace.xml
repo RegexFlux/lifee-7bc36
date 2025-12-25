@@ -6,16 +6,14 @@
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/PromoRoulette.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/PromoRoulette.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/album/AlbumSimple.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/album/AlbumSimple.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/modals/CreditModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/modals/CreditModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/album/promos.server.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/album/promos.server.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/album/AlbumSimpleLauncher.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/album/AlbumSimpleLauncher.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/StudioApp.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/StudioApp.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useVideoResultModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useVideoResultModal.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib/replicate/provider.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/replicate/provider.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/album/checkout.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/album/checkout.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/api/album/confirm.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/album/confirm.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/album/draft/quote.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/album/draft/quote.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/auth/session.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/auth/session.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/api/webhooks/stripe.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/webhooks/stripe.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/billing.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/billing.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -122,7 +120,7 @@
       <workItem from="1766482629813" duration="43111000" />
       <workItem from="1766584822328" duration="272000" />
       <workItem from="1766585104258" duration="176000" />
-      <workItem from="1766585287848" duration="35892000" />
+      <workItem from="1766585287848" duration="52691000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
@@ -310,13 +308,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/components/album/AlbumSimple.tsx</url>
-          <line>53</line>
+          <line>54</line>
           <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="85" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/components/album/AlbumSimple.tsx</url>
-          <line>480</line>
+          <line>482</line>
           <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="86" />
         </line-breakpoint>
@@ -325,6 +323,36 @@
           <line>64</line>
           <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="87" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/pages/api/album/status/[orderId].ts</url>
+          <line>16</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="88" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/pages/api/album/confirm.ts</url>
+          <line>258</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="89" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/pages/api/album/confirm.ts</url>
+          <line>183</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="90" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/pages/api/album/confirm.ts</url>
+          <line>108</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="91" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/pages/api/album/confirm.ts</url>
+          <line>250</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="92" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

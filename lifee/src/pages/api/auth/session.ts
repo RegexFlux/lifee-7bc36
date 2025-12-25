@@ -4,7 +4,7 @@ import crypto from "crypto";
 import {eq, and, isNull, gt} from "drizzle-orm";
 
 import {db} from "@/lib/db";
-import {authSessions} from "@/lib/db/schema.auth";
+import {appUsers, authSessions} from "@/lib/db/schema.auth";
 
 export const COOKIE_NAME = "lifee_session";
 const SESSION_DAYS = 30;
@@ -66,6 +66,33 @@ export function clearSessionCookie(res: NextApiResponse) {
         sameSite: "lax",
         path: "/",
     }));
+}
+
+export async function getUserFromReq(req: NextApiRequest) {
+    const raw = req.headers.cookie || "";
+    const m = raw.match(new RegExp(`(?:^|; )${COOKIE_NAME}=([^;]+)`));
+    if (!m) return null;
+
+    const token = decodeURIComponent(m[1] || "");
+    if (!token) return null;
+
+    const tokenHash = sha256(token);
+    const now = new Date();
+
+    const rows = await db
+        .select({userId: authSessions.userId, email: appUsers.email})
+        .from(authSessions)
+        .leftJoin(appUsers, eq(authSessions.userId, appUsers.id))
+        .where(
+            and(
+                eq(authSessions.tokenHash, tokenHash),
+                isNull(authSessions.revokedAt),
+                gt(authSessions.expiresAt, now)
+            )
+        )
+        .limit(1);
+
+    return rows[0];
 }
 
 export async function getUserIdFromReq(req: NextApiRequest): Promise<string | null> {
