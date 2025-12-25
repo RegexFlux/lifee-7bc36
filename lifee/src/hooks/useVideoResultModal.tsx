@@ -5,6 +5,7 @@ import {Download, ExternalLink, Film, Sparkles, X, Zap, CheckCircle2, Crown} fro
 import {useRouter} from "next/router";
 import {AnimatePresence, motion} from "framer-motion";
 import {EmailSharePopover} from "@/components/EmailSharePopover";
+import {AlbumSimpleLauncher} from "@/components/album/AlbumSimpleLauncher";
 
 /** Packs: lumineux, simples, “sale ready” */
 type PackTier = "standard" | "creator";
@@ -379,36 +380,21 @@ export function VideoResultModal(props: Readonly<{
                                             <div
                                                 className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/10"/>
                                         </div>
-
                                         <div
                                             className="mt-3 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <button
-                                                    onClick={() => {
-                                                        const v = videoRef.current;
-                                                        if (!v) return;
-                                                        const next = !muted;
-                                                        setMuted(next);
-                                                        v.muted = next;
-                                                        if (!next) v.play().catch(() => {
-                                                        });
-                                                    }}
-                                                    className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-900 hover:bg-slate-50"
-                                                >
-                                                    <span className="h-2 w-2 rounded-full bg-slate-900/70"/>
-                                                    {muted ? "Activer le son" : "Couper le son"}
-                                                </button>
-
+                                            <div className="flex flex-col items-center gap-2">
                                                 {props.shareUrl ? (
                                                     <a
                                                         href={props.shareUrl}
                                                         target="_blank"
                                                         rel="noreferrer"
-                                                        className="text-xs text-slate-500 hover:text-slate-700 underline"
+                                                        className="text-base text-slate-500 hover:text-slate-700 underline"
                                                     >
                                                         Ouvrir le lien de partage
                                                     </a>
                                                 ) : null}
+                                                <AlbumSimpleLauncher/>
+
                                             </div>
 
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full sm:w-auto">

@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useRef } from "react";
-import { ArrowRight, Sparkles } from "lucide-react";
+import React, {useEffect, useMemo, useRef} from "react";
+import {ArrowRight, Sparkles} from "lucide-react";
 import InteractiveDemo from "./InteractiveDemo";
 import {StarDustRain} from "@/components/effects/StarDustRain";
+import {AlbumSimpleLauncher} from "@/components/album/AlbumSimpleLauncher";
 
 type HeroProps = {
     onDownloadClick: () => void;
@@ -178,7 +179,8 @@ function FloatingBadge({
             ].join(" ")}
         >
             <div className="flex items-start gap-2">
-                <div className="mt-0.5 h-8 w-8 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600">
+                <div
+                    className="mt-0.5 h-8 w-8 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600">
                     {icon}
                 </div>
                 <div className="min-w-0">
@@ -190,44 +192,50 @@ function FloatingBadge({
     );
 }
 
-export default function Hero({ onDownloadClick }: Readonly<HeroProps>) {
+export default function Hero({onDownloadClick}: Readonly<HeroProps>) {
     const canvasRef = useStarDust(true);
 
     const avatars = useMemo(() => [1, 2, 3], []);
 
     return (
         <header className="relative z-10 overflow-hidden">
-            <StarDustRain  />
+            <StarDustRain/>
 
             {/* Decorative background layer */}
             <div className="pointer-events-none absolute inset-0">
                 {/* soft gradients */}
-                <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-rose-200/40 blur-3xl" />
-                <div className="absolute -bottom-44 -right-44 h-[640px] w-[640px] rounded-full bg-amber-200/40 blur-3xl" />
-                <div className="absolute left-1/2 top-[-120px] h-[460px] w-[780px] -translate-x-1/2 rounded-[3rem] bg-gradient-to-r from-rose-200/25 via-white/10 to-amber-200/25 blur-2xl" />
+                <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-rose-200/40 blur-3xl"/>
+                <div
+                    className="absolute -bottom-44 -right-44 h-[640px] w-[640px] rounded-full bg-amber-200/40 blur-3xl"/>
+                <div
+                    className="absolute left-1/2 top-[-120px] h-[460px] w-[780px] -translate-x-1/2 rounded-[3rem] bg-gradient-to-r from-rose-200/25 via-white/10 to-amber-200/25 blur-2xl"/>
 
                 {/* subtle noise (keep your existing svg URL usage) */}
-                <div className="absolute inset-0 opacity-[0.08] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+                <div
+                    className="absolute inset-0 opacity-[0.08] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"/>
 
                 {/* stardust canvas */}
                 <div className="absolute inset-0">
-                    <canvas ref={canvasRef} className="h-full w-full" />
+                    <canvas ref={canvasRef} className="h-full w-full"/>
                 </div>
 
                 {/* light beams */}
-                <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-white/50 to-white/20" />
-                <div className="absolute inset-0 bg-gradient-to-t from-stone-50/40 via-transparent to-white/30" />
+                <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-white/50 to-white/20"/>
+                <div className="absolute inset-0 bg-gradient-to-t from-stone-50/40 via-transparent to-white/30"/>
 
                 {/* top shimmer line */}
-                <div className="absolute left-0 right-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-rose-300/60 to-transparent" />
+                <div
+                    className="absolute left-0 right-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-rose-300/60 to-transparent"/>
             </div>
 
             {/* Content */}
-            <div className="relative pt-14 sm:pt-16 pb-20 sm:pb-28 px-6 max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div
+                className="relative pt-14 sm:pt-16 pb-20 sm:pb-28 px-6 max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                 {/* Left: copy */}
                 <div className="space-y-7 sm:space-y-8">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-100/60 border border-amber-200 text-amber-900 text-xs font-black tracking-wide uppercase shadow-sm backdrop-blur">
-                        <Sparkles size={12} />
+                    <div
+                        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-100/60 border border-amber-200 text-amber-900 text-xs font-black tracking-wide uppercase shadow-sm backdrop-blur">
+                        <Sparkles size={12}/>
                         Nouvelle technologie de restauration
                     </div>
 
@@ -235,10 +243,11 @@ export default function Hero({ onDownloadClick }: Readonly<HeroProps>) {
                         Ne laissez pas{" "}
                         <span className="relative inline-block">
               <span className="relative z-10">vos souvenirs</span>
-              <span className="absolute -inset-x-3 bottom-1 h-3 rounded-full bg-rose-200/55 blur-[1px]" />
+              <span className="absolute -inset-x-3 bottom-1 h-3 rounded-full bg-rose-200/55 blur-[1px]"/>
             </span>{" "}
-                        <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-amber-500 italic pr-2">
+                        <br/>
+                        <span
+                            className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-amber-500 italic pr-2">
               s&apos;effacer.
             </span>
                     </h1>
@@ -250,25 +259,7 @@ export default function Hero({ onDownloadClick }: Readonly<HeroProps>) {
 
                     {/* CTA row */}
                     <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                        <button
-                            onClick={onDownloadClick}
-                            className={[
-                                "group relative overflow-hidden",
-                                "px-7 sm:px-8 py-4",
-                                "rounded-2xl",
-                                "bg-stone-900 hover:bg-stone-800",
-                                "text-white text-base sm:text-lg font-bold",
-                                "shadow-xl shadow-rose-200/70",
-                                "transition-all",
-                                "flex items-center justify-center gap-2",
-                                "hover:-translate-y-0.5 active:translate-y-0",
-                            ].join(" ")}
-                        >
-                            {/* inner glow */}
-                            <span className="absolute -inset-6 bg-gradient-to-r from-rose-500/35 to-amber-500/35 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                            <span className="relative">Commencer mon album</span>
-                            <ArrowRight size={20} className="relative transition-transform group-hover:translate-x-0.5" />
-                        </button>
+                        <AlbumSimpleLauncher/>
 
                         <div className="flex items-center gap-3 px-1 sm:px-4 text-sm text-stone-600">
                             <div className="flex -space-x-2">
@@ -292,9 +283,9 @@ export default function Hero({ onDownloadClick }: Readonly<HeroProps>) {
                     {/* Micro proof chips */}
                     <div className="flex flex-wrap gap-2 pt-2">
                         {[
-                            { t: "Restauration auto", c: "bg-rose-50 border-rose-100 text-rose-700" },
-                            { t: "Timeline drag & drop", c: "bg-amber-50 border-amber-100 text-amber-800" },
-                            { t: "Export HD", c: "bg-white/70 border-stone-200 text-stone-700" },
+                            {t: "Restauration auto", c: "bg-rose-50 border-rose-100 text-rose-700"},
+                            {t: "Timeline drag & drop", c: "bg-amber-50 border-amber-100 text-amber-800"},
+                            {t: "Export HD", c: "bg-white/70 border-stone-200 text-stone-700"},
                         ].map((chip) => (
                             <div
                                 key={chip.t}
@@ -303,7 +294,7 @@ export default function Hero({ onDownloadClick }: Readonly<HeroProps>) {
                                     chip.c,
                                 ].join(" ")}
                             >
-                                <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" />
+                                <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70"/>
                                 {chip.t}
                             </div>
                         ))}
@@ -316,19 +307,19 @@ export default function Hero({ onDownloadClick }: Readonly<HeroProps>) {
                     <div className="pointer-events-none absolute z-40 inset-0 hidden lg:block w-1/2 left-96 top-64">
                         <FloatingBadge
                             className="left-24 -top-24"
-                            icon={<Sparkles size={14} />}
+                            icon={<Sparkles size={14}/>}
                             title="Effet “cinéma”"
                             desc="Stabilisation + lumière douce."
                         />
                         <FloatingBadge
                             className="left-24 animate-[float_7.5s_ease-in-out_infinite]"
-                            icon={<Sparkles size={14} />}
+                            icon={<Sparkles size={14}/>}
                             title="Restauration"
                             desc="Contraste & couleurs fidèles."
                         />
                         <FloatingBadge
                             className="left-24 top-24 animate-[float_8.5s_ease-in-out_infinite]"
-                            icon={<Sparkles size={14} />}
+                            icon={<Sparkles size={14}/>}
                             title="Partage privé"
                             desc="Un lien, zéro réseau social."
                         />
@@ -336,8 +327,9 @@ export default function Hero({ onDownloadClick }: Readonly<HeroProps>) {
 
                     {/* frame */}
                     <div className="relative">
-                        <div className="absolute -inset-6 bg-gradient-to-tr from-rose-200/55 to-amber-200/55 blur-3xl opacity-55 rounded-[2.5rem]" />
-                        <InteractiveDemo onDownloadClick={onDownloadClick} />
+                        <div
+                            className="absolute -inset-6 bg-gradient-to-tr from-rose-200/55 to-amber-200/55 blur-3xl opacity-55 rounded-[2.5rem]"/>
+                        <InteractiveDemo onDownloadClick={onDownloadClick}/>
                     </div>
 
                     {/* mobile helper note */}

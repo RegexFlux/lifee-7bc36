@@ -1,11 +1,12 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+// pages/api/auth/session.ts
+import type {NextApiRequest, NextApiResponse} from "next";
 import crypto from "crypto";
-import { eq, and, isNull, gt } from "drizzle-orm";
+import {eq, and, isNull, gt} from "drizzle-orm";
 
-import { db } from "@/lib/db";
-import { authSessions } from "@/lib/db/schema.auth";
+import {db} from "@/lib/db";
+import {authSessions} from "@/lib/db/schema.auth";
 
-const COOKIE_NAME = "lifee_session";
+export const COOKIE_NAME = "lifee_session";
 const SESSION_DAYS = 30;
 
 function sha256(input: string) {
@@ -79,7 +80,7 @@ export async function getUserIdFromReq(req: NextApiRequest): Promise<string | nu
     const now = new Date();
 
     const rows = await db
-        .select({ userId: authSessions.userId })
+        .select({userId: authSessions.userId})
         .from(authSessions)
         .where(
             and(

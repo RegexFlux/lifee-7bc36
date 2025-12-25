@@ -1,5 +1,23 @@
 import type {Asset, MusicTrack, StudioBootstrap, TimelineItem} from "@/types/studio";
 
+type DraftDTO = {
+    draftId: string;
+    status: "draft" | "paid" | "archived";
+    items: { assetId: string; title: string; position: number; thumbnailUrl?: string }[];
+    requiredCredits: number;
+    quote: { requiredCredits: number; recommendedPackId: string; packs: any[] };
+};
+
+type AlbumOrderStatusDTO = {
+    orderId: string;
+    status: "generating" | "assembling" | "done" | "error";
+    videos: { total: number; done: number; failed: number };
+    export: null | { status: "queued" | "rendering" | "done" | "error"; progress: number; url?: string };
+    finalUrl: string | null;
+    error: string | null;
+};
+
+
 async function safeJson<T>(res: Response): Promise<T> {
     const text = await res.text();
     try {
@@ -45,7 +63,12 @@ export const studioApi = {
             });
 
             if (!res.ok) throw new Error(await res.text());
-            return res.json() as Promise<{ fileUrl: string; thumbnailUrl?: string; fileKey: string; thumbnailKey?: string }>;
+            return res.json() as Promise<{
+                fileUrl: string;
+                thumbnailUrl?: string;
+                fileKey: string;
+                thumbnailKey?: string
+            }>;
         },
         // Library
         createAsset: (payload: {
@@ -58,10 +81,10 @@ export const studioApi = {
         }) => request<Asset>
         ("/api/studio/library", {method: "POST", body: JSON.stringify(payload)}),
 
-    getClip: (clipId: string) =>
-        request<{ clipId: string; assetId: string; type: "video" | "image"; url: string }>(
-            `/api/studio/timeline/clips/${clipId}/get`
-        ),
+        getClip: (clipId: string) =>
+            request<{ clipId: string; assetId: string; type: "video" | "image"; url: string }>(
+                `/api/studio/timeline/clips/${clipId}/get`
+            ),
 
         deleteAsset:
             (id: string) => request<{ ok: true }>(`/api/studio/library/${id}`, {method: "DELETE"}),
@@ -93,7 +116,10 @@ export const studioApi = {
 
         purchaseCredits:
             (amount: number) =>
-                request<{ credits: number }>("/api/studio/credits/purchase", {method: "POST", body: JSON.stringify({amount})}),
+                request<{ credits: number }>("/api/studio/credits/purchase", {
+                    method: "POST",
+                    body: JSON.stringify({amount})
+                }),
 
         // Export
         startExport:
@@ -107,5 +133,27 @@ export const studioApi = {
                     progress: number;
                     url?: string
                 }>(`/api/studio/export/${jobId}`),
+
+        albumDraft: () => request<DraftDTO>("/api/album/draft"),
+        albumUploadToDraft: async (draftId: string, files: File[]) => {
+            const fd = new FormData();
+            fd.append("draftId", draftId);
+            files.forEach((f) => fd.append("files", f));
+            return requestForm<{ ok: true }>("/api/album/draft/upload", fd);
+        },
+        albumReorderDraft: (draftId: string, orderedAssetIds: string[]) =>
+            request<{ ok: true }>("/api/album/draft/reorder", {
+                method: "POST",
+                body: JSON.stringify({draftId, orderedAssetIds})
+            }),
+
+        albumCheckout: (payload: { draftId: string; packId: string; successUrl: string; cancelUrl: string }) =>
+            request<{ url: string }>("/api/album/checkout", {method: "POST", body: JSON.stringify(payload)}),
+
+        albumConfirm: (payload: { draftId: string; stripeSessionId: string }) =>
+            request<{ orderId: string }>("/api/album/confirm", {method: "POST", body: JSON.stringify(payload)}),
+
+        albumOrderStatus: (orderId: string) =>
+            request<AlbumOrderStatusDTO>(`/api/album/status/${orderId}`),
     }
 ;

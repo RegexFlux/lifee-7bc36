@@ -1,6 +1,6 @@
 {
-  "id": "a5788438-3259-4e66-98d7-abef6e48843d",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "618d29c6-0993-4a45-8aee-dd8ed4625c08",
+  "prevId": "a5788438-3259-4e66-98d7-abef6e48843d",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -1472,6 +1472,31 @@
         "stripe_customer_id": {
           "name": "stripe_customer_id",
           "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "promo_code": {
+          "name": "promo_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "promo_source": {
+          "name": "promo_source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "discount_percent": {
+          "name": "discount_percent",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "draft_id": {
+          "name": "draft_id",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         },

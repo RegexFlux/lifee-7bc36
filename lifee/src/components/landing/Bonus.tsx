@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowRight, X } from "lucide-react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
+import {ArrowRight, X} from "lucide-react";
 
 type BonusProps = {
     onLoginClick: () => void;
@@ -73,7 +73,7 @@ export default function Bonus({
 
     return (
         <div
-            className={`fixed bottom-6 left-6 z-40 transition-all duration-700 transform ${
+            className={`fixed bottom-6 left-6 z-10 transition-all duration-700 transform ${
                 showBonusToast ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0 pointer-events-none"
             }`}
             aria-hidden={!showBonusToast}
@@ -88,14 +88,15 @@ export default function Bonus({
                 }}
             >
                 {/* Halo / fond */}
-                <div className="absolute inset-0 bg-gradient-to-br from-rose-50 via-white to-amber-50" />
-                <div className="absolute -top-10 -left-10 w-40 h-40 bg-rose-200/40 blur-3xl rounded-full" />
-                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-amber-200/40 blur-3xl rounded-full" />
+                <div className="absolute inset-0 bg-gradient-to-br from-rose-50 via-white to-amber-50"/>
+                <div className="absolute -top-10 -left-10 w-40 h-40 bg-rose-200/40 blur-3xl rounded-full"/>
+                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-amber-200/40 blur-3xl rounded-full"/>
 
                 <div className="relative p-4 flex gap-3">
                     {/* Icône */}
                     <div className="shrink-0">
-                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500 to-amber-400 text-white flex items-center justify-center text-2xl shadow-lg group-hover:rotate-6 transition-transform">
+                        <div
+                            className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500 to-amber-400 text-white flex items-center justify-center text-2xl shadow-lg group-hover:rotate-6 transition-transform">
                             🎁
                         </div>
                     </div>
@@ -113,7 +114,8 @@ export default function Bonus({
 
                         {/* Code + copier */}
                         <div className="mt-2 flex items-center gap-2">
-              <span className="inline-flex items-center px-2.5 py-1 rounded-xl bg-stone-900 text-white text-[11px] tracking-widest font-bold">
+              <span
+                  className="inline-flex items-center px-2.5 py-1 rounded-xl bg-stone-900 text-white text-[11px] tracking-widest font-bold">
                 {bonusCode}
               </span>
 
@@ -125,15 +127,17 @@ export default function Bonus({
                                 {copied ? "Copié ✅" : "Copier"}
                             </button>
 
-                            <span className="ml-auto inline-flex items-center gap-1 text-[11px] font-semibold text-rose-700">
-                S’inscrire <ArrowRight size={14} />
+                            <span
+                                className="ml-auto inline-flex items-center gap-1 text-[11px] font-semibold text-rose-700">
+                S’inscrire <ArrowRight size={14}/>
               </span>
                         </div>
                     </div>
                 </div>
 
                 {/* Mini barre en bas */}
-                <div className="relative h-1 w-full bg-gradient-to-r from-rose-500 via-amber-400 to-rose-500 opacity-80" />
+                <div
+                    className="relative h-1 w-full bg-gradient-to-r from-rose-500 via-amber-400 to-rose-500 opacity-80"/>
             </div>
         </div>
     );

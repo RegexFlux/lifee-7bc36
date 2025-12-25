@@ -6,6 +6,8 @@ import {db} from "@/lib/db";
 import {lifeeJobs, lifeeJobEvents} from "@/lib/db/schema";
 import {eq} from "drizzle-orm";
 import {putRemoteUrlToS3} from "@/lib/s3";
+import {albumOrderItems, albumOrders} from "@/lib/db/schema.album";
+import {exportJobs} from "@/lib/db/schema.studio";
 
 export const config = {
     api: {bodyParser: false},
@@ -115,6 +117,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         createdAt: new Date(),
     });
 
+
     // IMPORTANT: Replicate peut retenter (donc handler idempotent) :contentReference[oaicite:8]{index=8}
     if (status === "succeeded" && outputUrl) {
         const key = job.videoKey || `lifee/videos/${jobId}.mp4`;
@@ -136,6 +139,57 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 message: `Upload S3 vidéo échoué: ${e?.message || "?"}`,
                 createdAt: new Date(),
             });
+        }
+    }
+
+    // 1) Si ce job appartient à un album, on sync son statut
+    const [orderItem] = await db.select().from(albumOrderItems).where(eq(albumOrderItems.jobId, jobId)).limit(1);
+
+    if (orderItem) {
+        const mapped =
+            status === "succeeded" ? "succeeded" :
+                status === "failed" || status === "canceled" ? "failed" :
+                    status === "processing" ? "processing" :
+                        "starting";
+
+        await db.update(albumOrderItems).set({
+            status: mapped,
+            updatedAt: new Date(),
+            error: err,
+        }).where(eq(albumOrderItems.id, orderItem.id));
+
+        // 2) check "all succeeded"
+        const all = await db.select({status: albumOrderItems.status, orderId: albumOrderItems.orderId})
+            .from(albumOrderItems)
+            .where(eq(albumOrderItems.orderId, orderItem.orderId));
+
+        const anyFailed = all.some((x) => x.status === "failed");
+        const allDone = all.length > 0 && all.every((x) => x.status === "succeeded");
+
+        if (anyFailed) {
+            await db.update(albumOrders).set({
+                status: "error",
+                error: "Une ou plusieurs vidéos ont échoué.",
+                updatedAt: new Date()
+            })
+                .where(eq(albumOrders.id, orderItem.orderId));
+        } else if (allDone) {
+            // 3) créer un exportJob (ou lancer ton vrai pipeline)
+            const [order] = await db.select().from(albumOrders).where(eq(albumOrders.id, orderItem.orderId)).limit(1);
+            if (order && !order.exportJobId) {
+                const [job] = await db.insert(exportJobs).values({
+                    userId: order.userId,
+                    status: "queued",
+                    progress: 0,
+                    musicTrackId: null,
+                }).returning({id: exportJobs.id});
+
+                await db.update(albumOrders).set({exportJobId: job.id, status: "assembling", updatedAt: new Date()})
+                    .where(eq(albumOrders.id, order.id));
+
+                // TODO: ici tu lances ton vrai assembleur.
+                // Pour l’instant tu peux réutiliser ta simulation export (comme tu fais déjà).
+            }
         }
     }
 

@@ -1,3 +1,4 @@
+// lib/db/schema.billing.ts
 import {
     pgTable,
     uuid,
@@ -31,6 +32,11 @@ export const creditPurchases = pgTable(
         stripeCheckoutSessionId: text("stripe_checkout_session_id"),
         stripePaymentIntentId: text("stripe_payment_intent_id"),
         stripeCustomerId: text("stripe_customer_id"),
+
+        promoCode: text("promo_code"),
+        promoSource: text("promo_source"), // "manual" | "roulette"
+        discountPercent: integer("discount_percent").notNull().default(0),
+        draftId: uuid("draft_id"), // si pas déjà présent dans ton schéma réel (tu l'utilises dans l'insert)
 
         createdAt: timestamp("created_at", {withTimezone: true}).notNull().defaultNow(),
         paidAt: timestamp("paid_at", {withTimezone: true}),

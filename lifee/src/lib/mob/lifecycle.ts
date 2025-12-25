@@ -1,21 +1,22 @@
-import { db } from "@/lib/db";
-import { lifeeJobs, lifeeJobEvents } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import {db} from "@/lib/db";
+import {lifeeJobs, lifeeJobEvents} from "@/lib/db/schema";
+import {eq} from "drizzle-orm";
 import crypto from "node:crypto";
-import type { NextApiRequest } from "next";
-import { mockVideoAbsoluteUrl } from "@/lib/replicate/provider";
+import type {NextApiRequest} from "next";
+import {mockVideoAbsoluteUrl} from "@/lib/replicate/provider";
 
 const TOTAL_MS = Number(process.env.MOCK_TOTAL_MS || "6000");
 
 function stage(elapsed: number) {
     const t = Math.max(0, elapsed);
-    if (t < TOTAL_MS * 0.2) return { status: "starting", progress: 0.3, msg: "Démarrage…" };
-    if (t < TOTAL_MS * 0.75) return { status: "processing", progress: 0.7, msg: "Rendu en cours…" };
-    return { status: "succeeded", progress: 1.0, msg: "Vidéo prête ✅" };
+    if (t < TOTAL_MS * 0.2) return {status: "starting", progress: 0.3, msg: "Démarrage…"};
+    if (t < TOTAL_MS * 0.75) return {status: "processing", progress: 0.7, msg: "Rendu en cours…"};
+    return {status: "succeeded", progress: 1.0, msg: "Vidéo prête ✅"};
 }
 
 export async function advanceMockJobIfNeeded(params: { jobId: string; req: NextApiRequest }) {
-    const job = await db.query.lifeeJobs.findFirst({ where: eq(lifeeJobs.id, params.jobId) });
+    const job = await db.query.lifeeJobs.findFirst({where: eq(lifeeJobs.id, params.jobId)});
+    console.log('job', job);
     if (!job) return null;
 
     // on considère "mock" si predictionId commence par "mock_"
@@ -52,7 +53,7 @@ export async function advanceMockJobIfNeeded(params: { jobId: string; req: NextA
             createdAt: new Date(),
         });
 
-        return await db.query.lifeeJobs.findFirst({ where: eq(lifeeJobs.id, params.jobId) });
+        return await db.query.lifeeJobs.findFirst({where: eq(lifeeJobs.id, params.jobId)});
     }
 
     // sinon juste laisser tel quel

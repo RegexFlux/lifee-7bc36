@@ -178,6 +178,49 @@ CREATE TABLE "stripe_events" (
 	"processed_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "album_draft_items" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"draft_id" uuid NOT NULL,
+	"asset_id" uuid NOT NULL,
+	"position" integer NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "album_drafts" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid NOT NULL,
+	"status" text DEFAULT 'draft' NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "album_order_items" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"order_id" uuid NOT NULL,
+	"source_asset_id" uuid NOT NULL,
+	"video_asset_id" uuid,
+	"job_id" text,
+	"position" integer NOT NULL,
+	"status" text DEFAULT 'queued' NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"error" text
+);
+--> statement-breakpoint
+CREATE TABLE "album_orders" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid NOT NULL,
+	"draft_id" uuid,
+	"status" text DEFAULT 'generating' NOT NULL,
+	"pack_id" text,
+	"required_credits" integer DEFAULT 0 NOT NULL,
+	"export_job_id" uuid,
+	"final_url" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"error" text
+);
+--> statement-breakpoint
 ALTER TABLE "auth_sessions" ADD CONSTRAINT "auth_sessions_user_id_app_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."app_users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "oauth_accounts" ADD CONSTRAINT "oauth_accounts_user_id_app_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."app_users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "studio_job_imports" ADD CONSTRAINT "studio_job_imports_user_id_app_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."app_users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -187,6 +230,15 @@ ALTER TABLE "timeline_clips" ADD CONSTRAINT "timeline_clips_user_id_app_users_id
 ALTER TABLE "timeline_clips" ADD CONSTRAINT "timeline_clips_asset_id_studio_assets_id_fk" FOREIGN KEY ("asset_id") REFERENCES "public"."studio_assets"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "credit_ledger" ADD CONSTRAINT "credit_ledger_user_id_app_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."app_users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "credit_purchases" ADD CONSTRAINT "credit_purchases_user_id_app_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."app_users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "album_draft_items" ADD CONSTRAINT "album_draft_items_draft_id_album_drafts_id_fk" FOREIGN KEY ("draft_id") REFERENCES "public"."album_drafts"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "album_draft_items" ADD CONSTRAINT "album_draft_items_asset_id_studio_assets_id_fk" FOREIGN KEY ("asset_id") REFERENCES "public"."studio_assets"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "album_drafts" ADD CONSTRAINT "album_drafts_user_id_app_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."app_users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "album_order_items" ADD CONSTRAINT "album_order_items_order_id_album_orders_id_fk" FOREIGN KEY ("order_id") REFERENCES "public"."album_orders"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "album_order_items" ADD CONSTRAINT "album_order_items_source_asset_id_studio_assets_id_fk" FOREIGN KEY ("source_asset_id") REFERENCES "public"."studio_assets"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "album_order_items" ADD CONSTRAINT "album_order_items_video_asset_id_studio_assets_id_fk" FOREIGN KEY ("video_asset_id") REFERENCES "public"."studio_assets"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "album_orders" ADD CONSTRAINT "album_orders_user_id_app_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."app_users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "album_orders" ADD CONSTRAINT "album_orders_draft_id_album_drafts_id_fk" FOREIGN KEY ("draft_id") REFERENCES "public"."album_drafts"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "album_orders" ADD CONSTRAINT "album_orders_export_job_id_export_jobs_id_fk" FOREIGN KEY ("export_job_id") REFERENCES "public"."export_jobs"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "email_login_codes_email_idx" ON "email_login_codes" USING btree ("email","created_at");--> statement-breakpoint
 CREATE INDEX "lifee_job_events_job_idx" ON "lifee_job_events" USING btree ("job_id","created_at");--> statement-breakpoint
 CREATE UNIQUE INDEX "lifee_jobs_share_slug_uq" ON "lifee_jobs" USING btree ("share_slug");--> statement-breakpoint
@@ -210,4 +262,11 @@ CREATE INDEX "credit_ledger_user_idx" ON "credit_ledger" USING btree ("user_id",
 CREATE UNIQUE INDEX "credit_ledger_unique_ref" ON "credit_ledger" USING btree ("user_id","reason","ref_id");--> statement-breakpoint
 CREATE INDEX "credit_purchases_user_idx" ON "credit_purchases" USING btree ("user_id","created_at");--> statement-breakpoint
 CREATE UNIQUE INDEX "credit_purchases_checkout_uq" ON "credit_purchases" USING btree ("stripe_checkout_session_id");--> statement-breakpoint
-CREATE UNIQUE INDEX "credit_purchases_pi_uq" ON "credit_purchases" USING btree ("stripe_payment_intent_id");
+CREATE UNIQUE INDEX "credit_purchases_pi_uq" ON "credit_purchases" USING btree ("stripe_payment_intent_id");--> statement-breakpoint
+CREATE INDEX "album_draft_items_draft_pos_idx" ON "album_draft_items" USING btree ("draft_id","position");--> statement-breakpoint
+CREATE UNIQUE INDEX "album_draft_items_unique" ON "album_draft_items" USING btree ("draft_id","asset_id");--> statement-breakpoint
+CREATE INDEX "album_drafts_user_idx" ON "album_drafts" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "album_drafts_user_updated_idx" ON "album_drafts" USING btree ("user_id","updated_at");--> statement-breakpoint
+CREATE INDEX "album_order_items_order_idx" ON "album_order_items" USING btree ("order_id","position");--> statement-breakpoint
+CREATE INDEX "album_order_items_job_idx" ON "album_order_items" USING btree ("job_id");--> statement-breakpoint
+CREATE INDEX "album_orders_user_idx" ON "album_orders" USING btree ("user_id","created_at");
