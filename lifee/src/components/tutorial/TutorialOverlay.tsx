@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ChevronLeft, ChevronRight, X, Sparkles } from "lucide-react";
+import React, {useEffect, useId, useLayoutEffect, useMemo, useRef, useState} from "react";
+import {createPortal} from "react-dom";
+import {AnimatePresence, motion, useReducedMotion} from "framer-motion";
+import {ChevronLeft, ChevronRight, X, Sparkles} from "lucide-react";
 
 type Placement = "auto" | "top" | "bottom" | "left" | "right";
 type MultiMode = "auto" | "single" | "union";
@@ -56,14 +56,14 @@ function rectSigForSelectors(selectors: string[]) {
     const sig: number[] = [];
     for (const sel of selectors) {
         const els = Array.from(document.querySelectorAll(sel));
-        if (els.length === 0) return { ok: false as const, sig: [] as number[] };
+        if (els.length === 0) return {ok: false as const, sig: [] as number[]};
 
         // On concatène les rects “visibles” (w/h > 1). Pas besoin d’être dans le viewport.
         const rects = els
             .map((el) => el.getBoundingClientRect())
             .filter((r) => r.width > 1 && r.height > 1);
 
-        if (rects.length === 0) return { ok: false as const, sig: [] as number[] };
+        if (rects.length === 0) return {ok: false as const, sig: [] as number[]};
 
         // signature simple
         for (const r of rects) {
@@ -75,7 +75,7 @@ function rectSigForSelectors(selectors: string[]) {
             );
         }
     }
-    return { ok: true as const, sig };
+    return {ok: true as const, sig};
 }
 
 function sigEqual(a: number[], b: number[]) {
@@ -89,7 +89,7 @@ async function waitForLayoutStable(opts: {
     stableMs: number;
     timeoutMs: number;
 }) {
-    const { selectors, stableMs, timeoutMs } = opts;
+    const {selectors, stableMs, timeoutMs} = opts;
 
     const start = performance.now();
     let lastSig: number[] | null = null;
@@ -100,7 +100,7 @@ async function waitForLayoutStable(opts: {
             const now = performance.now();
             if (now - start > timeoutMs) return resolve();
 
-            const { ok, sig } = rectSigForSelectors(selectors);
+            const {ok, sig} = rectSigForSelectors(selectors);
             if (!ok) {
                 lastSig = null;
                 stableSince = 0;
@@ -152,7 +152,7 @@ function unionRects(rects: Array<{ x: number; y: number; w: number; h: number }>
     const top = Math.min(...rects.map((r) => r.y));
     const right = Math.max(...rects.map((r) => r.x + r.w));
     const bottom = Math.max(...rects.map((r) => r.y + r.h));
-    return { x: left, y: top, w: right - left, h: bottom - top };
+    return {x: left, y: top, w: right - left, h: bottom - top};
 }
 
 function pickPlacementAuto(rect: { x: number; y: number; w: number; h: number }) {
@@ -164,10 +164,10 @@ function pickPlacementAuto(rect: { x: number; y: number; w: number; h: number })
     const spaceRight = vw - (rect.x + rect.w);
 
     const best = [
-        { p: "bottom" as const, s: spaceBottom },
-        { p: "top" as const, s: spaceTop },
-        { p: "right" as const, s: spaceRight },
-        { p: "left" as const, s: spaceLeft },
+        {p: "bottom" as const, s: spaceBottom},
+        {p: "top" as const, s: spaceTop},
+        {p: "right" as const, s: spaceRight},
+        {p: "left" as const, s: spaceLeft},
     ].sort((a, b) => b.s - a.s)[0];
 
     return best.p;
@@ -180,7 +180,7 @@ function computeCardPosition(args: {
     cardH: number;
     gap: number;
 }) {
-    const { rect, placement, cardW, cardH, gap } = args;
+    const {rect, placement, cardW, cardH, gap} = args;
     const vw = window.innerWidth;
     const vh = window.innerHeight;
 
@@ -205,7 +205,7 @@ function computeCardPosition(args: {
     x = clamp(x, margin, vw - cardW - margin);
     y = clamp(y, margin, vh - cardH - margin);
 
-    return { x, y };
+    return {x, y};
 }
 
 
@@ -214,11 +214,11 @@ function useTargetRects(selector: string, padding = 10) {
         elements: Element[];
         rects: Array<{ x: number; y: number; w: number; h: number }>;
         union: { x: number; y: number; w: number; h: number } | null;
-    }>({ elements: [], rects: [], union: null });
+    }>({elements: [], rects: [], union: null});
 
     useLayoutEffect(() => {
         if (!selector) {
-            setData({ elements: [], rects: [], union: null });
+            setData({elements: [], rects: [], union: null});
             return;
         }
 
@@ -230,7 +230,7 @@ function useTargetRects(selector: string, padding = 10) {
             raf = requestAnimationFrame(() => {
                 const els = Array.from(document.querySelectorAll(selector));
                 if (els.length === 0) {
-                    setData({ elements: [], rects: [], union: null });
+                    setData({elements: [], rects: [], union: null});
                     return;
                 }
 
@@ -247,12 +247,12 @@ function useTargetRects(selector: string, padding = 10) {
 
                 if (rects.length === 0) {
                     // targets exist but none are visible
-                    setData({ elements: els, rects: [], union: null });
+                    setData({elements: els, rects: [], union: null});
                     return;
                 }
 
                 const u = unionRects(rects);
-                setData({ elements: els, rects, union: u });
+                setData({elements: els, rects, union: u});
             });
         };
 
@@ -281,12 +281,14 @@ function useTargetRects(selector: string, padding = 10) {
     return data;
 }
 
-function Pill({ n, sub }: { n: number; sub?: number }) {
+function Pill({n, sub}: { n: number; sub?: number }) {
     return (
-        <div className="relative grid h-7 w-7 place-items-center rounded-full bg-white/95 text-[11px] font-semibold text-neutral-900 shadow-[0_10px_30px_rgba(0,0,0,.18)] ring-1 ring-black/10">
+        <div
+            className="relative grid h-7 w-7 place-items-center rounded-full bg-white/95 text-[11px] font-semibold text-neutral-900 shadow-[0_10px_30px_rgba(0,0,0,.18)] ring-1 ring-black/10">
             {n}
             {typeof sub === "number" && (
-                <div className="absolute -right-1 -top-1 grid h-4 w-4 place-items-center rounded-full bg-neutral-900 text-[9px] font-semibold text-white ring-2 ring-white">
+                <div
+                    className="absolute -right-1 -top-1 grid h-4 w-4 place-items-center rounded-full bg-neutral-900 text-[9px] font-semibold text-white ring-2 ring-white">
                     {sub + 1}
                 </div>
             )}
@@ -299,9 +301,9 @@ export function TutorialOverlay({
                                     storageKey = "lifee_tour_done_v1",
                                     defaultMode = "walkthrough",
                                     forceOpen = false,
-    deferOpen,
+                                    deferOpen,
                                     onClose,
-    onIndexChange
+                                    onIndexChange
                                 }: Props) {
     const reduced = useReducedMotion();
     const portalId = useId();
@@ -329,7 +331,8 @@ export function TutorialOverlay({
         // 1) on déclenche le layout side-effect (ex: sidebar open/close) AVANT de mesurer
         try {
             onIndexChange?.(clamped);
-        } catch {}
+        } catch {
+        }
 
         (async () => {
             const stableMs = deferOpen?.stepStableMs ?? deferOpen?.stableMs ?? 30;
@@ -344,7 +347,7 @@ export function TutorialOverlay({
             const selectors = sel ? [sel] : [];
 
             if (selectors.length) {
-                await waitForLayoutStable({ selectors, stableMs, timeoutMs });
+                await waitForLayoutStable({selectors, stableMs, timeoutMs});
                 await raf2(); // flush final
             }
 
@@ -424,7 +427,8 @@ export function TutorialOverlay({
             // 1) attendre fonts (souvent ça bouge les rects)
             try {
                 await document.fonts?.ready;
-            } catch {}
+            } catch {
+            }
 
             // 2) attendre event optionnel
             if (deferOpen?.eventName) {
@@ -435,7 +439,7 @@ export function TutorialOverlay({
                         window.removeEventListener(deferOpen!.eventName!, onEvt);
                         res();
                     };
-                    window.addEventListener(deferOpen.eventName!, onEvt, { once: true });
+                    window.addEventListener(deferOpen.eventName!, onEvt, {once: true});
                 });
             }
 
@@ -446,7 +450,7 @@ export function TutorialOverlay({
                     : [steps[0]?.target].filter(Boolean) as string[];
 
             if (selectors.length) {
-                await waitForLayoutStable({ selectors, stableMs, timeoutMs });
+                await waitForLayoutStable({selectors, stableMs, timeoutMs});
             }
 
             // 4) double RAF = “layout flush”
@@ -456,7 +460,8 @@ export function TutorialOverlay({
                 // Lance l'état externe AVANT d'ouvrir l'overlay (sidebar etc.)
                 try {
                     onIndexChange?.(0);
-                } catch {}
+                } catch {
+                }
 
                 // Laisse démarrer la transition + attends stabilité du step 0
                 const stableMs0 = deferOpen?.stepStableMs ?? deferOpen?.stableMs ?? 220;
@@ -468,7 +473,7 @@ export function TutorialOverlay({
 
                 const s0 = steps[0]?.target ? [steps[0]!.target] : [];
                 if (s0.length) {
-                    await waitForLayoutStable({ selectors: s0, stableMs: stableMs0, timeoutMs: timeoutMs0 });
+                    await waitForLayoutStable({selectors: s0, stableMs: stableMs0, timeoutMs: timeoutMs0});
                     await raf2();
                 }
 
@@ -516,10 +521,9 @@ export function TutorialOverlay({
         if (!el) return;
 
         try {
-            if (!step?.avoidScrolling) {
-                // console.log('scr', step?.avoidScrolling);
-                // el.scrollIntoView({block: "center", inline: "center", behavior: reduced ? "auto" : "smooth"});
-            }
+            // if (!step?.avoidScrolling) {
+            el.scrollIntoView({block: "center", inline: "center", behavior: reduced ? "auto" : "smooth"});
+            // }
         } catch {
             // ignore
         }
@@ -535,8 +539,14 @@ export function TutorialOverlay({
                 e.preventDefault();
                 closeTour();
             }
-            if (e.key === "ArrowRight") { e.preventDefault(); next(); }
-            if (e.key === "ArrowLeft") { e.preventDefault(); prev(); }
+            if (e.key === "ArrowRight") {
+                e.preventDefault();
+                next();
+            }
+            if (e.key === "ArrowLeft") {
+                e.preventDefault();
+                prev();
+            }
 
         };
 
@@ -549,7 +559,8 @@ export function TutorialOverlay({
         setOpen(false);
         try {
             localStorage.setItem(storageKey, "1");
-        } catch {}
+        } catch {
+        }
         onClose?.();
     };
 
@@ -564,15 +575,16 @@ export function TutorialOverlay({
         setOpen(true);
         try {
             localStorage.removeItem(storageKey);
-        } catch {}
+        } catch {
+        }
     };
 
     const mapSteps = useMemo(
-        () => steps.map((s, idx) => ({ ...s, idx })).filter((s) => s.showInMap !== false),
+        () => steps.map((s, idx) => ({...s, idx})).filter((s) => s.showInMap !== false),
         [steps]
     );
 
-    const cardSize = { w: 380, h: 220 };
+    const cardSize = {w: 380, h: 220};
 
     const placement = useMemo(() => {
         if (!anchorRect) return "bottom" as const;
@@ -581,7 +593,7 @@ export function TutorialOverlay({
     }, [anchorRect, step?.placement]);
 
     const cardPos = useMemo(() => {
-        if (!anchorRect) return { x: 24, y: 24 };
+        if (!anchorRect) return {x: 24, y: 24};
         return computeCardPosition({
             rect: anchorRect,
             placement,
@@ -607,13 +619,13 @@ export function TutorialOverlay({
         for (const s of mapSteps) {
             const els = Array.from(document.querySelectorAll(s.target));
             const visible = els
-                .map((el) => ({ el, r: getElRect(el) }))
-                .filter(({ r }) => r.w > 1 && r.h > 1)
-                .filter(({ r }) => isInViewport(r));
+                .map((el) => ({el, r: getElRect(el)}))
+                .filter(({r}) => r.w > 1 && r.h > 1)
+                .filter(({r}) => isInViewport(r));
 
             const count = visible.length;
 
-            visible.forEach(({ r }, elIdx) => {
+            visible.forEach(({r}, elIdx) => {
                 all.push({
                     stepId: s.id,
                     stepIdx: s.idx,
@@ -634,17 +646,17 @@ export function TutorialOverlay({
         <div id={portalId} className="fixed inset-0 z-[9999]">
             {/* Scrim */}
             <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: reduced ? 0 : 0.18 }}
+                initial={{opacity: 0}}
+                animate={{opacity: 1}}
+                exit={{opacity: 0}}
+                transition={{duration: reduced ? 0 : 0.18}}
                 className="absolute inset-0 bg-[radial-gradient(1200px_circle_at_30%_0%,rgba(255,255,255,.10),transparent_60%),radial-gradient(900px_circle_at_90%_90%,rgba(120,255,170,.10),transparent_55%)]"
             />
             <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: reduced ? 0 : 0.18 }}
+                initial={{opacity: 0}}
+                animate={{opacity: 1}}
+                exit={{opacity: 0}}
+                transition={{duration: reduced ? 0 : 0.18}}
                 className="absolute inset-0 bg-black/55"
                 onMouseDown={() => {
                     if (mode === "walkthrough") closeTour();
@@ -656,10 +668,10 @@ export function TutorialOverlay({
                 <>
                     {/* Hole using giant shadow */}
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.98 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.98 }}
-                        transition={{ duration: reduced ? 0 : 0.22, ease: [0.2, 0.8, 0.2, 1] }}
+                        initial={{opacity: 0, scale: 0.98}}
+                        animate={{opacity: 1, scale: 1}}
+                        exit={{opacity: 0, scale: 0.98}}
+                        transition={{duration: reduced ? 0 : 0.22, ease: [0.2, 0.8, 0.2, 1]}}
                         className="absolute"
                         style={{
                             left: spotlightRect.x,
@@ -674,10 +686,10 @@ export function TutorialOverlay({
 
                     {/* Premium ring + subtle sweep */}
                     <motion.div
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 6 }}
-                        transition={{ duration: reduced ? 0 : 0.26, ease: [0.16, 1, 0.3, 1] }}
+                        initial={{opacity: 0, y: 6}}
+                        animate={{opacity: 1, y: 0}}
+                        exit={{opacity: 0, y: 6}}
+                        transition={{duration: reduced ? 0 : 0.26, ease: [0.16, 1, 0.3, 1]}}
                         className="absolute"
                         style={{
                             left: spotlightRect.x,
@@ -688,11 +700,14 @@ export function TutorialOverlay({
                             pointerEvents: "none",
                         }}
                     >
-                        <div className="absolute inset-0 rounded-[inherit] ring-1 ring-white/35 shadow-[0_18px_60px_rgba(0,0,0,.40)]" />
-                        <div className="absolute -inset-[2px] rounded-[inherit] bg-[linear-gradient(90deg,rgba(255,255,255,.08),rgba(150,255,200,.22),rgba(255,255,255,.08))] opacity-70 blur-[10px]" />
+                        <div
+                            className="absolute inset-0 rounded-[inherit] ring-1 ring-white/35 shadow-[0_18px_60px_rgba(0,0,0,.40)]"/>
+                        <div
+                            className="absolute -inset-[2px] rounded-[inherit] bg-[linear-gradient(90deg,rgba(255,255,255,.08),rgba(150,255,200,.22),rgba(255,255,255,.08))] opacity-70 blur-[10px]"/>
                         {!reduced && (
                             <div className="absolute inset-0 overflow-hidden rounded-[inherit]">
-                                <div className="absolute -left-1/2 top-0 h-full w-1/2 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent)] opacity-35 animate-[lifeeSweep_1.6s_ease-in-out_infinite]" />
+                                <div
+                                    className="absolute -left-1/2 top-0 h-full w-1/2 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent)] opacity-35 animate-[lifeeSweep_1.6s_ease-in-out_infinite]"/>
                             </div>
                         )}
                     </motion.div>
@@ -705,7 +720,7 @@ export function TutorialOverlay({
                     onClick={closeTour}
                     aria-label="Fermer"
                 >
-                    <X className="h-4 w-4" />
+                    <X className="h-4 w-4"/>
                 </button>
             </div>
 
@@ -715,30 +730,30 @@ export function TutorialOverlay({
                     <button
                         key={`${m.stepId}:${m.elIdx}`}
                         className="absolute -translate-x-1/2 -translate-y-1/2"
-                        style={{ left: m.x, top: m.y }}
+                        style={{left: m.x, top: m.y}}
                         onClick={() => {
                             setI(m.stepIdx);
                             setMatchIndex(m.elIdx);
                         }}
                         aria-label={`Ouvrir l’aide: étape ${m.stepIdx + 1}`}
                     >
-                        <Pill n={m.stepIdx + 1} sub={m.multiCount > 1 ? m.elIdx : undefined} />
+                        <Pill n={m.stepIdx + 1} sub={m.multiCount > 1 ? m.elIdx : undefined}/>
                     </button>
                 ))}
 
             {/* Card */}
             <AnimatePresence mode="wait">
-                {!uiSettling && ( <motion.div
+                {!uiSettling && (<motion.div
                     key={step.id + mode}
                     ref={cardRef}
                     tabIndex={-1}
                     role="dialog"
                     aria-modal="true"
                     aria-label={`Tutoriel: ${step.title}`}
-                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                    transition={{ duration: reduced ? 0 : 0.22, ease: [0.16, 1, 0.3, 1] }}
+                    initial={{opacity: 0, y: 10, scale: 0.98}}
+                    animate={{opacity: 1, y: 0, scale: 1}}
+                    exit={{opacity: 0, y: 10, scale: 0.98}}
+                    transition={{duration: reduced ? 0 : 0.22, ease: [0.16, 1, 0.3, 1]}}
                     className="absolute outline-none"
                     style={{
                         left: mode === "walkthrough" ? cardPos.x : 24,
@@ -747,11 +762,13 @@ export function TutorialOverlay({
                     }}
                     onMouseDown={(e) => e.stopPropagation()}
                 >
-                    <div className="rounded-2xl bg-white/95 p-4 shadow-[0_30px_120px_rgba(0,0,0,.40)] ring-1 ring-black/10">
+                    <div
+                        className="rounded-2xl bg-white/95 p-4 shadow-[0_30px_120px_rgba(0,0,0,.40)] ring-1 ring-black/10 max-w-[90dvw]">
                         <div className="flex items-start justify-between gap-3">
                             <div>
                                 <div className="flex items-center gap-2">
-                                    <div className="grid h-7 w-7 place-items-center rounded-xl bg-neutral-900 text-white shadow-sm">
+                                    <div
+                                        className="grid h-7 w-7 place-items-center rounded-xl bg-neutral-900 text-white shadow-sm">
                                         <span className="text-[12px] font-semibold">{i + 1}</span>
                                     </div>
                                     <div className="text-sm font-semibold text-neutral-950">{step.title}</div>
@@ -774,13 +791,15 @@ export function TutorialOverlay({
                         </div>
 
                         {step.tip && (
-                            <div className="mt-3 rounded-xl bg-neutral-50 px-3 py-2 text-xs text-neutral-600 ring-1 ring-black/5">
+                            <div
+                                className="mt-3 rounded-xl bg-neutral-50 px-3 py-2 text-xs text-neutral-600 ring-1 ring-black/5">
                                 <span className="font-semibold text-neutral-800">Pro tip :</span> {step.tip}
                             </div>
                         )}
 
                         <div className="mt-4 flex items-center justify-between">
-                            <button className="text-xs font-medium text-neutral-500 hover:text-neutral-800" onClick={closeTour}>
+                            <button className="text-xs font-medium text-neutral-500 hover:text-neutral-800"
+                                    onClick={closeTour}>
                                 Passer
                             </button>
 
@@ -790,7 +809,7 @@ export function TutorialOverlay({
                                     onClick={prev}
                                     disabled={i === 0}
                                 >
-                                    <ChevronLeft className="h-4 w-4" />
+                                    <ChevronLeft className="h-4 w-4"/>
                                     Précédent
                                 </button>
 
@@ -799,7 +818,7 @@ export function TutorialOverlay({
                                     onClick={i === steps.length - 1 ? closeTour : next}
                                 >
                                     {i === steps.length - 1 ? "Terminer" : "Suivant"}
-                                    <ChevronRight className="h-4 w-4" />
+                                    <ChevronRight className="h-4 w-4"/>
                                 </button>
                             </div>
                         </div>
@@ -811,7 +830,8 @@ export function TutorialOverlay({
                                     className={`h-1.5 w-1.5 rounded-full ${idx === i ? "bg-neutral-900" : "bg-neutral-200"}`}
                                 />
                             ))}
-                            <div className="ml-auto text-[11px] text-neutral-400">Esc pour fermer • ← → pour naviguer</div>
+                            <div className="ml-auto text-[11px] text-neutral-400">Esc pour fermer • ← → pour naviguer
+                            </div>
                         </div>
                     </div>
                 </motion.div>)}

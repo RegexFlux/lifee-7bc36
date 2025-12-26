@@ -1,90 +1,54 @@
-import React, {useEffect, useMemo, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import Head from "next/head";
 import {useRouter} from "next/router";
+import {Loader2} from "lucide-react";
+import {fetchJson} from "@/components/landing/interactiveDemo/utils";
+import type {AlbumDTO} from "@/types/studioHelp";
 
-import {fetchJson, HttpError} from "@/components/landing/interactiveDemo/utils";
-import {StudioOpening} from "@/oldComponents/effects/StudioOpening";
+type AlbumsResp = { albums: AlbumDTO[] };
+type CreateAlbumResp = { album: AlbumDTO };
 
-type AlbumMode = "studio_help" | "studio_pro";
-
-type Album = {
-    id: string;
-    title: string;
-    mode: AlbumMode;
-    createdAt: string;
-    updatedAt: string;
-};
-
-type AlbumsResponse = { albums: Album[] };
-
-// Choix “actif” :
-// - si albumId présent dans l’URL => prendre celui-là si existe
-// - sinon => le plus récent (déjà trié par API), donc [0]
-function pickActiveAlbum(albums: Album[], albumId?: string | string[] | null) {
-    const id = Array.isArray(albumId) ? albumId[0] : albumId;
-    if (id) {
-        const found = albums.find((a) => a.id === id);
-        if (found) return found;
-    }
-    return albums[0] ?? null;
+function routeForAlbum(a: AlbumDTO) {
+    if (a.mode === "studio_pro") return `/studio/albums/${encodeURIComponent(a.id)}/pro`;
+    return `/studio/albums/${encodeURIComponent(a.id)}/help/welcome`;
 }
 
-function routeForAlbum(a: Album) {
-    // routes cibles : adapte si tu as choisi d’autres paths
-    if (a.mode === "studio_pro") return `/studio/pro?albumId=${encodeURIComponent(a.id)}`;
-    return `/studio/welcome?albumId=${encodeURIComponent(a.id)}`;
-}
-
-export default function StudioIndexPage() {
+export default function StudioIndex() {
     const router = useRouter();
-
-    const [loading, setLoading] = useState(true);
     const [err, setErr] = useState<string | null>(null);
-
-    const redirectedRef = useRef(false);
-
-    const qsAlbumId = useMemo(() => {
-        if (!router.isReady) return null;
-        const v = router.query.albumId;
-        return Array.isArray(v) ? v[0] : v || null;
-    }, [router.isReady, router.query.albumId]);
+    const [loading, setLoading] = useState(true);
+    const redirected = useRef(false);
 
     useEffect(() => {
         if (!router.isReady) return;
-        if (redirectedRef.current) return;
+        if (redirected.current) return;
 
         (async () => {
             setLoading(true);
             setErr(null);
 
             try {
-                const data = await fetchJson<AlbumsResponse>("/api/albums?limit=25", {method: "GET"});
+                const data = await fetchJson<AlbumsResp>("/api/albums?limit=25", {method: "GET"});
+                let album = data.albums?.[0] ?? null;
 
-                const active = pickActiveAlbum(data.albums || [], qsAlbumId);
-                if (!active) {
-                    // Si aucun album => on crée généralement un album automatiquement côté /welcome.
-                    // Ici on redirige simple vers welcome (qui pourra créer un album si besoin).
-                    redirectedRef.current = true;
-                    await router.replace("/studio/welcome");
-                    return;
+                if (!album) {
+                    const created = await fetchJson<CreateAlbumResp>("/api/albums", {
+                        method: "POST",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify({title: "Untitled"}),
+                    });
+                    album = created.album;
                 }
 
-                const to = routeForAlbum(active);
-                redirectedRef.current = true;
-                await router.replace(to);
+                redirected.current = true;
+                await router.replace(routeForAlbum(album));
             } catch (e: any) {
-                if (e instanceof HttpError && (e.status === 401 || e.status === 403)) {
-                    // Normal si session pas créée? Mais ton requireViewer crée un guest normalement.
-                    // On retente une fois après un petit tick (sans spam).
-                    setErr("Auth required.");
-                } else {
-                    setErr(e?.message || "Failed to load studio.");
-                }
+                setErr(e?.message || "Failed to open studio");
             } finally {
                 setLoading(false);
             }
         })();
-    }, [router.isReady, router, qsAlbumId]);
+    }, [router.isReady, router]);
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-stone-50 via-white to-stone-50">
@@ -93,12 +57,26 @@ export default function StudioIndexPage() {
                 <meta name="robots" content="noindex,nofollow"/>
             </Head>
 
-            <StudioOpening
-                forceOpen={true}
-                onDone={() => {
-                    window.dispatchEvent(new Event("lifee:sidebar-settled"));
-                }}
-            />
+            <div className="mx-auto max-w-3xl px-6 py-16">
+                <div className="rounded-3xl border border-stone-200 bg-white/80 backdrop-blur shadow-sm p-6">
+                    <div className="flex items-center gap-3">
+                        <div className="h-11 w-11 rounded-2xl border border-stone-200 bg-white grid place-items-center">
+                            <Loader2 className={loading ? "animate-spin" : ""} size={18}/>
+                        </div>
+                        <div className="min-w-0">
+                            <div className="text-sm font-black text-stone-900">Ouverture du Studio…</div>
+                            <div
+                                className="mt-0.5 text-xs text-stone-500">{loading ? "Chargement" : err ? "Erreur" : "OK"}</div>
+                        </div>
+                    </div>
+                    {err ? (
+                        <div
+                            className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-800">
+                            {err}
+                        </div>
+                    ) : null}
+                </div>
+            </div>
         </div>
     );
 }

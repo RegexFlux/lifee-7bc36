@@ -1,4 +1,3 @@
-// pages/api/albums/index.ts
 import type {NextApiRequest, NextApiResponse} from "next";
 import {z} from "zod";
 import {and, desc, eq} from "drizzle-orm";

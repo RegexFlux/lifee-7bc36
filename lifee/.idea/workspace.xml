@@ -5,22 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb/storage_v2/_src_/database/lifee_db.lCs6OQ/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb/storage_v2/_src_/database/lifee_db.lCs6OQ/schema/public.abK9xQ.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/api/albums/[albumId]/items/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/api/albums/[albumId]/items/reorder.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/drizzle/0000_mean_marvel_zombies.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/drizzle/0001_tiny_vin_gonzales.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/drizzle/meta/0000_snapshot.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/drizzle/meta/0001_snapshot.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/drizzle/meta/_journal.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/validation/enums.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/validation/enums.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/tutorial/TutorialOverlay.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/tutorial/TutorialOverlay.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/locales/en.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/locales/en.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/locales/fr.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/locales/fr.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/albums/[id]/export.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/albums/[albumId]/export.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/albums/[id]/index.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/albums/[id]/items/bulk.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/albums/[albumId]/items/bulk.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/albums/[id]/items/index.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/albums/[id]/items/reorder.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/albums/[id]/save.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/albums/[albumId]/save.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/api/albums/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/albums/index.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/studio.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/studio.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/studio/albums/[albumId]/generate.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/studio/albums/[albumId]/organize.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/studio/welcome.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/studio/welcome.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/studio/albums/[id].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/studio/albums/[id]/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/studio/welcome.tsx" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,6 +55,7 @@
     "git-widget-placeholder": "refacto",
     "js.debugger.nextJs.config.created.client": "true",
     "js.debugger.nextJs.config.created.server": "true",
+    "jsx.switch.disabled": "true",
     "last_opened_file_path": "/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/src/components",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -82,11 +83,11 @@
       <recent name="$PROJECT_DIR$/src/components/toast" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/pages/studio/albums/[id]" />
+      <recent name="$PROJECT_DIR$/src/components/studio/help/organize" />
+      <recent name="$PROJECT_DIR$/src/components/studio/help" />
       <recent name="$PROJECT_DIR$/src/components/studio/welcome" />
       <recent name="$PROJECT_DIR$/src/lib/public" />
-      <recent name="$PROJECT_DIR$/src/pages/api/share" />
-      <recent name="$PROJECT_DIR$/src/locales" />
-      <recent name="$PROJECT_DIR$/src/components/landing" />
     </key>
   </component>
   <component name="RunManager" selected="npm.Next.js: server-side">
@@ -124,7 +125,7 @@
       <workItem from="1766720088052" duration="81000" />
       <workItem from="1766720178142" duration="8745000" />
       <workItem from="1766729151093" duration="14040000" />
-      <workItem from="1766743582893" duration="2260000" />
+      <workItem from="1766743582893" duration="5805000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />

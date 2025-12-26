@@ -17,7 +17,7 @@ export default apiHandler({
     POST: async (req: NextApiRequest, res: NextApiResponse) => {
         const viewer = await requireViewer(req, res);
 
-        const albumId = Array.isArray(req.query.id) ? req.query.id[0] : req.query.id;
+        const albumId = Array.isArray(req.query.albumId) ? req.query.albumId[0] : req.query.albumId;
         if (!albumId) return fail(res, 400, "Missing album id");
 
         const parsed = zBody.safeParse(req.body);
