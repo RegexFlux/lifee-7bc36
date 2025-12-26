@@ -8,7 +8,8 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib/db/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/db/schema.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib/db/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/db/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/assets/presign-bulk.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/assets/presign-bulk.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/exports/ffmpeg.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/exports/ffmpeg.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/exports/renderAlbumExport.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/exports/renderAlbumExport.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,7 +116,7 @@
       <workItem from="1766482629813" duration="43111000" />
       <workItem from="1766584822328" duration="272000" />
       <workItem from="1766585104258" duration="176000" />
-      <workItem from="1766585287848" duration="62238000" />
+      <workItem from="1766585287848" duration="62921000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />

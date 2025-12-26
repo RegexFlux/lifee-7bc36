@@ -1,23 +1,30 @@
-// src/lib/exports/renderAlbumExport.ts
+// File: src/lib/exports/renderAlbumExport.ts
 import fs from "fs";
 import os from "os";
 import path from "path";
-import crypto from "crypto";
 import {asc, eq} from "drizzle-orm";
+import {PutObjectCommand} from "@aws-sdk/client-s3";
 
 import {db} from "@/lib/db";
 import {albums, albumItems, assets, exportJobs, musics} from "@/lib/db/schema";
-import {PutObjectCommand} from "@aws-sdk/client-s3";
-
 import {copyS3Object} from "@/lib/s3/copyObject";
 import {downloadToFile} from "@/lib/exports/downloadToFile";
 import {
     ffmpegNormalizeClip,
-    ffmpegConcatFromList,
     ffmpegAddMusic,
+    ffmpegImageToClip,
+    ffprobeDurationSec,
+    ffmpegConcatWithTransitions,
 } from "@/lib/exports/ffmpeg";
 import {presignGetObject} from "@/lib/s3/presignGet";
 import {S3_BUCKET_NAME, s3Client} from "@/lib/s3/client";
+
+const WIDTH = 1080;
+const HEIGHT = 1920;
+const FPS = 30;
+
+const IMAGE_DURATION_SEC = 2.5;     // ✅ fixe
+const TRANSITION_SEC = 0.35;        // ✅ transition
 
 export async function renderAlbumExport(params: { exportJobId: string }) {
     const job = (await db.select().from(exportJobs).where(eq(exportJobs.id, params.exportJobId)).limit(1))[0];
@@ -33,7 +40,6 @@ export async function renderAlbumExport(params: { exportJobId: string }) {
             assetId: assets.id,
             type: assets.type,
             fileKey: assets.fileKey,
-            thumbnailKey: assets.thumbnailKey,
         })
         .from(albumItems)
         .innerJoin(assets, eq(assets.id, albumItems.assetId))
@@ -42,62 +48,82 @@ export async function renderAlbumExport(params: { exportJobId: string }) {
 
     if (!items.length) throw new Error("Album has no items");
 
-    // v1 simple: export uniquement vidéos (les images doivent d’abord être générées en vidéo via Replicate)
-    const nonVideo = items.find((it) => it.type !== "video");
-    if (nonVideo) throw new Error("Export v1 supports only video items (generate videos first)");
-
     await db.update(exportJobs).set({progress: 10, updatedAt: new Date()}).where(eq(exportJobs.id, job.id));
-
-    // ✅ Optimisation: 1 vidéo => copy direct (puis musique optionnelle)
     const exportKeyBase = `lifee/users/${job.userId}/exports/${job.id}`;
+
+    // ✅ Single item : on garde le fast path (avec musique via ffmpeg si besoin)
     if (items.length === 1) {
-        const single = items[0];
+        const it = items[0];
         const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "lifee-export-"));
         try {
             const finalKey = `${exportKeyBase}.mp4`;
+            const basePath = path.join(tmpDir, "base.mp4");
 
-            // si musique : on doit passer par ffmpeg (download + music + upload)
+            if (it.type === "video") {
+                if (!album.musicId) {
+                    await copyS3Object({fromKey: it.fileKey, toKey: finalKey, contentType: "video/mp4"});
+                    await db.transaction(async (tx) => {
+                        await tx.update(exportJobs).set({
+                            status: "done",
+                            progress: 100,
+                            videoKey: finalKey,
+                            updatedAt: new Date()
+                        }).where(eq(exportJobs.id, job.id));
+                        await tx.update(albums).set({
+                            status: "exported",
+                            updatedAt: new Date()
+                        }).where(eq(albums.id, album.id));
+                    });
+                    return {videoKey: finalKey};
+                }
+                const vUrl = await presignGetObject({key: it.fileKey, expiresIn: 60 * 60});
+                await downloadToFile(vUrl, basePath);
+            } else if (it.type === "image") {
+                const imgUrl = await presignGetObject({key: it.fileKey, expiresIn: 60 * 60});
+                const imgPath = path.join(tmpDir, "in.jpg");
+                await downloadToFile(imgUrl, imgPath);
+                await ffmpegImageToClip({
+                    imagePath: imgPath,
+                    outPath: basePath,
+                    width: WIDTH,
+                    height: HEIGHT,
+                    fps: FPS,
+                    durationSec: IMAGE_DURATION_SEC
+                });
+            } else {
+                throw new Error(`Unsupported asset type: ${it.type}`);
+            }
+
+            let finalPath = basePath;
             if (album.musicId) {
-                const vUrl = await presignGetObject({key: single.fileKey, expiresIn: 60 * 60});
-                const vPath = path.join(tmpDir, "in.mp4");
-                await downloadToFile(vUrl, vPath);
-
                 const m = (await db.select().from(musics).where(eq(musics.id, album.musicId)).limit(1))[0];
                 if (!m?.fileKey) throw new Error("Music not found");
-
                 const mUrl = await presignGetObject({key: m.fileKey, expiresIn: 60 * 60});
                 const mPath = path.join(tmpDir, "music.mp3");
                 await downloadToFile(mUrl, mPath);
 
-                const outPath = path.join(tmpDir, "out.mp4");
-                await ffmpegAddMusic({videoIn: vPath, musicIn: mPath, outPath});
-
-                await db.update(exportJobs).set({progress: 90, updatedAt: new Date()}).where(eq(exportJobs.id, job.id));
-
-                const buf = fs.readFileSync(outPath);
-                await s3Client.send(new PutObjectCommand({
-                    Bucket: S3_BUCKET_NAME,
-                    Key: finalKey,
-                    Body: buf,
-                    ContentType: "video/mp4"
-                }));
-            } else {
-                // pas de musique => copy S3 instant
-                await copyS3Object({fromKey: single.fileKey, toKey: finalKey, contentType: "video/mp4"});
+                const withMusic = path.join(tmpDir, "with-music.mp4");
+                await ffmpegAddMusic({videoIn: basePath, musicIn: mPath, outPath: withMusic});
+                finalPath = withMusic;
             }
+
+            await db.update(exportJobs).set({progress: 90, updatedAt: new Date()}).where(eq(exportJobs.id, job.id));
+            const buf = fs.readFileSync(finalPath);
+            await s3Client.send(new PutObjectCommand({
+                Bucket: S3_BUCKET_NAME,
+                Key: finalKey,
+                Body: buf,
+                ContentType: "video/mp4"
+            }));
 
             await db.transaction(async (tx) => {
                 await tx.update(exportJobs).set({
                     status: "done",
                     progress: 100,
                     videoKey: finalKey,
-                    updatedAt: new Date(),
+                    updatedAt: new Date()
                 }).where(eq(exportJobs.id, job.id));
-
-                await tx.update(albums).set({
-                    status: "exported",
-                    updatedAt: new Date(),
-                }).where(eq(albums.id, album.id));
+                await tx.update(albums).set({status: "exported", updatedAt: new Date()}).where(eq(albums.id, album.id));
             });
 
             return {videoKey: finalKey};
@@ -106,60 +132,77 @@ export async function renderAlbumExport(params: { exportJobId: string }) {
         }
     }
 
-    // Multi clips => normalize -> concat -> add music -> upload
+    // ✅ Multi items : normalize/video + image->clip, puis transitions
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "lifee-export-"));
     try {
-        await db.update(exportJobs).set({progress: 15, updatedAt: new Date()}).where(eq(exportJobs.id, job.id));
+        const clipPaths: string[] = [];
 
-        // Download + normalize
-        const normalizedPaths: string[] = [];
         for (let i = 0; i < items.length; i++) {
             const it = items[i];
-            const url = await presignGetObject({key: it.fileKey, expiresIn: 60 * 60});
-            const inPath = path.join(tmpDir, `in-${i}.mp4`);
-            const normPath = path.join(tmpDir, `norm-${i}.mp4`);
+            const outClip = path.join(tmpDir, `clip-${i}.mp4`);
 
-            await downloadToFile(url, inPath);
+            if (it.type === "video") {
+                const vUrl = await presignGetObject({key: it.fileKey, expiresIn: 60 * 60});
+                const inPath = path.join(tmpDir, `in-${i}.mp4`);
+                await downloadToFile(vUrl, inPath);
+                await ffmpegNormalizeClip({inPath, outPath: outClip, width: WIDTH, height: HEIGHT, fps: FPS});
+            } else if (it.type === "image") {
+                const imgUrl = await presignGetObject({key: it.fileKey, expiresIn: 60 * 60});
+                const imgPath = path.join(tmpDir, `in-${i}.jpg`);
+                await downloadToFile(imgUrl, imgPath);
+                await ffmpegImageToClip({
+                    imagePath: imgPath,
+                    outPath: outClip,
+                    width: WIDTH,
+                    height: HEIGHT,
+                    fps: FPS,
+                    durationSec: IMAGE_DURATION_SEC
+                });
+            } else {
+                throw new Error(`Unsupported asset type: ${it.type}`);
+            }
 
-            // v1: config fixe (tu pourras rendre dynamique ensuite)
-            await ffmpegNormalizeClip({inPath, outPath: normPath, width: 1080, height: 1920, fps: 30});
-            normalizedPaths.push(normPath);
+            clipPaths.push(outClip);
 
-            const pct = 15 + Math.round(((i + 1) / items.length) * 45); // 15 -> 60
+            const pct = 15 + Math.round(((i + 1) / items.length) * 35); // 15 -> 50
             await db.update(exportJobs).set({progress: pct, updatedAt: new Date()}).where(eq(exportJobs.id, job.id));
         }
 
-        // Concat list file
-        const listPath = path.join(tmpDir, "concat.txt");
-        fs.writeFileSync(
-            listPath,
-            normalizedPaths.map((p) => `file '${p.replace(/'/g, "'\\''")}'`).join("\n"),
-            "utf8"
-        );
+        // Durées réelles (vidéo = durée vidéo, image = duration fix mais on lit aussi au probe)
+        const durationsSec = [];
+        for (let i = 0; i < clipPaths.length; i++) {
+            durationsSec.push(await ffprobeDurationSec(clipPaths[i]));
+        }
 
-        const concatPath = path.join(tmpDir, "concat.mp4");
-        await ffmpegConcatFromList({listFilePath: listPath, outPath: concatPath});
+        await db.update(exportJobs).set({progress: 60, updatedAt: new Date()}).where(eq(exportJobs.id, job.id));
 
-        await db.update(exportJobs).set({progress: 75, updatedAt: new Date()}).where(eq(exportJobs.id, job.id));
+        // Concat avec transitions
+        const transitioned = path.join(tmpDir, "transitioned.mp4");
+        await ffmpegConcatWithTransitions({
+            clipPaths,
+            durationsSec,
+            outPath: transitioned,
+            transitionSec: TRANSITION_SEC,
+        });
 
-        // Music optional
-        let finalPath = concatPath;
+        await db.update(exportJobs).set({progress: 80, updatedAt: new Date()}).where(eq(exportJobs.id, job.id));
+
+        // Musique optionnelle
+        let finalPath = transitioned;
         if (album.musicId) {
             const m = (await db.select().from(musics).where(eq(musics.id, album.musicId)).limit(1))[0];
             if (!m?.fileKey) throw new Error("Music not found");
-
             const mUrl = await presignGetObject({key: m.fileKey, expiresIn: 60 * 60});
             const mPath = path.join(tmpDir, "music.mp3");
             await downloadToFile(mUrl, mPath);
 
             const withMusic = path.join(tmpDir, "with-music.mp4");
-            await ffmpegAddMusic({videoIn: concatPath, musicIn: mPath, outPath: withMusic});
+            await ffmpegAddMusic({videoIn: transitioned, musicIn: mPath, outPath: withMusic});
             finalPath = withMusic;
 
-            await db.update(exportJobs).set({progress: 90, updatedAt: new Date()}).where(eq(exportJobs.id, job.id));
+            await db.update(exportJobs).set({progress: 92, updatedAt: new Date()}).where(eq(exportJobs.id, job.id));
         }
 
-        // Upload to S3
         const finalKey = `${exportKeyBase}.mp4`;
         const buf = fs.readFileSync(finalPath);
         await s3Client.send(new PutObjectCommand({
@@ -174,19 +217,12 @@ export async function renderAlbumExport(params: { exportJobId: string }) {
                 status: "done",
                 progress: 100,
                 videoKey: finalKey,
-                updatedAt: new Date(),
+                updatedAt: new Date()
             }).where(eq(exportJobs.id, job.id));
-
-            await tx.update(albums).set({
-                status: "exported",
-                updatedAt: new Date(),
-            }).where(eq(albums.id, album.id));
+            await tx.update(albums).set({status: "exported", updatedAt: new Date()}).where(eq(albums.id, album.id));
         });
 
         return {videoKey: finalKey};
-    } catch (e: any) {
-        // fail-safe: job already set to error by worker endpoint
-        throw e;
     } finally {
         fs.rmSync(tmpDir, {recursive: true, force: true});
     }

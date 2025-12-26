@@ -654,4 +654,30 @@ export const creditEvents = pgTable(
     })
 );
 
-// TODO
+export const generationShares = pgTable(
+    "generation_shares",
+    {
+        id: uuid("id").primaryKey().defaultRandom(),
+
+        generationJobId: uuid("generation_job_id")
+            .notNull()
+            .references(() => replicateGenerationJobs.id, {onDelete: "cascade"}),
+
+        userId: text("user_id")
+            .notNull()
+            .references(() => users.id, {onDelete: "cascade"}),
+
+        isActive: boolean("is_active").notNull().default(true),
+
+        accessCount: integer("access_count").notNull().default(0),
+        lastAccessedAt: timestamp("last_accessed_at", {withTimezone: true}),
+
+        revokedAt: timestamp("revoked_at", {withTimezone: true}),
+
+        createdAt: timestamp("created_at", {withTimezone: true}).notNull().defaultNow(),
+    },
+    (t) => ({
+        genUid: uniqueIndex("generation_shares_generation_uidx").on(t.generationJobId),
+        userCreatedIdx: index("generation_shares_user_created_idx").on(t.userId, t.createdAt),
+    })
+);

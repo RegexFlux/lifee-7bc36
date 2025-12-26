@@ -13,6 +13,107 @@ export function runCmd(cmd: string, args: string[], opts?: { cwd?: string }) {
     });
 }
 
+export async function ffprobeDurationSec(inputPath: string) {
+    const r = await runCmd("ffprobe", [
+        "-v",
+        "error",
+        "-show_entries",
+        "format=duration",
+        "-of",
+        "default=noprint_wrappers=1:nokey=1",
+        inputPath,
+    ]);
+    if (r.code !== 0) throw new Error(`ffprobe failed: ${r.stderr || r.stdout}`);
+    const sec = Number(String(r.stdout).trim());
+    if (!Number.isFinite(sec) || sec <= 0) throw new Error("ffprobe invalid duration");
+    return sec;
+}
+
+/**
+ * Concat N clips AVEC transitions (xfade + acrossfade).
+ * Prérequis: tous les clips ont même résolution/fps et audio présent (silence ok).
+ */
+export async function ffmpegConcatWithTransitions(params: {
+    clipPaths: string[];
+    durationsSec: number[]; // même ordre que clipPaths
+    outPath: string;
+    transitionSec: number; // ex 0.35
+}) {
+    const {clipPaths, durationsSec, outPath} = params;
+    const n = clipPaths.length;
+    if (n < 2) throw new Error("Need at least 2 clips for transitions");
+    if (durationsSec.length !== n) throw new Error("durationsSec length mismatch");
+
+    const t = Math.max(0.05, Math.min(params.transitionSec, 2.0));
+
+    // garde-fou : chaque clip doit être > transition + marge
+    for (let i = 0; i < n; i++) {
+        if (durationsSec[i] <= t + 0.1) {
+            throw new Error(`Clip too short for transition (idx=${i} dur=${durationsSec[i].toFixed(2)}s)`);
+        }
+    }
+
+    // Offsets cumulés (overlap)
+    // xfade offset = (sum(durations[0..i-1]) - t*i)
+    const offsets: number[] = [];
+    let sum = durationsSec[0];
+    for (let i = 1; i < n; i++) {
+        offsets[i] = sum - t * i;
+        sum += durationsSec[i];
+    }
+
+    const inputs = clipPaths.flatMap((p) => ["-i", p]);
+
+    const parts: string[] = [];
+
+    // reset PTS
+    for (let i = 0; i < n; i++) {
+        parts.push(`[${i}:v]setpts=PTS-STARTPTS[v${i}]`);
+        parts.push(`[${i}:a]asetpts=PTS-STARTPTS[a${i}]`);
+    }
+
+    // chain xfade + acrossfade
+    let vPrev = `v0`;
+    let aPrev = `a0`;
+    for (let i = 1; i < n; i++) {
+        const vOut = i === n - 1 ? "vout" : `v${i}x`;
+        const aOut = i === n - 1 ? "aout" : `a${i}x`;
+
+        const off = offsets[i];
+        parts.push(`[${vPrev}][v${i}]xfade=transition=fade:duration=${t}:offset=${off.toFixed(4)}[${vOut}]`);
+        parts.push(`[${aPrev}][a${i}]acrossfade=d=${t}:c1=tri:c2=tri[${aOut}]`);
+
+        vPrev = vOut;
+        aPrev = aOut;
+    }
+
+    const filterComplex = parts.join(";");
+
+    const r = await runCmd("ffmpeg", [
+        "-y",
+        ...inputs,
+        "-filter_complex",
+        filterComplex,
+        "-map",
+        "[vout]",
+        "-map",
+        "[aout]",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "veryfast",
+        "-crf",
+        "20",
+        "-c:a",
+        "aac",
+        "-b:a",
+        "192k",
+        outPath,
+    ]);
+
+    if (r.code !== 0) throw new Error(`ffmpeg transitions failed: ${r.stderr || r.stdout}`);
+}
+
 export async function ffprobeHasAudio(inputPath: string) {
     const r = await runCmd("ffprobe", [
         "-v",
