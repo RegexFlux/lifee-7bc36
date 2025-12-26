@@ -23,7 +23,7 @@ export const REPLICATE_JOB_STATUSES = [
 export const JOB_EVENT_LEVELS = ["info", "warn", "error"] as const;
 export const JOB_EVENT_SOURCES = ["server", "replicate"] as const;
 
-export const ALBUM_STATUSES = ["draft", "exported"] as const;
+export const ALBUM_MODES = ["studio_pro", "studio_help"] as const;
 
 export const CREDIT_PACK_TIERS = ["standard", "creator"] as const;
 

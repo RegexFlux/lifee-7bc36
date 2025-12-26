@@ -21,13 +21,12 @@ import {
     REPLICATE_JOB_STATUSES,
     JOB_EVENT_LEVELS,
     JOB_EVENT_SOURCES,
-    ALBUM_STATUSES,
     CREDIT_PACK_TIERS,
     CREDIT_PURCHASE_STATUSES,
     WEBHOOK_PROVIDERS,
     WEBHOOK_PROCESSING_STATUSES,
     ACCOUNT_LINK_STATUSES,
-    CREDIT_EVENT_TYPES,
+    CREDIT_EVENT_TYPES, ALBUM_MODES,
 } from "@/lib/shared/enums";
 
 /* ----------------------------- ENUMS (PG) ----------------------------- */
@@ -49,7 +48,7 @@ export const replicateJobStatusEnum = pgEnum(
 export const jobEventLevelEnum = pgEnum("job_event_level", JOB_EVENT_LEVELS);
 export const jobEventSourceEnum = pgEnum("job_event_source", JOB_EVENT_SOURCES);
 
-export const albumStatusEnum = pgEnum("album_status", ALBUM_STATUSES);
+export const albumModesEnum = pgEnum("album_modes", ALBUM_MODES);
 
 export const creditPackTierEnum = pgEnum("credit_pack_tier", CREDIT_PACK_TIERS);
 export const creditPurchaseStatusEnum = pgEnum(
@@ -375,7 +374,7 @@ export const albums = pgTable(
             .references(() => users.id, {onDelete: "cascade"}),
 
         title: text("title").notNull().default("Untitled"),
-        status: albumStatusEnum("status").notNull().default("draft"),
+        mode: albumModesEnum("mode").notNull().default("studio_help"),
 
         // N albums -> 1 music
         musicId: uuid("music_id").references(() => musics.id, {onDelete: "set null"}),
@@ -385,7 +384,6 @@ export const albums = pgTable(
     },
     (t) => ({
         userCreatedIdx: index("albums_user_created_idx").on(t.userId, t.createdAt),
-        userStatusIdx: index("albums_user_status_idx").on(t.userId, t.status),
     })
 );
 
