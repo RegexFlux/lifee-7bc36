@@ -1,0 +1,1 @@
+ALTER TABLE "replicate_generation_jobs" ALTER COLUMN "album_item_id" DROP NOT NULL;

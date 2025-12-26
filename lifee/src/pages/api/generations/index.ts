@@ -162,8 +162,8 @@ export default apiHandler({
                 `);
 
                 // @ts-ignore driver-dependent
-                const rows = r?.rows ?? [];
-                if (!rows.length) {
+                const {credits} = r[0];
+                if (!credits) {
                     const err: any = new Error("Not enough credits");
                     err.status = 402;
                     throw err;
