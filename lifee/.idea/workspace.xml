@@ -6,10 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/db/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/db/schema.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/db/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/db/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/exports/ffmpeg.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/exports/ffmpeg.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/exports/renderAlbumExport.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/exports/renderAlbumExport.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +42,7 @@
     "git-widget-placeholder": "refacto",
     "js.debugger.nextJs.config.created.client": "true",
     "js.debugger.nextJs.config.created.server": "true",
-    "last_opened_file_path": "/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/src/lib/s3",
+    "last_opened_file_path": "/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/src/lib/shared",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -64,11 +62,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/lib/shared" />
       <recent name="$PROJECT_DIR$/src/lib/s3" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/public/audio" />
       <recent name="$PROJECT_DIR$/src/pages/api/studio/timeline/clips/[clipId]" />
-      <recent name="$PROJECT_DIR$/public/examples/showcase" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/pages/api/exports/[id]" />
@@ -116,7 +114,7 @@
       <workItem from="1766482629813" duration="43111000" />
       <workItem from="1766584822328" duration="272000" />
       <workItem from="1766585104258" duration="176000" />
-      <workItem from="1766585287848" duration="62921000" />
+      <workItem from="1766585287848" duration="64631000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
