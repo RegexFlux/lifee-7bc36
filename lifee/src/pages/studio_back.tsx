@@ -1,26 +1,14 @@
-// File: pages/studio/index.tsx
-import React from "react";
-import {useViewer} from "@/lib/auth/useViewer";
+import React, {useState} from "react";
 import Head from "next/head";
-import {StudioOpening} from "@/components/effects/StudioOpening";
+import LandingPage from "../components/landing/LandingPage";
+import TransitionScreen from "../views/TransitionScreen";
 import StudioApp from "@/components/studio/StudioApp";
+import StudioTutorial from "@/components/studio/StudioTutorial";
+import {StudioOpening} from "@/components/effects/StudioOpening";
 
-export default function StudioPage() {
-    const {viewer, loading, error, refresh} = useViewer();
+type View = "landing" | "transition" | "studio";
 
-    if (loading) return <div style={{padding: 24}}>Loading viewer…</div>;
-
-    if (error || !viewer) {
-        return (
-            <div style={{padding: 24}}>
-                <div style={{marginBottom: 12}}>Viewer error.</div>
-                <button onClick={refresh}>Retry</button>
-            </div>
-        );
-    }
-
-    const isGuest = viewer.user.type === "guest";
-
+export default function OldStudioPage() {
     return (
         <>
             <Head>

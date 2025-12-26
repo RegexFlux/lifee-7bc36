@@ -6,11 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/auth/cookies.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/auth/cookies.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/auth/require.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/auth/require.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/auth/viewer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/auth/viewer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/db/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/db/schema.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/auth/email/verify-code.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/auth/email/verify-code.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/AuthModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/AuthModal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/studio.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/studio_back.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,7 +114,7 @@
       <workItem from="1766482629813" duration="43111000" />
       <workItem from="1766584822328" duration="272000" />
       <workItem from="1766585104258" duration="176000" />
-      <workItem from="1766585287848" duration="65837000" />
+      <workItem from="1766585287848" duration="66611000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
@@ -356,6 +353,12 @@
           <line>1</line>
           <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="93" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/lib/auth/useViewer.ts</url>
+          <line>20</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="95" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
