@@ -7,7 +7,7 @@ export const generationReadyEmail: EmailTemplate<{
     appUrl: string;
 }> = ({generationId, appUrl}) => {
     const subject = "Lifee — Votre vidéo est prête";
-    const link = `${appUrl.replace(/\/$/, "")}/slug/${generationId}`;
+    const link = `${appUrl.replace(/\/$/, "")}/share/${generationId}`;
     const html = renderEmailLayout({
         title: "Vidéo prête",
         preheader: "Votre génération est terminée",

@@ -23,7 +23,7 @@ export default function InteractiveDemo({onDownloadClick}: Props) {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const resultModal = useVideoResultModal({
-        videoUrl: demo.videoUrl,
+        resultUrl: demo.videoUrl,
         shareUrl: demo.shareUrl,
         onDownloadClick,
         studioPath: "/studio",
@@ -44,7 +44,6 @@ export default function InteractiveDemo({onDownloadClick}: Props) {
         await demo.uploadAndGenerate(f);
     };
 
-    console.log({...demo})
     return (
         <div className="relative group perspective-1000 lg:pl-10">
             {/* ✅ TOP-RIGHT Dock */}

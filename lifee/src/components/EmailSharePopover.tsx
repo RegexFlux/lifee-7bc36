@@ -131,11 +131,11 @@ export function EmailSharePopover({
 
                 if (!alive) return;
 
-                const publicPath = extractPublicPath(payload) ?? `/slug/${generationId}`;
+                const publicPath = extractPublicPath(payload) ?? `/share/${generationId}`;
                 setShareUrl(absoluteUrlFromPath(publicPath));
             } catch (e: any) {
                 if (!alive) return;
-                setShareUrl(absoluteUrlFromPath(`/slug/${generationId}`));
+                setShareUrl(absoluteUrlFromPath(`/share/${generationId}`));
                 setErr(e instanceof HttpError ? (e.message || t("emailPopover.err.shareFailed")) : t("emailPopover.err.shareFailed"));
             } finally {
                 if (alive) setShareLoading(false);

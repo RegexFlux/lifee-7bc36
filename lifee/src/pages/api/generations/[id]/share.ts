@@ -41,7 +41,7 @@ export default apiHandler({
 
             return ok(res, {
                 share: updated,
-                publicPath: `/slug/${generationId}`,
+                publicPath: `/share/${updated.id}`,
             });
         }
 
@@ -54,7 +54,7 @@ export default apiHandler({
             })
             .returning();
 
-        return ok(res, {share: created, publicPath: `/slug/${generationId}`}, 201);
+        return ok(res, {share: created, publicPath: `/share/${created.id}`}, 201);
     },
 
     DELETE: async (req: NextApiRequest, res: NextApiResponse) => {

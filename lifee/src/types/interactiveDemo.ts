@@ -17,7 +17,7 @@ export type Job = {
     albumItemId: string | null,
     createdByAssetId: string,
     resultAssetId: string | null,
-    "progressMessage": null,
+    progressMessage: null,
     month: number,
     year: number,
     id: string;
@@ -31,13 +31,13 @@ export type Job = {
 
 
 export type CreateJobResponse = {
-    jobId: string;
+    generationId: string;
     shareUrl: string;
     statusUrl: string;
 };
 
 export type LatestDemoResponse = {
-    jobId: string | null;
+    generationId: string | null;
 };
 
 export type SendEmailResponse = {

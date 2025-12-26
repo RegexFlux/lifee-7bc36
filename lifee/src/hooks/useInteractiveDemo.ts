@@ -98,21 +98,29 @@ export function useInteractiveDemo({router}: Params) {
 
     const ensureShareUrl = async (generationId: string) => {
         try {
-            const payload = await fetchJson<any>(`/api/generations/${encodeURIComponent(generationId)}/share`, {
+            const payload = await fetchJson<{
+                ok: boolean;
+                publicPath: string;
+            }>(`/api/generations/${encodeURIComponent(generationId)}/share`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: "{}",
             });
 
+            console.log('x', safeFirstString(payload?.publicPath));
+
             const publicPath =
                 safeFirstString(payload?.publicPath) ||
-                safeFirstString(payload?.data?.publicPath) ||
-                `/slug/${generationId}`;
+                `/share/${generationId}`;
+
+
+            console.log('pay', payload);
 
             const abs = new URL(publicPath, window.location.origin).toString();
             setShareUrl(abs);
-        } catch {
-            setShareUrl(new URL(`/slug/${generationId}`, window.location.origin).toString());
+        } catch (e) {
+            console.error('error', e);
+            setShareUrl(new URL(`/share/${generationId}`, window.location.origin).toString());
         }
     };
 
@@ -221,10 +229,7 @@ export function useInteractiveDemo({router}: Params) {
                 // headers: {"Content-Type":"application/json","Idempotency-Key": crypto.randomUUID()},
             });
             console.log('pp', payload);
-            const generationId =
-                safeFirstString((payload as any)?.generation) ||
-                safeFirstString((payload as any)?.id) ||
-                null;
+            const generationId = safeFirstString(payload.generationId)
 
             if (!generationId) {
                 setError(t("demo.error.upload_failed"));
@@ -267,12 +272,30 @@ export function useInteractiveDemo({router}: Params) {
     };
 
     useEffect(() => {
-        if (router.query.generationId) {
-            setJobId(router.query.generationId);
-            pollJob(router.query.generationId);
-            ensureShareUrl(generationId);
-        }
-    }, [router.query.generationId])
+        if (!router.isReady) return;
+
+        const raw = router.query.generationId;
+        const generationId = typeof raw === "string" ? raw : null;
+        if (!generationId) return;
+
+        let cancelled = false;
+
+        (async () => {
+            try {
+                await setJobId(generationId);
+                pollJob(generationId);
+                await ensureShareUrl(generationId);
+                if (cancelled) return;
+            } catch (e) {
+                if (cancelled) return;
+                console.error(e);
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [router.isReady, router.query.generationId]);
 
     return {
         demoState,
