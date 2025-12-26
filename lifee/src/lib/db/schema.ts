@@ -101,6 +101,8 @@ export const authSessions = pgTable(
             .references(() => users.id, {onDelete: "cascade"}),
 
         tokenHash: text("token_hash").notNull(),
+        ip: text("ip").notNull(),
+        userAgent: text("user_agent").notNull(),
 
         expiresAt: timestamp("expires_at", {withTimezone: true}).notNull(),
         revokedAt: timestamp("revoked_at", {withTimezone: true}),

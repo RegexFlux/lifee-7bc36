@@ -20,18 +20,42 @@ export function getCookie(req: NextApiRequest, name: string) {
     return cookies[name] || null;
 }
 
-export function setSessionCookie(res: NextApiResponse, token: string) {
-    const maxAge = 60 * 60 * 24 * SESSION_TTL_DAYS;
+export function setSessionCookie(
+    res: NextApiResponse,
+    token: string,
+    opts?: { expiresAt?: Date }
+) {
+    const secure = process.env.NODE_ENV === "production";
+
+    const maxAge =
+        opts?.expiresAt
+            ? Math.max(0, Math.floor((opts.expiresAt.getTime() - Date.now()) / 1000))
+            : 60 * 60 * 24 * 30;
+
     res.setHeader(
         "Set-Cookie",
-        serialize(LIFEe_SESSION_COOKIE, token, {...cookieBaseOptions(), maxAge})
+        serialize(LIFEe_SESSION_COOKIE, token, {
+            httpOnly: true,
+            secure,
+            sameSite: "lax",
+            path: "/",
+            maxAge,
+        })
     );
 }
 
 export function clearSessionCookie(res: NextApiResponse) {
+    const secure = process.env.NODE_ENV === "production";
+
     res.setHeader(
         "Set-Cookie",
-        serialize(LIFEe_SESSION_COOKIE, "", {...cookieBaseOptions(), maxAge: 0})
+        serialize(LIFEe_SESSION_COOKIE, "", {
+            httpOnly: true,
+            secure,
+            sameSite: "lax",
+            path: "/",
+            maxAge: 0,
+        })
     );
 }
 
