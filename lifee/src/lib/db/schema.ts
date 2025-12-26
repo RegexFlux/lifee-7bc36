@@ -245,9 +245,14 @@ export const assetThumbnailJobs = pgTable(
         status: assetThumbnailJobStatusEnum("status").notNull().default("queued"),
         attempts: integer("attempts").notNull().default(0),
 
+        errorMessage: text("error_message"),
+
         lastError: text("last_error"),
         lockedAt: timestamp("locked_at", {withTimezone: true}),
         doneAt: timestamp("done_at", {withTimezone: true}),
+        nextAttemptAt: timestamp("next_attempt_at", {withTimezone: true}),
+        startedAt: timestamp("started_at", {withTimezone: true}),
+        completedAt: timestamp("completed_at", {withTimezone: true}),
 
         createdAt: timestamp("created_at", {withTimezone: true}).notNull().defaultNow(),
         updatedAt: timestamp("updated_at", {withTimezone: true}).notNull().defaultNow(),

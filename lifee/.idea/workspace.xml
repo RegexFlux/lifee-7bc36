@@ -5,85 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb/storage_v2/_src_/database/lifee_db.lCs6OQ/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb/storage_v2/_src_/database/lifee_db.lCs6OQ/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/drizzle/meta/_journal.json" beforeDir="false" afterPath="$PROJECT_DIR$/drizzle/meta/_journal.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/auth/AuthGateModal.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/sections/SocialProof.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/sections/SocialProof.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/help/organize/OrganizeDndGrid.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/help/organize/OrganizeDndGrid.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/assets/keys.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/assets/keys.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib/db/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/db/schema.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/db/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/db/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/exports/renderAlbumExport.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/exports/renderAlbumExport.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/shared/enums.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/shared/enums.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/ConversionCard.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/CopyButton.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/EmailSharePopover.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/MiniAudioWidget.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/PlayerCard.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/PromoRoulette.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/VideoPlayer.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/album/AlbumShowcase.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/album/AlbumSimple.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/album/AlbumSimpleLauncher.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/effects/StarDustRain.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/effects/StudioOpening.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/fx/FXBackdrop.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/fx/Tilt3D.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/landing/Animations.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/landing/AuthModal.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/landing/BackgroundEffects.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/landing/Bonus.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/landing/Footer.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/landing/GoFurther.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/landing/Hero.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/landing/HowItWorks.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/landing/InteractiveDemo.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/landing/LandingPage.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/landing/NavBar.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/landing/Showcase.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/landing/SocialProof.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/landing/Solution.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/landing/StudioShowcase.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/landing/interactiveDemo/Dock.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/landing/interactiveDemo/PolaroidStack.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/landing/interactiveDemo/utils.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/LibraryItemCard.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/LibraryList.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/Sidebar.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/StudioApp.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/StudioTutorial.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/TimelineCanvas.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/TimelineCanvasItem.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/TimelineCanvasView.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/TimelineItemMenu.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/Toolbar.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/aigen/AIGenModal.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/aigen/AdvancedDrawer.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/aigen/AdvancedInspectorOverlay.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/aigen/CardShell.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/aigen/GenerateDialog.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/aigen/ResultDialog.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/aigen/SegButton.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/aigen/SourceDialog.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/modals/CreditModal.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/modals/ExportModal.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/modals/GuestLinkAccountNudgeModal.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/modals/MusicModal.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/studio/modals/UploadModal.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/tutorial/TutorialOverlay.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/ui/ConfirmDialog.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/ui/ToastProvider.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/useLifeeJobStatus.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/assets/[id]/url.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/assets/[id]/url.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/assets/bulk.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/assets/bulk.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/assets/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/assets/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/share/[generationShareId].ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/share/[generationShareId].ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/studio/albums/[id]/help/welcome.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/studio/albums/[id]/help/welcome.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/studio/albums/[id]/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/studio/albums/[id]/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/studio_back.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/studioHelp.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/studioHelp.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/worker/assetThumbnailsWorker.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/worker/assetThumbnailsWorker.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -125,7 +54,8 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "npm.Next.js: server-side.executor": "Run",
+    "npm.Next.js: server-side.executor": "Debug",
+    "npm.worker:thumbs:watch.executor": "Debug",
     "rearrange.code.on.save": "true",
     "settings.editor.selected.configurable": "actions.on.save",
     "ts.external.directory.path": "/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/node_modules/typescript/lib",
@@ -168,6 +98,21 @@
       <envs />
       <method v="2" />
     </configuration>
+    <configuration name="worker:thumbs:watch" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="worker:thumbs:watch" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="npm.worker:thumbs:watch" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -188,7 +133,7 @@
       <workItem from="1766720088052" duration="81000" />
       <workItem from="1766720178142" duration="8745000" />
       <workItem from="1766729151093" duration="14040000" />
-      <workItem from="1766743582893" duration="8558000" />
+      <workItem from="1766743582893" duration="10557000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
@@ -459,6 +404,24 @@
           <url>file://$PROJECT_DIR$/src/pages/api/share/[generationShareId].ts</url>
           <line>90</line>
           <option name="timeStamp" value="109" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/worker/assetThumbnailsWorker.ts</url>
+          <line>95</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="110" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/worker/assetThumbnailsWorker.ts</url>
+          <line>397</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="113" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/worker/assetThumbnailsWorker.ts</url>
+          <line>384</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="114" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
