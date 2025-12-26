@@ -4,102 +4,51 @@
 import {useEffect, useRef, useState} from "react";
 import type {NextRouter} from "next/router";
 
-import type {
-    CreateJobResponse,
-    DemoState,
-    JobStatusResponse,
-    LatestDemoResponse,
-} from "@/types/interactiveDemo";
-
-import {
-    fetchJson,
-    HttpError,
-    isBlobUrl,
-    safeFirstString,
-} from "@/components/landing/interactiveDemo/utils";
-
+import type {CreateJobResponse, DemoState, JobStatusResponse, LatestDemoResponse} from "@/types/interactiveDemo";
+import {fetchJson, HttpError, isBlobUrl, safeFirstString} from "@/components/landing/interactiveDemo/utils";
 import {useT} from "@/lib/i18n/useT";
 
-type Params = {
-    router: NextRouter;
+type Params = { router: NextRouter };
+
+type AssetType = "image" | "video";
+
+type PresignResp = {
+    uploadUrl: string;
+    key: string;
+    expiresInSec: number;
 };
 
-const LS_KEY_NEW = "lifee:lastDemoGenerationId";
-const LS_KEY_OLD = "lifee:lastDemoJobId";
+type AssetDTO = {
+    id: string;
+    type: AssetType;
+    fileKey: string;
+    month: number;
+    year: number;
+};
 
-function getQueryId(router: NextRouter): string | null {
-    // migration: accepte generationId OU jobId
-    const g = safeFirstString((router.query as any)?.generationId);
-    const j = safeFirstString((router.query as any)?.jobId);
-    return g || j || null;
+type CreateAssetResp = { asset: AssetDTO };
+
+function inferExt(file: File): string {
+    const name = (file.name || "").toLowerCase();
+    const m = name.match(/\.([a-z0-9]{1,10})$/);
+    if (m?.[1]) return m[1];
+    const mime = (file.type || "").toLowerCase();
+    if (mime === "image/jpeg") return "jpg";
+    if (mime === "image/png") return "png";
+    if (mime === "image/webp") return "webp";
+    return "bin";
 }
 
-function pickId(payload: any): string | null {
-    return (
-        safeFirstString(payload?.generationId) ||
-        safeFirstString(payload?.id) ||
-        safeFirstString(payload?.jobId) ||
-        safeFirstString(payload?.data?.generationId) ||
-        safeFirstString(payload?.data?.id) ||
-        safeFirstString(payload?.data?.jobId) ||
-        safeFirstString(payload?.result?.generationId) ||
-        safeFirstString(payload?.result?.id) ||
-        safeFirstString(payload?.result?.jobId) ||
-        null
-    );
-}
-
-function pickStatus(payload: any): string | null {
-    return (
-        safeFirstString(payload?.status) ||
-        safeFirstString(payload?.data?.status) ||
-        safeFirstString(payload?.result?.status) ||
-        null
-    );
-}
-
-function pickVideoUrl(payload: any): string | null {
-    return (
-        safeFirstString(payload?.resultUrl) ||
-        safeFirstString(payload?.videoUrl) ||
-        safeFirstString(payload?.data?.resultUrl) ||
-        safeFirstString(payload?.data?.videoUrl) ||
-        safeFirstString(payload?.result?.resultUrl) ||
-        safeFirstString(payload?.result?.videoUrl) ||
-        null
-    );
-}
-
-function pickThumbnailUrl(payload: any): string | null {
-    return (
-        safeFirstString(payload?.thumbnailUrl) ||
-        safeFirstString(payload?.data?.thumbnailUrl) ||
-        safeFirstString(payload?.result?.thumbnailUrl) ||
-        null
-    );
-}
-
-function pickError(payload: any): string | null {
-    return (
-        safeFirstString(payload?.error) ||
-        safeFirstString(payload?.data?.error) ||
-        safeFirstString(payload?.result?.error) ||
-        null
-    );
-}
-
-function extractPublicPath(payload: any): string | null {
-    return (
-        safeFirstString(payload?.publicPath) ||
-        safeFirstString(payload?.data?.publicPath) ||
-        safeFirstString(payload?.result?.publicPath) ||
-        null
-    );
-}
-
-function absFromPublicPath(path: string) {
-    // hook = client only
-    return new URL(path, window.location.origin).toString();
+async function putToPresignedUrl(uploadUrl: string, file: File) {
+    const r = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: {"Content-Type": file.type || "application/octet-stream"},
+        body: file,
+    });
+    if (!r.ok) {
+        const txt = await r.text().catch(() => "");
+        throw new Error(`S3 upload failed (${r.status}): ${txt || "?"}`);
+    }
 }
 
 export function useInteractiveDemo({router}: Params) {
@@ -108,10 +57,7 @@ export function useInteractiveDemo({router}: Params) {
     const [demoState, setDemoState] = useState<DemoState>("idle");
     const [videoUrl, setVideoUrl] = useState<string | null>(null);
     const [shareUrl, setShareUrl] = useState<string | null>(null);
-
-    // ⚠️ "jobId" conserve l’API du composant, mais c’est maintenant un generationId
-    const [jobId, setJobIdState] = useState<string | null>(null);
-
+    const [jobId, setJobIdState] = useState<string | null>(null); // = generationId
     const [error, setError] = useState<string | null>(null);
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
@@ -124,7 +70,6 @@ export function useInteractiveDemo({router}: Params) {
 
     useEffect(() => stopPolling, []);
 
-    // cleanup blob url
     useEffect(() => {
         return () => {
             if (photoPreview && isBlobUrl(photoPreview)) {
@@ -136,105 +81,38 @@ export function useInteractiveDemo({router}: Params) {
         };
     }, [photoPreview]);
 
-    const setGenerationIdInUrl = async (id?: string) => {
-        const nextQuery = {...router.query} as Record<string, any>;
+    const setJobId = async (id: string | null) => {
+        setJobIdState(id);
+        try {
+            if (id) localStorage.setItem("lifee:lastDemoGenerationId", id);
+        } catch {
+        }
+        if (!router.isReady) return;
 
-        // migration: on privilégie generationId
+        const nextQuery = {...router.query} as Record<string, any>;
         if (id) nextQuery.generationId = id;
         else delete nextQuery.generationId;
-
-        // on nettoie l’ancien param
-        delete nextQuery.jobId;
-
+        delete nextQuery.jobId; // compat ancien
         await router.replace({query: nextQuery}, undefined, {shallow: true});
     };
 
-    const setJobId = async (id: string | null) => {
-        setJobIdState(id);
-
-        try {
-            if (id) {
-                localStorage.setItem(LS_KEY_NEW, id);
-                localStorage.setItem(LS_KEY_OLD, id); // migration
-            }
-        } catch {
-        }
-
-        if (router.isReady) await setGenerationIdInUrl(id || undefined);
-    };
-
-    const setPhotoPreviewSmart = (next: string | null) => {
-        if (!next) return;
-        setPhotoPreview((prev) => {
-            // blob local -> thumb distante : remplace + revoke
-            if (prev && isBlobUrl(prev) && !isBlobUrl(next)) {
-                try {
-                    URL.revokeObjectURL(prev);
-                } catch {
-                }
-            }
-            return next;
-        });
-    };
-
     const ensureShareUrl = async (generationId: string) => {
-        // évite de spam (appel idempotent, mais on le fait au max 1x / id côté hook)
-        if (shareUrl) return;
-
         try {
-            const payload = await fetchJson<any>(
-                `/api/generations/${encodeURIComponent(generationId)}/share`,
-                {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: "{}",
-                }
-            );
+            const payload = await fetchJson<any>(`/api/generations/${encodeURIComponent(generationId)}/share`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: "{}",
+            });
 
-            const publicPath = extractPublicPath(payload) ?? `/slug/${generationId}`;
-            setShareUrl(absFromPublicPath(publicPath));
+            const publicPath =
+                safeFirstString(payload?.publicPath) ||
+                safeFirstString(payload?.data?.publicPath) ||
+                `/slug/${generationId}`;
+
+            const abs = new URL(publicPath, window.location.origin).toString();
+            setShareUrl(abs);
         } catch {
-            // fallback (ça marche si /slug/:id est public côté app)
-            setShareUrl(absFromPublicPath(`/slug/${generationId}`));
-        }
-    };
-
-    const hydrateFromJob = async (generationId: string) => {
-        stopPolling();
-
-        try {
-            const data = await fetchJson<JobStatusResponse>(
-                `/api/generations/${encodeURIComponent(generationId)}`
-            );
-
-            setJobIdState(generationId);
-
-            const thumb = pickThumbnailUrl(data);
-            if (thumb) setPhotoPreviewSmart(thumb);
-
-            // share : on le crée/réactive une fois
-            void ensureShareUrl(generationId);
-
-            const status = pickStatus(data);
-
-            if ((status === "succeeded" || status === "done") && pickVideoUrl(data)) {
-                setVideoUrl(pickVideoUrl(data));
-                setDemoState("success");
-                stopPolling();
-                return;
-            }
-
-            if (status === "failed" || status === "error") {
-                setError(pickError(data) || t("demo.error.generation_failed"));
-                setDemoState("failed");
-                stopPolling();
-                return;
-            }
-
-            setDemoState("generating");
-            pollJob(generationId, true);
-        } catch {
-            setDemoState("idle");
+            setShareUrl(new URL(`/slug/${generationId}`, window.location.origin).toString());
         }
     };
 
@@ -243,28 +121,31 @@ export function useInteractiveDemo({router}: Params) {
 
         const tick = async () => {
             try {
-                const data = await fetchJson<JobStatusResponse>(
-                    `/api/generations/${encodeURIComponent(generationId)}`
-                );
+                const data = await fetchJson<JobStatusResponse>(`/api/generations/${encodeURIComponent(generationId)}`);
 
-                const thumb = pickThumbnailUrl(data);
-                if (thumb) setPhotoPreviewSmart(thumb);
+                const status = safeFirstString((data as any)?.status) || "";
+                const vUrl =
+                    safeFirstString((data as any)?.resultUrl) ||
+                    safeFirstString((data as any)?.videoUrl) ||
+                    null;
 
-                const status = pickStatus(data);
-
-                if ((status === "succeeded" || status === "done") && pickVideoUrl(data)) {
-                    setVideoUrl(pickVideoUrl(data));
+                if ((status === "succeeded" || status === "done") && vUrl) {
+                    setVideoUrl(vUrl);
                     setDemoState("success");
                     stopPolling();
-                } else if (status === "failed" || status === "error") {
-                    setError(pickError(data) || t("demo.error.generation_failed"));
+                    return;
+                }
+
+                if (status === "failed" || status === "error") {
+                    setError(safeFirstString((data as any)?.error) || t("demo.error.generation_failed"));
                     setDemoState("failed");
                     stopPolling();
-                } else {
-                    setDemoState("generating");
+                    return;
                 }
+
+                setDemoState("generating");
             } catch {
-                // cold start / réseau: on continue
+                // continue
             }
         };
 
@@ -272,58 +153,39 @@ export function useInteractiveDemo({router}: Params) {
         pollRef.current = setInterval(tick, 1500);
     };
 
-    async function fetchLatestDemoId(): Promise<string | null> {
-        // On suppose que /api/generations/index.ts supporte une variante “latest demo”
-        const candidates = [
-            "/api/generations?scope=demo&latest=day",
-            "/api/generations?demo=1&latest=day",
-            "/api/generations?scope=demo&mode=day&latest=1",
-        ] as const;
+    async function createAssetFromFile(file: File): Promise<AssetDTO> {
+        // 1) presign
+        const presign = await fetchJson<PresignResp>("/api/assets/presign", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                contentType: file.type || "application/octet-stream",
+                ext: inferExt(file),
+                type: "image" as AssetType,
+            }),
+        });
 
-        for (const url of candidates) {
-            try {
-                const payload = await fetchJson<LatestDemoResponse>(url);
-                const id = pickId(payload) || pickId((payload as any)?.latest);
-                if (id) return id;
-            } catch {
-                // try next
-            }
-        }
-        return null;
+        // 2) upload PUT to S3
+        await putToPresignedUrl(presign.uploadUrl, file);
+
+        // 3) add asset (month/year obligatoires)
+        const d = new Date();
+        const body = {
+            fileKey: presign.key,
+            type: "image" as AssetType,
+            title: (file.name || "").slice(0, 120) || undefined,
+            month: d.getMonth() + 1,
+            year: d.getFullYear(),
+        };
+
+        const created = await fetchJson<CreateAssetResp>("/api/assets", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(body),
+        });
+
+        return created.asset;
     }
-
-    // initial load: query generationId -> latest -> localStorage
-    useEffect(() => {
-        if (!router.isReady) return;
-
-        const qId = getQueryId(router);
-        if (qId) {
-            void setJobId(qId);
-            void hydrateFromJob(qId);
-            return;
-        }
-
-        (async () => {
-            // 1) server latest (IP/scope) via nouveaux endpoints
-            const latest = await fetchLatestDemoId();
-            if (latest) {
-                await setJobId(latest);
-                await hydrateFromJob(latest);
-                return;
-            }
-
-            // 2) fallback localStorage
-            try {
-                const last = localStorage.getItem(LS_KEY_NEW) || localStorage.getItem(LS_KEY_OLD);
-                if (last) {
-                    await setJobId(last);
-                    await hydrateFromJob(last);
-                }
-            } catch {
-            }
-        })();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [router.isReady]);
 
     const uploadAndGenerate = async (file: File) => {
         stopPolling();
@@ -346,16 +208,26 @@ export function useInteractiveDemo({router}: Params) {
         await setJobId(null);
         setDemoState("analyzing");
 
-        const fd = new FormData();
-        fd.append("file", file);
-
         try {
+            // ✅ Flow attendu
+            const asset = await createAssetFromFile(file);
+
             const payload = await fetchJson<CreateJobResponse>("/api/generations", {
                 method: "POST",
-                body: fd,
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    sourceAssetId: asset.id,
+                    duration: 5,
+                }),
+                // Optionnel mais recommandé: idempotence côté front
+                // headers: {"Content-Type":"application/json","Idempotency-Key": crypto.randomUUID()},
             });
 
-            const generationId = pickId(payload);
+            const generationId =
+                safeFirstString((payload as any)?.jobId) ||
+                safeFirstString((payload as any)?.id) ||
+                null;
+
             if (!generationId) {
                 setError(t("demo.error.upload_failed"));
                 setDemoState("failed");
@@ -363,8 +235,6 @@ export function useInteractiveDemo({router}: Params) {
             }
 
             await setJobId(generationId);
-
-            // share url: créé/réactive + stable pendant la génération
             await ensureShareUrl(generationId);
 
             setDemoState("generating");
@@ -373,8 +243,13 @@ export function useInteractiveDemo({router}: Params) {
             const err = e as unknown;
 
             if (err instanceof HttpError) {
-                if (err.status === 429 || err.status === 403) {
-                    setError(t("demo.error.quota"));
+                if (err.status === 429 || err.status === 403 || err.status === 402) {
+                    // 402 chez toi: demo already used / crédits insuffisants
+                    setError(
+                        err.status === 402
+                            ? "Demo déjà utilisée sur ce réseau."
+                            : t("demo.error.quota")
+                    );
                     setDemoState("failed");
                     return;
                 }
@@ -400,15 +275,10 @@ export function useInteractiveDemo({router}: Params) {
         jobId,
         error,
         photoPreview,
-
-        setPhotoPreviewSmart,
-
-        hydrateFromJob,
-        pollJob,
-        stopPolling,
-
         uploadAndGenerate,
         openShare,
+        pollJob,
+        stopPolling,
         setJobId,
     };
 }

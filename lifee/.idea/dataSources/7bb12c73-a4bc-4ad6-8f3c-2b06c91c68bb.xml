@@ -3,7 +3,7 @@
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.53">
     <root id="1">
       <DateStyle>mdy</DateStyle>
-      <IntrospectionStateNumber>2631</IntrospectionStateNumber>
+      <IntrospectionStateNumber>2659</IntrospectionStateNumber>
       <ServerVersion>16.11</ServerVersion>
       <StartupTime>1766585017</StartupTime>
       <TimeZones>true ACDT
@@ -696,7 +696,7 @@ false posixrules
 13276||10|C|G
 13276||-9223372036854775808|U|G
 13276||10|U|G</Grants>
-      <IntrospectionStateNumber>2631</IntrospectionStateNumber>
+      <IntrospectionStateNumber>2659</IntrospectionStateNumber>
       <ObjectId>16384</ObjectId>
       <OwnerName>lifee</OwnerName>
     </database>
@@ -4106,12 +4106,17 @@ false posixrules
       <ValidatorName>fmgr_sql_validator</ValidatorName>
       <ValidatorSchema>pg_catalog</ValidatorSchema>
     </language>
-    <schema id="262" parent="2" name="information_schema">
+    <schema id="262" parent="2" name="drizzle">
+      <ObjectId>27914</ObjectId>
+      <StateNumber>2632</StateNumber>
+      <OwnerName>lifee</OwnerName>
+    </schema>
+    <schema id="263" parent="2" name="information_schema">
       <ObjectId>13276</ObjectId>
       <StateNumber>530</StateNumber>
       <OwnerName>lifee</OwnerName>
     </schema>
-    <schema id="263" parent="2" name="pg_catalog">
+    <schema id="264" parent="2" name="pg_catalog">
       <AutoIntrospectionLevel>1</AutoIntrospectionLevel>
       <Comment>system catalog schema</Comment>
       <LastIntrospectionLevel>1</LastIntrospectionLevel>
@@ -4120,17 +4125,2419 @@ false posixrules
       <StateNumber>524</StateNumber>
       <OwnerName>lifee</OwnerName>
     </schema>
-    <schema id="264" parent="2" name="public">
+    <schema id="265" parent="2" name="public">
       <AutoIntrospectionLevel>3</AutoIntrospectionLevel>
       <Current>1</Current>
-      <LastIntrospectionL1Xid>2631</LastIntrospectionL1Xid>
-      <LastIntrospectionL2Xid>2631</LastIntrospectionL2Xid>
-      <LastIntrospectionL3Xid>2631</LastIntrospectionL3Xid>
+      <LastIntrospectionL1Xid>2659</LastIntrospectionL1Xid>
+      <LastIntrospectionL2Xid>2659</LastIntrospectionL2Xid>
+      <LastIntrospectionL3Xid>2659</LastIntrospectionL3Xid>
       <LastIntrospectionLevel>3</LastIntrospectionLevel>
-      <LastIntrospectionLocalTimestamp>2025-12-26.04:16:00</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-12-26.05:49:55</LastIntrospectionLocalTimestamp>
       <ObjectId>27913</ObjectId>
       <StateNumber>2630</StateNumber>
       <OwnerName>lifee</OwnerName>
     </schema>
+    <object-type id="266" parent="265" name="account_link_status">
+      <DetailsLevel>2</DetailsLevel>
+      <Labels>pending
+completed
+cancelled</Labels>
+      <ObjectId>27925</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <SubCategory>enum</SubCategory>
+      <SubKind>enum</SubKind>
+      <OwnerName>lifee</OwnerName>
+    </object-type>
+    <object-type id="267" parent="265" name="album_status">
+      <DetailsLevel>2</DetailsLevel>
+      <Labels>draft
+exported</Labels>
+      <ObjectId>27932</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <SubCategory>enum</SubCategory>
+      <SubKind>enum</SubKind>
+      <OwnerName>lifee</OwnerName>
+    </object-type>
+    <object-type id="268" parent="265" name="asset_type">
+      <DetailsLevel>2</DetailsLevel>
+      <Labels>image
+video</Labels>
+      <ObjectId>27938</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <SubCategory>enum</SubCategory>
+      <SubKind>enum</SubKind>
+      <OwnerName>lifee</OwnerName>
+    </object-type>
+    <object-type id="269" parent="265" name="auth_email_code_purpose">
+      <DetailsLevel>2</DetailsLevel>
+      <Labels>login
+change_email
+link_guest
+merge_into_existing</Labels>
+      <ObjectId>27944</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <SubCategory>enum</SubCategory>
+      <SubKind>enum</SubKind>
+      <OwnerName>lifee</OwnerName>
+    </object-type>
+    <object-type id="270" parent="265" name="credit_event_type">
+      <DetailsLevel>2</DetailsLevel>
+      <Labels>purchase
+spend
+refund
+admin_adjust</Labels>
+      <ObjectId>27954</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <SubCategory>enum</SubCategory>
+      <SubKind>enum</SubKind>
+      <OwnerName>lifee</OwnerName>
+    </object-type>
+    <object-type id="271" parent="265" name="credit_pack_tier">
+      <DetailsLevel>2</DetailsLevel>
+      <Labels>standard
+creator</Labels>
+      <ObjectId>27964</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <SubCategory>enum</SubCategory>
+      <SubKind>enum</SubKind>
+      <OwnerName>lifee</OwnerName>
+    </object-type>
+    <object-type id="272" parent="265" name="credit_purchase_status">
+      <DetailsLevel>2</DetailsLevel>
+      <Labels>created
+paid
+failed
+refunded</Labels>
+      <ObjectId>27970</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <SubCategory>enum</SubCategory>
+      <SubKind>enum</SubKind>
+      <OwnerName>lifee</OwnerName>
+    </object-type>
+    <object-type id="273" parent="265" name="export_job_status">
+      <DetailsLevel>2</DetailsLevel>
+      <Labels>queued
+rendering
+done
+error</Labels>
+      <ObjectId>27980</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <SubCategory>enum</SubCategory>
+      <SubKind>enum</SubKind>
+      <OwnerName>lifee</OwnerName>
+    </object-type>
+    <object-type id="274" parent="265" name="job_event_level">
+      <DetailsLevel>2</DetailsLevel>
+      <Labels>info
+warn
+error</Labels>
+      <ObjectId>27990</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <SubCategory>enum</SubCategory>
+      <SubKind>enum</SubKind>
+      <OwnerName>lifee</OwnerName>
+    </object-type>
+    <object-type id="275" parent="265" name="job_event_source">
+      <DetailsLevel>2</DetailsLevel>
+      <Labels>server
+replicate</Labels>
+      <ObjectId>27998</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <SubCategory>enum</SubCategory>
+      <SubKind>enum</SubKind>
+      <OwnerName>lifee</OwnerName>
+    </object-type>
+    <object-type id="276" parent="265" name="replicate_job_status">
+      <DetailsLevel>2</DetailsLevel>
+      <Labels>uploading
+queued
+starting
+processing
+succeeded
+failed
+canceled</Labels>
+      <ObjectId>28004</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <SubCategory>enum</SubCategory>
+      <SubKind>enum</SubKind>
+      <OwnerName>lifee</OwnerName>
+    </object-type>
+    <object-type id="277" parent="265" name="user_type">
+      <DetailsLevel>2</DetailsLevel>
+      <Labels>guest
+normal</Labels>
+      <ObjectId>28020</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <SubCategory>enum</SubCategory>
+      <SubKind>enum</SubKind>
+      <OwnerName>lifee</OwnerName>
+    </object-type>
+    <object-type id="278" parent="265" name="webhook_processing_status">
+      <DetailsLevel>2</DetailsLevel>
+      <Labels>received
+processed
+failed</Labels>
+      <ObjectId>28026</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <SubCategory>enum</SubCategory>
+      <SubKind>enum</SubKind>
+      <OwnerName>lifee</OwnerName>
+    </object-type>
+    <object-type id="279" parent="265" name="webhook_provider">
+      <DetailsLevel>2</DetailsLevel>
+      <Labels>stripe
+replicate</Labels>
+      <ObjectId>28034</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <SubCategory>enum</SubCategory>
+      <SubKind>enum</SubKind>
+      <OwnerName>lifee</OwnerName>
+    </object-type>
+    <table id="280" parent="265" name="account_links">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>28039</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <table id="281" parent="265" name="album_items">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>28047</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <table id="282" parent="265" name="albums">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>28055</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <table id="283" parent="265" name="assets">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>28067</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <table id="284" parent="265" name="auth_email_codes">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>28076</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <table id="285" parent="265" name="auth_sessions">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>28086</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <table id="286" parent="265" name="credit_events">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>28095</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <table id="287" parent="265" name="credit_packs">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>28105</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <table id="288" parent="265" name="credit_purchases">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>28116</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <table id="289" parent="265" name="demo_trials">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>28127</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <table id="290" parent="265" name="export_jobs">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>28136</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <table id="291" parent="265" name="generation_shares">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>28148</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <table id="292" parent="265" name="idempotency_keys">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>28157</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <table id="293" parent="265" name="musics">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>28166</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <table id="294" parent="265" name="oauth_accounts">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>28176</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <table id="295" parent="265" name="replicate_generation_job_events">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>28185</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <table id="296" parent="265" name="replicate_generation_jobs">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>28194</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <table id="297" parent="265" name="user_email_updates">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>28205</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <table id="298" parent="265" name="users">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>28214</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <table id="299" parent="265" name="webhook_events">
+      <DetailsLevel>2</DetailsLevel>
+      <ObjectId>28225</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>lifee</OwnerName>
+    </table>
+    <column id="300" parent="280" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="301" parent="280" name="guest_user_id">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="302" parent="280" name="target_user_id">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="303" parent="280" name="status">
+      <DefaultExpression>&apos;pending&apos;::account_link_status</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>account_link_status|0s</StoredType>
+      <TypeId>27925</TypeId>
+    </column>
+    <column id="304" parent="280" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="305" parent="280" name="completed_at">
+      <Position>6</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <foreign-key id="306" parent="280" name="account_links_guest_user_id_users_id_fk">
+      <ColNames>guest_user_id</ColNames>
+      <ObjectId>28236</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28214</RefTableId>
+    </foreign-key>
+    <foreign-key id="307" parent="280" name="account_links_target_user_id_users_id_fk">
+      <ColNames>target_user_id</ColNames>
+      <ObjectId>28241</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28214</RefTableId>
+    </foreign-key>
+    <index id="308" parent="280" name="account_links_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28045</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="309" parent="280" name="account_links_guest_pending_uidx">
+      <ColNames>guest_user_id</ColNames>
+      <Condition>(status = &apos;pending&apos;::account_link_status)</Condition>
+      <ObjectId>28384</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="310" parent="280" name="account_links_guest_idx">
+      <ColNames>guest_user_id</ColNames>
+      <ObjectId>28381</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="311" parent="280" name="account_links_target_idx">
+      <ColNames>target_user_id</ColNames>
+      <ObjectId>28382</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="312" parent="280" name="account_links_status_idx">
+      <ColNames>status</ColNames>
+      <ObjectId>28383</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="313" parent="280" name="account_links_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28046</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <UnderlyingIndexId>28045</UnderlyingIndexId>
+    </key>
+    <column id="314" parent="281" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="315" parent="281" name="album_id">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="316" parent="281" name="asset_id">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="317" parent="281" name="position">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="318" parent="281" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="319" parent="281" name="updated_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <foreign-key id="320" parent="281" name="album_items_album_id_albums_id_fk">
+      <ColNames>album_id</ColNames>
+      <ObjectId>28246</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28055</RefTableId>
+    </foreign-key>
+    <foreign-key id="321" parent="281" name="album_items_asset_id_assets_id_fk">
+      <ColNames>asset_id</ColNames>
+      <ObjectId>28251</ObjectId>
+      <OnDelete>restrict</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28067</RefTableId>
+    </foreign-key>
+    <index id="322" parent="281" name="album_items_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28053</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="323" parent="281" name="album_items_album_pos_idx">
+      <ColNames>album_id
+position</ColNames>
+      <ObjectId>28385</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="324" parent="281" name="album_items_album_idx">
+      <ColNames>album_id</ColNames>
+      <ObjectId>28387</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="325" parent="281" name="album_items_asset_idx">
+      <ColNames>asset_id</ColNames>
+      <ObjectId>28386</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="326" parent="281" name="album_items_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28054</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <UnderlyingIndexId>28053</UnderlyingIndexId>
+    </key>
+    <column id="327" parent="282" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="328" parent="282" name="user_id">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="329" parent="282" name="title">
+      <DefaultExpression>&apos;Untitled&apos;::text</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="330" parent="282" name="status">
+      <DefaultExpression>&apos;draft&apos;::album_status</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>album_status|0s</StoredType>
+      <TypeId>27932</TypeId>
+    </column>
+    <column id="331" parent="282" name="music_id">
+      <Position>5</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="332" parent="282" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="333" parent="282" name="updated_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>7</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <foreign-key id="334" parent="282" name="albums_user_id_users_id_fk">
+      <ColNames>user_id</ColNames>
+      <ObjectId>28256</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28214</RefTableId>
+    </foreign-key>
+    <foreign-key id="335" parent="282" name="albums_music_id_musics_id_fk">
+      <ColNames>music_id</ColNames>
+      <ObjectId>28261</ObjectId>
+      <OnDelete>set-null</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28166</RefTableId>
+    </foreign-key>
+    <index id="336" parent="282" name="albums_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28065</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="337" parent="282" name="albums_user_status_idx">
+      <ColNames>user_id
+status</ColNames>
+      <ObjectId>28389</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="338" parent="282" name="albums_user_created_idx">
+      <ColNames>user_id
+created_at</ColNames>
+      <ObjectId>28388</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="339" parent="282" name="albums_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28066</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <UnderlyingIndexId>28065</UnderlyingIndexId>
+    </key>
+    <column id="340" parent="283" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="341" parent="283" name="user_id">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="342" parent="283" name="generated_from_asset_id">
+      <Position>3</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="343" parent="283" name="type">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>asset_type|0s</StoredType>
+      <TypeId>27938</TypeId>
+    </column>
+    <column id="344" parent="283" name="file_key">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="345" parent="283" name="title">
+      <Position>6</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="346" parent="283" name="month">
+      <NotNull>1</NotNull>
+      <Position>7</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="347" parent="283" name="year">
+      <NotNull>1</NotNull>
+      <Position>8</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="348" parent="283" name="thumbnail_key">
+      <Position>9</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="349" parent="283" name="deleted_at">
+      <Position>10</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="350" parent="283" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>11</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <foreign-key id="351" parent="283" name="assets_user_id_users_id_fk">
+      <ColNames>user_id</ColNames>
+      <ObjectId>28266</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28214</RefTableId>
+    </foreign-key>
+    <foreign-key id="352" parent="283" name="generated_from_asset_id_fkey">
+      <ColNames>generated_from_asset_id</ColNames>
+      <ObjectId>28271</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28067</RefTableId>
+    </foreign-key>
+    <index id="353" parent="283" name="assets_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28074</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="354" parent="283" name="assets_user_year_month_idx">
+      <ColNames>user_id
+year
+month</ColNames>
+      <ObjectId>28390</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="355" parent="283" name="assets_generated_from_idx">
+      <ColNames>generated_from_asset_id</ColNames>
+      <ObjectId>28391</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="356" parent="283" name="assets_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28075</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <UnderlyingIndexId>28074</UnderlyingIndexId>
+    </key>
+    <column id="357" parent="284" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="358" parent="284" name="email">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="359" parent="284" name="purpose">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>auth_email_code_purpose|0s</StoredType>
+      <TypeId>27944</TypeId>
+    </column>
+    <column id="360" parent="284" name="code_hash">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="361" parent="284" name="expires_at">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="362" parent="284" name="consumed_at">
+      <Position>6</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="363" parent="284" name="attempts">
+      <DefaultExpression>0</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>7</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="364" parent="284" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>8</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <index id="365" parent="284" name="auth_email_codes_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28084</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="366" parent="284" name="auth_email_codes_email_purpose_idx">
+      <ColNames>email
+purpose</ColNames>
+      <ObjectId>28392</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationNames>default</CollationNames>
+      <CollationIds>100</CollationIds>
+      <CollationParentNames>pg_catalog</CollationParentNames>
+    </index>
+    <index id="367" parent="284" name="auth_email_codes_created_idx">
+      <ColNames>created_at</ColNames>
+      <ObjectId>28393</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="368" parent="284" name="auth_email_codes_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28085</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <UnderlyingIndexId>28084</UnderlyingIndexId>
+    </key>
+    <column id="369" parent="285" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="370" parent="285" name="user_id">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="371" parent="285" name="token_hash">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="372" parent="285" name="ip">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="373" parent="285" name="user_agent">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="374" parent="285" name="expires_at">
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="375" parent="285" name="revoked_at">
+      <Position>7</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="376" parent="285" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>8</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <foreign-key id="377" parent="285" name="auth_sessions_user_id_users_id_fk">
+      <ColNames>user_id</ColNames>
+      <ObjectId>28276</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28214</RefTableId>
+    </foreign-key>
+    <index id="378" parent="285" name="auth_sessions_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28093</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="379" parent="285" name="auth_sessions_token_hash_uidx">
+      <ColNames>token_hash</ColNames>
+      <ObjectId>28394</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationNames>default</CollationNames>
+      <CollationIds>100</CollationIds>
+      <CollationParentNames>pg_catalog</CollationParentNames>
+    </index>
+    <index id="380" parent="285" name="auth_sessions_user_expires_idx">
+      <ColNames>user_id
+expires_at</ColNames>
+      <ObjectId>28396</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="381" parent="285" name="auth_sessions_user_idx">
+      <ColNames>user_id</ColNames>
+      <ObjectId>28395</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="382" parent="285" name="auth_sessions_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28094</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <UnderlyingIndexId>28093</UnderlyingIndexId>
+    </key>
+    <column id="383" parent="286" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="384" parent="286" name="user_id">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="385" parent="286" name="type">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>credit_event_type|0s</StoredType>
+      <TypeId>27954</TypeId>
+    </column>
+    <column id="386" parent="286" name="delta">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="387" parent="286" name="purchase_id">
+      <Position>5</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="388" parent="286" name="album_export_job_id">
+      <Position>6</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="389" parent="286" name="replicate_job_id">
+      <Position>7</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="390" parent="286" name="note">
+      <Position>8</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="391" parent="286" name="metadata">
+      <DefaultExpression>&apos;{}&apos;::jsonb</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>9</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>jsonb|0s</StoredType>
+      <TypeId>3802</TypeId>
+    </column>
+    <column id="392" parent="286" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>10</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <foreign-key id="393" parent="286" name="credit_events_user_id_users_id_fk">
+      <ColNames>user_id</ColNames>
+      <ObjectId>28281</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28214</RefTableId>
+    </foreign-key>
+    <foreign-key id="394" parent="286" name="credit_events_purchase_id_credit_purchases_id_fk">
+      <ColNames>purchase_id</ColNames>
+      <ObjectId>28286</ObjectId>
+      <OnDelete>set-null</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28116</RefTableId>
+    </foreign-key>
+    <foreign-key id="395" parent="286" name="credit_events_album_export_job_id_export_jobs_id_fk">
+      <ColNames>album_export_job_id</ColNames>
+      <ObjectId>28291</ObjectId>
+      <OnDelete>set-null</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28136</RefTableId>
+    </foreign-key>
+    <foreign-key id="396" parent="286" name="credit_events_replicate_job_id_replicate_generation_jobs_id_fk">
+      <ColNames>replicate_job_id</ColNames>
+      <ObjectId>28296</ObjectId>
+      <OnDelete>set-null</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28194</RefTableId>
+    </foreign-key>
+    <index id="397" parent="286" name="credit_events_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28103</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="398" parent="286" name="credit_events_user_idx">
+      <ColNames>user_id</ColNames>
+      <ObjectId>28397</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="399" parent="286" name="credit_events_type_idx">
+      <ColNames>type</ColNames>
+      <ObjectId>28399</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="400" parent="286" name="credit_events_created_idx">
+      <ColNames>created_at</ColNames>
+      <ObjectId>28398</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="401" parent="286" name="credit_events_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28104</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <UnderlyingIndexId>28103</UnderlyingIndexId>
+    </key>
+    <column id="402" parent="287" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="403" parent="287" name="tier">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>credit_pack_tier|0s</StoredType>
+      <TypeId>27964</TypeId>
+    </column>
+    <column id="404" parent="287" name="name">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="405" parent="287" name="sub_title">
+      <Position>4</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="406" parent="287" name="credits">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="407" parent="287" name="price_eur">
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="408" parent="287" name="is_active">
+      <DefaultExpression>true</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>7</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>boolean|0s</StoredType>
+      <TypeId>16</TypeId>
+    </column>
+    <column id="409" parent="287" name="badge">
+      <Position>8</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="410" parent="287" name="benefits">
+      <DefaultExpression>&apos;{}&apos;::text[]</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>9</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text[]|0s</StoredType>
+      <TypeId>1009</TypeId>
+    </column>
+    <column id="411" parent="287" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>10</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <index id="412" parent="287" name="credit_packs_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28114</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="413" parent="287" name="credit_packs_tier_idx">
+      <ColNames>tier</ColNames>
+      <ObjectId>28400</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="414" parent="287" name="credit_packs_created_idx">
+      <ColNames>created_at</ColNames>
+      <ObjectId>28401</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="415" parent="287" name="credit_packs_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28115</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <UnderlyingIndexId>28114</UnderlyingIndexId>
+    </key>
+    <column id="416" parent="288" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="417" parent="288" name="user_id">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="418" parent="288" name="credit_pack_id">
+      <Position>3</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="419" parent="288" name="credits_bought">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="420" parent="288" name="amount_eur">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="421" parent="288" name="discount_percent">
+      <DefaultExpression>0</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="422" parent="288" name="status">
+      <DefaultExpression>&apos;created&apos;::credit_purchase_status</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>7</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>credit_purchase_status|0s</StoredType>
+      <TypeId>27970</TypeId>
+    </column>
+    <column id="423" parent="288" name="stripe_checkout_session_id">
+      <Position>8</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="424" parent="288" name="stripe_payment_intent_id">
+      <Position>9</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="425" parent="288" name="stripe_customer_id">
+      <Position>10</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="426" parent="288" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>11</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="427" parent="288" name="paid_at">
+      <Position>12</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <foreign-key id="428" parent="288" name="credit_purchases_user_id_users_id_fk">
+      <ColNames>user_id</ColNames>
+      <ObjectId>28301</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28214</RefTableId>
+    </foreign-key>
+    <foreign-key id="429" parent="288" name="credit_purchases_credit_pack_id_credit_packs_id_fk">
+      <ColNames>credit_pack_id</ColNames>
+      <ObjectId>28306</ObjectId>
+      <OnDelete>set-null</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28105</RefTableId>
+    </foreign-key>
+    <index id="430" parent="288" name="credit_purchases_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28125</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="431" parent="288" name="credit_purchases_stripe_checkout_uidx">
+      <ColNames>stripe_checkout_session_id</ColNames>
+      <Condition>(stripe_checkout_session_id IS NOT NULL)</Condition>
+      <ObjectId>28405</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationNames>default</CollationNames>
+      <CollationIds>100</CollationIds>
+      <CollationParentNames>pg_catalog</CollationParentNames>
+    </index>
+    <index id="432" parent="288" name="credit_purchases_stripe_payment_intent_uidx">
+      <ColNames>stripe_payment_intent_id</ColNames>
+      <Condition>(stripe_payment_intent_id IS NOT NULL)</Condition>
+      <ObjectId>28406</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationNames>default</CollationNames>
+      <CollationIds>100</CollationIds>
+      <CollationParentNames>pg_catalog</CollationParentNames>
+    </index>
+    <index id="433" parent="288" name="credit_purchases_user_idx">
+      <ColNames>user_id</ColNames>
+      <ObjectId>28402</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="434" parent="288" name="credit_purchases_pack_idx">
+      <ColNames>credit_pack_id</ColNames>
+      <ObjectId>28403</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="435" parent="288" name="credit_purchases_status_idx">
+      <ColNames>status</ColNames>
+      <ObjectId>28404</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="436" parent="288" name="credit_purchases_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28126</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <UnderlyingIndexId>28125</UnderlyingIndexId>
+    </key>
+    <column id="437" parent="289" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="438" parent="289" name="ip_hash">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="439" parent="289" name="user_id">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="440" parent="289" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <index id="441" parent="289" name="demo_trials_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28134</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="442" parent="289" name="demo_trials_ip_created_idx">
+      <ColNames>ip_hash
+created_at</ColNames>
+      <ObjectId>28407</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationNames>default</CollationNames>
+      <CollationIds>100</CollationIds>
+      <CollationParentNames>pg_catalog</CollationParentNames>
+    </index>
+    <key id="443" parent="289" name="demo_trials_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28135</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <UnderlyingIndexId>28134</UnderlyingIndexId>
+    </key>
+    <column id="444" parent="290" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="445" parent="290" name="user_id">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="446" parent="290" name="album_id">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="447" parent="290" name="status">
+      <DefaultExpression>&apos;queued&apos;::export_job_status</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>export_job_status|0s</StoredType>
+      <TypeId>27980</TypeId>
+    </column>
+    <column id="448" parent="290" name="progress">
+      <DefaultExpression>0</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="449" parent="290" name="video_key">
+      <Position>6</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="450" parent="290" name="error_message">
+      <Position>7</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="451" parent="290" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>8</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="452" parent="290" name="updated_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>9</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <foreign-key id="453" parent="290" name="export_jobs_user_id_users_id_fk">
+      <ColNames>user_id</ColNames>
+      <ObjectId>28311</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28214</RefTableId>
+    </foreign-key>
+    <foreign-key id="454" parent="290" name="export_jobs_album_id_albums_id_fk">
+      <ColNames>album_id</ColNames>
+      <ObjectId>28316</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28055</RefTableId>
+    </foreign-key>
+    <index id="455" parent="290" name="export_jobs_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28146</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="456" parent="290" name="export_jobs_user_created_idx">
+      <ColNames>user_id
+created_at</ColNames>
+      <ObjectId>28408</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="457" parent="290" name="export_jobs_album_created_idx">
+      <ColNames>album_id
+created_at</ColNames>
+      <ObjectId>28409</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="458" parent="290" name="export_jobs_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28147</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <UnderlyingIndexId>28146</UnderlyingIndexId>
+    </key>
+    <column id="459" parent="291" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="460" parent="291" name="generation_job_id">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="461" parent="291" name="user_id">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="462" parent="291" name="is_active">
+      <DefaultExpression>true</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>boolean|0s</StoredType>
+      <TypeId>16</TypeId>
+    </column>
+    <column id="463" parent="291" name="access_count">
+      <DefaultExpression>0</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="464" parent="291" name="last_accessed_at">
+      <Position>6</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="465" parent="291" name="revoked_at">
+      <Position>7</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="466" parent="291" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>8</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <foreign-key id="467" parent="291" name="generation_shares_generation_job_id_replicate_generation_jobs_i">
+      <ColNames>generation_job_id</ColNames>
+      <ObjectId>28321</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28194</RefTableId>
+    </foreign-key>
+    <foreign-key id="468" parent="291" name="generation_shares_user_id_users_id_fk">
+      <ColNames>user_id</ColNames>
+      <ObjectId>28326</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28214</RefTableId>
+    </foreign-key>
+    <index id="469" parent="291" name="generation_shares_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28155</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="470" parent="291" name="generation_shares_generation_uidx">
+      <ColNames>generation_job_id</ColNames>
+      <ObjectId>28410</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="471" parent="291" name="generation_shares_user_created_idx">
+      <ColNames>user_id
+created_at</ColNames>
+      <ObjectId>28411</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="472" parent="291" name="generation_shares_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28156</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <UnderlyingIndexId>28155</UnderlyingIndexId>
+    </key>
+    <column id="473" parent="292" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="474" parent="292" name="provider">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="475" parent="292" name="key">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="476" parent="292" name="user_id">
+      <Position>4</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="477" parent="292" name="response_json">
+      <Position>5</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>jsonb|0s</StoredType>
+      <TypeId>3802</TypeId>
+    </column>
+    <column id="478" parent="292" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <index id="479" parent="292" name="idempotency_keys_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28164</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="480" parent="292" name="idempotency_provider_key_uidx">
+      <ColNames>provider
+key</ColNames>
+      <ObjectId>28412</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationIds>100
+100</CollationIds>
+      <CollationNames>default
+default</CollationNames>
+      <CollationParentNames>pg_catalog
+pg_catalog</CollationParentNames>
+    </index>
+    <index id="481" parent="292" name="idempotency_user_created_idx">
+      <ColNames>user_id
+created_at</ColNames>
+      <ObjectId>28413</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="482" parent="292" name="idempotency_keys_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28165</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <UnderlyingIndexId>28164</UnderlyingIndexId>
+    </key>
+    <column id="483" parent="293" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="484" parent="293" name="provider">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="485" parent="293" name="title">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="486" parent="293" name="artist">
+      <Position>4</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="487" parent="293" name="duration_sec">
+      <Position>5</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="488" parent="293" name="file_key">
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="489" parent="293" name="waveform_key">
+      <Position>7</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="490" parent="293" name="is_active">
+      <DefaultExpression>true</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>8</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>boolean|0s</StoredType>
+      <TypeId>16</TypeId>
+    </column>
+    <column id="491" parent="293" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>9</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <index id="492" parent="293" name="musics_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28174</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="493" parent="293" name="musics_active_idx">
+      <ColNames>is_active</ColNames>
+      <ObjectId>28414</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="494" parent="293" name="musics_created_idx">
+      <ColNames>created_at</ColNames>
+      <ObjectId>28415</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="495" parent="293" name="musics_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28175</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <UnderlyingIndexId>28174</UnderlyingIndexId>
+    </key>
+    <column id="496" parent="294" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="497" parent="294" name="user_id">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="498" parent="294" name="provider">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="499" parent="294" name="provider_account_id">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="500" parent="294" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <foreign-key id="501" parent="294" name="oauth_accounts_user_id_users_id_fk">
+      <ColNames>user_id</ColNames>
+      <ObjectId>28331</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28214</RefTableId>
+    </foreign-key>
+    <index id="502" parent="294" name="oauth_accounts_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28183</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="503" parent="294" name="oauth_accounts_provider_uidx">
+      <ColNames>provider
+provider_account_id</ColNames>
+      <ObjectId>28416</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationIds>100
+100</CollationIds>
+      <CollationNames>default
+default</CollationNames>
+      <CollationParentNames>pg_catalog
+pg_catalog</CollationParentNames>
+    </index>
+    <index id="504" parent="294" name="oauth_accounts_user_idx">
+      <ColNames>user_id</ColNames>
+      <ObjectId>28417</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="505" parent="294" name="oauth_accounts_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28184</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <UnderlyingIndexId>28183</UnderlyingIndexId>
+    </key>
+    <column id="506" parent="295" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="507" parent="295" name="replicate_generation_job_id">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="508" parent="295" name="status">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>job_event_level|0s</StoredType>
+      <TypeId>27990</TypeId>
+    </column>
+    <column id="509" parent="295" name="source">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>job_event_source|0s</StoredType>
+      <TypeId>27998</TypeId>
+    </column>
+    <column id="510" parent="295" name="message">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="511" parent="295" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <foreign-key id="512" parent="295" name="replicate_generation_job_events_replicate_generation_job_id_rep">
+      <ColNames>replicate_generation_job_id</ColNames>
+      <ObjectId>28336</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28194</RefTableId>
+    </foreign-key>
+    <index id="513" parent="295" name="replicate_generation_job_events_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28192</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="514" parent="295" name="replicate_job_events_job_created_idx">
+      <ColNames>replicate_generation_job_id
+created_at</ColNames>
+      <ObjectId>28419</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="515" parent="295" name="replicate_job_events_job_idx">
+      <ColNames>replicate_generation_job_id</ColNames>
+      <ObjectId>28418</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="516" parent="295" name="replicate_generation_job_events_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28193</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <UnderlyingIndexId>28192</UnderlyingIndexId>
+    </key>
+    <column id="517" parent="296" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="518" parent="296" name="user_id">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="519" parent="296" name="album_item_id">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="520" parent="296" name="created_by_asset_id">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="521" parent="296" name="result_asset_id">
+      <Position>5</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="522" parent="296" name="model">
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="523" parent="296" name="status">
+      <NotNull>1</NotNull>
+      <Position>7</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>replicate_job_status|0s</StoredType>
+      <TypeId>28004</TypeId>
+    </column>
+    <column id="524" parent="296" name="progress">
+      <DefaultExpression>0</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>8</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>real|0s</StoredType>
+      <TypeId>700</TypeId>
+    </column>
+    <column id="525" parent="296" name="progress_message">
+      <Position>9</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="526" parent="296" name="replicate_prediction_id">
+      <Position>10</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="527" parent="296" name="replicate_status">
+      <Position>11</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="528" parent="296" name="replicate_log">
+      <Position>12</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="529" parent="296" name="month">
+      <NotNull>1</NotNull>
+      <Position>13</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="530" parent="296" name="year">
+      <NotNull>1</NotNull>
+      <Position>14</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="531" parent="296" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>15</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="532" parent="296" name="updated_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>16</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <foreign-key id="533" parent="296" name="replicate_generation_jobs_user_id_users_id_fk">
+      <ColNames>user_id</ColNames>
+      <ObjectId>28341</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28214</RefTableId>
+    </foreign-key>
+    <foreign-key id="534" parent="296" name="replicate_generation_jobs_album_item_id_album_items_id_fk">
+      <ColNames>album_item_id</ColNames>
+      <ObjectId>28346</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28047</RefTableId>
+    </foreign-key>
+    <foreign-key id="535" parent="296" name="replicate_generation_jobs_created_by_asset_id_assets_id_fk">
+      <ColNames>created_by_asset_id</ColNames>
+      <ObjectId>28351</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28067</RefTableId>
+    </foreign-key>
+    <foreign-key id="536" parent="296" name="replicate_generation_jobs_result_asset_id_assets_id_fk">
+      <ColNames>result_asset_id</ColNames>
+      <ObjectId>28356</ObjectId>
+      <OnDelete>set-null</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28067</RefTableId>
+    </foreign-key>
+    <index id="537" parent="296" name="replicate_generation_jobs_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28203</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="538" parent="296" name="replicate_jobs_user_created_idx">
+      <ColNames>user_id
+created_at</ColNames>
+      <ObjectId>28420</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="539" parent="296" name="replicate_jobs_created_by_asset_idx">
+      <ColNames>created_by_asset_id</ColNames>
+      <ObjectId>28421</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="540" parent="296" name="replicate_jobs_status_idx">
+      <ColNames>status</ColNames>
+      <ObjectId>28422</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="541" parent="296" name="replicate_jobs_prediction_idx">
+      <ColNames>replicate_prediction_id</ColNames>
+      <ObjectId>28424</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationNames>default</CollationNames>
+      <CollationIds>100</CollationIds>
+      <CollationParentNames>pg_catalog</CollationParentNames>
+    </index>
+    <index id="542" parent="296" name="replicate_jobs_created_idx">
+      <ColNames>created_at</ColNames>
+      <ObjectId>28423</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="543" parent="296" name="replicate_generation_jobs_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28204</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <UnderlyingIndexId>28203</UnderlyingIndexId>
+    </key>
+    <column id="544" parent="297" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="545" parent="297" name="user_id">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="546" parent="297" name="old_email">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="547" parent="297" name="new_email">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="548" parent="297" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <foreign-key id="549" parent="297" name="user_email_updates_user_id_users_id_fk">
+      <ColNames>user_id</ColNames>
+      <ObjectId>28361</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28214</RefTableId>
+    </foreign-key>
+    <index id="550" parent="297" name="user_email_updates_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28212</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="551" parent="297" name="user_email_updates_user_idx">
+      <ColNames>user_id</ColNames>
+      <ObjectId>28425</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="552" parent="297" name="user_email_updates_new_email_idx">
+      <ColNames>new_email</ColNames>
+      <ObjectId>28426</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationNames>default</CollationNames>
+      <CollationIds>100</CollationIds>
+      <CollationParentNames>pg_catalog</CollationParentNames>
+    </index>
+    <key id="553" parent="297" name="user_email_updates_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28213</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <UnderlyingIndexId>28212</UnderlyingIndexId>
+    </key>
+    <column id="554" parent="298" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="555" parent="298" name="email">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="556" parent="298" name="type">
+      <DefaultExpression>&apos;guest&apos;::user_type</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>user_type|0s</StoredType>
+      <TypeId>28020</TypeId>
+    </column>
+    <column id="557" parent="298" name="credits">
+      <DefaultExpression>0</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="558" parent="298" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <index id="559" parent="298" name="users_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28223</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="560" parent="298" name="users_email_uidx">
+      <ColNames>email</ColNames>
+      <ObjectId>28427</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationNames>default</CollationNames>
+      <CollationIds>100</CollationIds>
+      <CollationParentNames>pg_catalog</CollationParentNames>
+    </index>
+    <index id="561" parent="298" name="users_type_idx">
+      <ColNames>type</ColNames>
+      <ObjectId>28428</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="562" parent="298" name="users_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28224</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <UnderlyingIndexId>28223</UnderlyingIndexId>
+    </key>
+    <column id="563" parent="299" name="id">
+      <DefaultExpression>gen_random_uuid()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="564" parent="299" name="provider">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>webhook_provider|0s</StoredType>
+      <TypeId>28034</TypeId>
+    </column>
+    <column id="565" parent="299" name="event_id">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="566" parent="299" name="type">
+      <Position>4</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="567" parent="299" name="payload">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>jsonb|0s</StoredType>
+      <TypeId>3802</TypeId>
+    </column>
+    <column id="568" parent="299" name="received_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="569" parent="299" name="processed_at">
+      <Position>7</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="570" parent="299" name="processing_status">
+      <DefaultExpression>&apos;received&apos;::webhook_processing_status</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>8</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>webhook_processing_status|0s</StoredType>
+      <TypeId>28026</TypeId>
+    </column>
+    <column id="571" parent="299" name="error">
+      <Position>9</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="572" parent="299" name="created_at">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>10</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="573" parent="299" name="related_user_id">
+      <Position>11</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="574" parent="299" name="related_purchase_id">
+      <Position>12</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="575" parent="299" name="related_replicate_job_id">
+      <Position>13</Position>
+      <StateNumber>2634</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <foreign-key id="576" parent="299" name="webhook_events_related_user_id_users_id_fk">
+      <ColNames>related_user_id</ColNames>
+      <ObjectId>28366</ObjectId>
+      <OnDelete>set-null</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28214</RefTableId>
+    </foreign-key>
+    <foreign-key id="577" parent="299" name="webhook_events_related_purchase_id_credit_purchases_id_fk">
+      <ColNames>related_purchase_id</ColNames>
+      <ObjectId>28371</ObjectId>
+      <OnDelete>set-null</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28116</RefTableId>
+    </foreign-key>
+    <foreign-key id="578" parent="299" name="webhook_events_related_replicate_job_id_replicate_generation_jo">
+      <ColNames>related_replicate_job_id</ColNames>
+      <ObjectId>28376</ObjectId>
+      <OnDelete>set-null</OnDelete>
+      <StateNumber>2634</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>28194</RefTableId>
+    </foreign-key>
+    <index id="579" parent="299" name="webhook_events_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28234</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="580" parent="299" name="webhook_events_provider_event_uidx">
+      <ColNames>provider
+event_id</ColNames>
+      <ObjectId>28429</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationIds>
+100</CollationIds>
+      <CollationParentNames>
+pg_catalog</CollationParentNames>
+      <CollationNames>
+default</CollationNames>
+    </index>
+    <index id="581" parent="299" name="webhook_events_provider_idx">
+      <ColNames>provider</ColNames>
+      <ObjectId>28430</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="582" parent="299" name="webhook_events_received_idx">
+      <ColNames>received_at</ColNames>
+      <ObjectId>28432</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="583" parent="299" name="webhook_events_status_idx">
+      <ColNames>processing_status</ColNames>
+      <ObjectId>28431</ObjectId>
+      <StateNumber>2634</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="584" parent="299" name="webhook_events_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>28235</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>2634</StateNumber>
+      <UnderlyingIndexId>28234</UnderlyingIndexId>
+    </key>
   </database-model>
 </dataSource>

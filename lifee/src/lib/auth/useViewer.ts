@@ -38,6 +38,10 @@ export function useViewer() {
     const refresh = useCallback(async () => {
         setLoading(true);
         try {
+            // MAYBE BUT NOT SUFFICIENT ??
+            // if (viewer) {
+            //     return viewer;
+            // }
             const v = await fetchViewer();
             setViewer(v);
             return v;
