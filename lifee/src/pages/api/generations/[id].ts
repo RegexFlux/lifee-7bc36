@@ -4,7 +4,7 @@ import {and, eq} from "drizzle-orm";
 import {apiHandler} from "@/lib/api/handler";
 import {ok, fail} from "@/lib/api/response";
 import {requireViewer} from "@/lib/auth/require";
-import {db} from "@/lib/db";
+import {db} from "@/lib/db/index";
 import {replicateGenerationJobs} from "@/lib/db/schema";
 
 export default apiHandler({
