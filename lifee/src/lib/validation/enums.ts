@@ -34,3 +34,11 @@ export const zWebhookProcessingStatus = z.enum(WEBHOOK_PROCESSING_STATUSES);
 
 export const zAccountLinkStatus = z.enum(ACCOUNT_LINK_STATUSES);
 export const zCreditEventType = z.enum(CREDIT_EVENT_TYPES);
+
+export const zReplicateStatus = z.enum([
+    "starting",
+    "processing",
+    "succeeded",
+    "failed",
+    "canceled",
+]);

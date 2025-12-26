@@ -17,6 +17,7 @@ export const REPLICATE_JOB_STATUSES = [
     "processing",
     "succeeded",
     "failed",
+    "canceled",
 ] as const;
 
 export const JOB_EVENT_LEVELS = ["info", "warn", "error"] as const;

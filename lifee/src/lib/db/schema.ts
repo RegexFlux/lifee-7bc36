@@ -231,6 +231,14 @@ export const replicateGenerationJobs = pgTable(
     {
         id: uuid("id").primaryKey().defaultRandom(),
 
+        userId: uuid("user_id")
+            .notNull()
+            .references(() => users.id, {onDelete: "cascade"}),
+
+        albumItemId: uuid("album_item_id")
+            .notNull()
+            .references(() => albumItems.id, {onDelete: "cascade"}),
+
         createdByAssetId: uuid("created_by_asset_id")
             .notNull()
             .references(() => assets.id, {onDelete: "cascade"}),
@@ -257,8 +265,10 @@ export const replicateGenerationJobs = pgTable(
         createdAt: timestamp("created_at", {withTimezone: true})
             .notNull()
             .defaultNow(),
+        updatedAt: timestamp("updated_at", {withTimezone: true}).notNull().defaultNow(),
     },
     (t) => ({
+        userIdx: index("replicate_jobs_user_created_idx").on(t.userId, t.createdAt),
         createdByIdx: index("replicate_jobs_created_by_asset_idx").on(t.createdByAssetId),
         statusIdx: index("replicate_jobs_status_idx").on(t.status),
         createdIdx: index("replicate_jobs_created_idx").on(t.createdAt),
@@ -266,6 +276,35 @@ export const replicateGenerationJobs = pgTable(
         // Si ReplicatePredictionId est un identifiant stable chez toi, tu peux activer l'unique :
         // predictionUidx: uniqueIndex("replicate_jobs_prediction_uidx").on(t.replicatePredictionId),
         predictionIdx: index("replicate_jobs_prediction_idx").on(t.replicatePredictionId),
+    })
+);
+
+export const idempotencyKeys = pgTable(
+    "idempotency_keys",
+    {
+        id: uuid("id").primaryKey().defaultRandom(),
+        provider: text("provider").notNull(), // ex: "replicate_create"
+        key: text("key").notNull(),
+        userId: text("user_id"),
+        responseJson: jsonb("response_json"),
+        createdAt: timestamp("created_at", {withTimezone: true}).notNull().defaultNow(),
+    },
+    (t) => ({
+        uniqProviderKey: uniqueIndex("idempotency_provider_key_uidx").on(t.provider, t.key),
+        userCreatedIdx: index("idempotency_user_created_idx").on(t.userId, t.createdAt),
+    })
+);
+
+export const demoTrials = pgTable(
+    "demo_trials",
+    {
+        id: uuid("id").primaryKey().defaultRandom(),
+        ipHash: text("ip_hash").notNull(),
+        userId: text("user_id").notNull(),
+        createdAt: timestamp("created_at", {withTimezone: true}).notNull().defaultNow(),
+    },
+    (t) => ({
+        ipCreatedIdx: index("demo_trials_ip_created_idx").on(t.ipHash, t.createdAt),
     })
 );
 
@@ -368,6 +407,7 @@ export const albumItems = pgTable(
         createdAt: timestamp("created_at", {withTimezone: true})
             .notNull()
             .defaultNow(),
+        updatedAt: timestamp("updated_at", {withTimezone: true}).notNull().defaultNow(),
     },
     (t) => ({
         // ✅ unique (album_id, position)
@@ -511,6 +551,10 @@ export const webhookEvents = pgTable(
 
         error: text("error"),
 
+        createdAt: timestamp("created_at", {withTimezone: true})
+            .notNull()
+            .defaultNow(),
+
         relatedUserId: uuid("related_user_id").references(() => users.id, {onDelete: "set null"}),
         relatedPurchaseId: uuid("related_purchase_id").references(() => creditPurchases.id, {
             onDelete: "set null",
@@ -602,3 +646,5 @@ export const creditEvents = pgTable(
         typeIdx: index("credit_events_type_idx").on(t.type),
     })
 );
+
+// TODO
