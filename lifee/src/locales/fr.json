@@ -27,8 +27,7 @@
   "auth.other_email": "Utiliser un autre email",
   "bonus.title": "Bonus activé",
   "bonus.badge": "- 25%",
-  "bonus.body": "25% de réduction offert avec le code {code}"
-
+  "bonus.body": "25% de réduction offert avec le code {code}",
   "gate.title": "Associez un email pour {action}",
   "gate.body": "Vous pouvez avancer sans compte. Pour sécuriser vos créations et les retrouver plus tard, ajoutez un email.",
   "gate.cta": "Associer mon email",

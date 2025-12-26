@@ -249,7 +249,7 @@ export default function AuthModal({onAuthed}: Props) {
                   </span>
                                 </p>
                                 <p className="mt-0.5 text-xs leading-relaxed text-stone-600">
-                                    {t("bonus.body")}
+                                    {t("bonus.body", {code: bonusCode})}
                                 </p>
                             </div>
                         </div>
