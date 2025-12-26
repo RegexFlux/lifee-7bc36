@@ -275,5 +275,15 @@
   "videoModal.unlockCta": "Déverrouiller le Studio (connexion → accès immédiat)",
   "videoModal.upgradeDesc": "Connexion → accès immédiat au studio, export 1080p et rendu amélioré.",
   "videoModal.upgradeTitle": "Passez au niveau Studio",
-  "videoModal.viewAllPacks": "Voir tous les packs"
+  "videoModal.viewAllPacks": "Voir tous les packs",
+  "share.actions.share": "Partager",
+  "share.actions.more": "Plus",
+  "share.actions.title": "Partager ce lien",
+  "share.actions.close": "Fermer",
+  "share.actions.copy": "Copier",
+  "share.actions.copied": "Copié ✓",
+  "share.actions.email": "Email",
+  "share.actions.more_apps": "Autres apps",
+  "share.actions.mobile_hint": "Sur mobile, le partage ouvre Instagram/Snapchat/Messages si installés.",
+  "share.actions.desktop_hint": "Astuce : “Autres apps” apparaît si votre navigateur supporte le partage natif."
 }

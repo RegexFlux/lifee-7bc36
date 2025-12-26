@@ -43,6 +43,14 @@ export default apiHandler({
 
         // anti-spam simple: max 3 exports / 2 minutes
         const twoMinAgo = new Date(Date.now() - 120_000);
+        const runningJob = await db
+            .select({id: exportJobs.id})
+            .from(exportJobs)
+            .where(and(eq(exportJobs.albumId, albumId), eq(exportJobs.status, 'rendering'))).limit(1);
+        if (runningJob) {
+            return fail(res, 429, "Un export est déja en cours");
+        }
+
         const recent = await db
             .select({id: exportJobs.id})
             .from(exportJobs)

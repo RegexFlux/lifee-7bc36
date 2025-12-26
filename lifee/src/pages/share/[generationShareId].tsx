@@ -4,6 +4,7 @@ import type {GetServerSideProps, InferGetServerSidePropsType} from "next";
 import Head from "next/head";
 import {useRouter} from "next/router";
 import dynamic from "next/dynamic";
+
 import {StarDustRain} from "@/components/animations/StarDustRain";
 import AuthModal from "@/components/auth/AuthModal";
 import NavBar from "@/components/landing/sections/NavBar";
@@ -12,48 +13,78 @@ import {PlayerCard} from "@/components/share/PlayerCard";
 import {ConversionCard} from "@/components/share/ConversionCard";
 import {usePublicShare} from "@/lib/public/usePublicShare";
 import {useT} from "@/lib/i18n/useT";
+import {ShareActions} from "@/components/share/ShareActions";
 
 const FXBackdrop = dynamic(() => import("@/components/animations/fx/FXBackdrop"), {ssr: false});
 
-/**
- * Public page (no viewer required).
- * Access is controlled by generation_shares: isActive=true & revokedAt=null.
- */
+function getAppUrlFromReq(req: any) {
+    const envUrl = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL;
+    if (envUrl) return envUrl.replace(/\/$/, "");
+
+    const proto = (req.headers["x-forwarded-proto"] as string) || "http";
+    const xfHost = (req.headers["x-forwarded-host"] as string) || req.headers.host;
+    const host = String(xfHost).split(",")[0].trim();
+    return `${proto}://${host}`;
+}
+
+function ogLocale(locale?: string) {
+    const l = (locale || "fr").toLowerCase();
+    if (l.startsWith("fr")) return "fr_FR";
+    return "en_US";
+}
+
 export const getServerSideProps: GetServerSideProps<{
     generationShareId: string;
+    canonicalUrl: string;
+    ogImageUrl: string;
+    ogTitle: string;
+    ogDescription: string;
+    ogLocale: string;
 }> = async (ctx) => {
     const generationShareId = String(ctx.params?.generationShareId || "").trim();
     if (!generationShareId) return {notFound: true};
+
+    const base = getAppUrlFromReq(ctx.req);
+    const canonicalUrl = `${base}/share/${generationShareId}`;
+    const ogImageUrl = `${base}/api/share/${generationShareId}/image`;
+
+    const locale = ctx.locale || "fr";
+    const isFr = locale.toLowerCase().startsWith("fr");
+
     return {
         props: {
             generationShareId,
+            canonicalUrl,
+            ogImageUrl,
+            ogTitle: isFr ? "Lifee — Visionnage privé" : "Lifee — Private viewing",
+            ogDescription: isFr
+                ? "Regardez ce souvenir. Pour sauvegarder et exporter en HD, passez au Studio."
+                : "Watch this memory. To save and export in HD, unlock Studio.",
+            ogLocale: ogLocale(locale),
         },
     };
 };
 
-
-export default function SharedMemorySlugPage({
-                                                 generationShareId
-                                             }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function SharePage({
+                                      generationShareId,
+                                      canonicalUrl,
+                                      ogImageUrl,
+                                      ogTitle,
+                                      ogDescription,
+                                      ogLocale,
+                                  }: InferGetServerSidePropsType<typeof getServerSideProps>) {
     const router = useRouter();
+    const {t} = useT();
 
     const openAuth = React.useCallback(() => {
-        router.push(
-            {pathname: router.pathname, query: {...router.query, auth: "1"}},
-            undefined,
-            {shallow: true}
-        );
+        router.push({pathname: router.pathname, query: {...router.query, auth: "1"}}, undefined, {shallow: true});
     }, [router]);
 
     const showAuthModal = React.useCallback(() => {
         router.push({query: {...router.query, auth: "1"}}, undefined, {shallow: true});
     }, [router]);
 
-    const publicShare = usePublicShare({
-        generationShareId
-    });
-
-    const {t} = useT();
+    const publicShare = usePublicShare({generationShareId});
 
     return (
         <div
@@ -62,19 +93,31 @@ export default function SharedMemorySlugPage({
             <StarDustRain/>
 
             <Head>
-                <title>Lifee — Visionnage</title>
+                <title>{ogTitle}</title>
+                <link rel="canonical" href={canonicalUrl}/>
                 <meta name="robots" content="noindex,nofollow"/>
                 <meta name="theme-color" content="#fafaf9"/>
+
+                {/* OpenGraph */}
+                <meta property="og:type" content="website"/>
+                <meta property="og:locale" content={ogLocale}/>
+                <meta property="og:title" content={ogTitle}/>
+                <meta property="og:description" content={ogDescription}/>
+                <meta property="og:url" content={canonicalUrl}/>
+                <meta property="og:image" content={ogImageUrl}/>
+
+                {/* Twitter */}
+                <meta name="twitter:card" content="summary_large_image"/>
+                <meta name="twitter:title" content={ogTitle}/>
+                <meta name="twitter:description" content={ogDescription}/>
+                <meta name="twitter:image" content={ogImageUrl}/>
             </Head>
 
-            {/* Auth (pour “Sauvegarder / Export / Studio”) */}
             <AuthModal/>
 
-            {/* Décor de fond */}
             <div className="pointer-events-none absolute inset-0">
                 <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-rose-200/30 blur-3xl"/>
                 <div className="absolute -bottom-28 -right-28 h-80 w-80 rounded-full bg-amber-200/30 blur-3xl"/>
-                {/* ⚠️ évite les URLs externes en prod si tu veux zéro dépendance */}
                 <div
                     className="absolute inset-0 opacity-[0.06] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"/>
             </div>
@@ -96,7 +139,7 @@ export default function SharedMemorySlugPage({
                             <PlayerCard
                                 videoUrl={publicShare.videoUrl}
                                 thumbnailUrl={publicShare.thumbnailUrl}
-                                title={publicShare.data.title ?? ''}
+                                title={publicShare.data.title ?? ""}
                                 createdLabel={publicShare.data.createdLabel}
                                 createdBy={publicShare.data.createdBy}
                                 progress={publicShare.progress}
@@ -111,29 +154,20 @@ export default function SharedMemorySlugPage({
                                 canReplay={Boolean(publicShare.videoUrl)}
                                 statusLine={t(publicShare.data.statusLineKey)}
                                 progress={publicShare.progress}
-                                shareUrl={publicShare.data.shareUrl}
-                                onUnlock={openAuth} // CTA: “Sauvegarder / Export / Share”
+                                shareUrl={canonicalUrl}
+                                onUnlock={openAuth}
                                 createdAt={null}
                                 variant="light"
                             />
                         </Tilt3D>
 
-                        <div
-                            className="mt-8 rounded-2xl border border-stone-200 bg-white/70 shadow-sm backdrop-blur p-5">
-                            <div className="text-sm font-semibold text-stone-900">Un lien simple. Une émotion intacte.
-                            </div>
-                            <div className="mt-1 text-xs text-stone-500">
-                                Pour sauvegarder, exporter en HD, et créer un album : passez au Studio.
-                            </div>
-                            <div className="mt-4 flex items-center justify-between">
-                                <div className="text-[11px] font-mono text-stone-500">privé • stable • HD</div>
-                                <button
-                                    onClick={openAuth}
-                                    className="text-xs font-bold text-stone-900 underline underline-offset-2 hover:text-stone-700"
-                                >
-                                    Sauvegarder
-                                </button>
-                            </div>
+                        {/* ✅ Share actions: mobile share sheet + desktop multi */}
+                        <div className="mt-4">
+                            <ShareActions
+                                url={canonicalUrl}
+                                title={ogTitle}
+                                text={ogDescription}
+                            />
                         </div>
                     </div>
                 </div>

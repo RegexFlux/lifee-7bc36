@@ -275,5 +275,15 @@
   "videoModal.unlockCta": "Unlock Studio (sign in → instant access)",
   "videoModal.upgradeDesc": "Sign in → instant studio access, 1080p export and improved rendering.",
   "videoModal.upgradeTitle": "Upgrade to Studio",
-  "videoModal.viewAllPacks": "View all packs"
+  "videoModal.viewAllPacks": "View all packs",
+  "share.actions.share": "Share",
+  "share.actions.more": "More",
+  "share.actions.title": "Share this link",
+  "share.actions.close": "Close",
+  "share.actions.copy": "Copy",
+  "share.actions.copied": "Copied ✓",
+  "share.actions.email": "Email",
+  "share.actions.more_apps": "More apps",
+  "share.actions.mobile_hint": "On mobile, the share sheet can show Instagram/Snapchat/Messages if installed.",
+  "share.actions.desktop_hint": "Tip: “More apps” appears if your browser supports native sharing."
 }
