@@ -5,7 +5,7 @@ import {z} from "zod";
 import {apiHandler} from "@/lib/api/handler";
 import {ok, fail} from "@/lib/api/response";
 import {requireAdmin} from "@/lib/admin/requireAdmin";
-import {presignPutObject} from "@/lib/s3/presignPut"; from "@/lib/s3";
+import {presignPutObject} from "@/lib/s3/presignPut";
 
 const zBody = z.object({
     contentType: z.string().min(3),

@@ -17,7 +17,7 @@ import {
     idempotencyKeys,
     replicateGenerationJobs,
 } from "@/lib/db/schema";
-import {presignGetObject} from "@/lib/s3";
+import {presignGetObject} from "@/lib/s3/presignGet";
 import {getClientIp, hashIp} from "@/lib/security/ip";
 import {resolveReplicateVersion} from "@/lib/replicate/resolveVersion";
 import {logReplicateJobEvent} from "@/lib/replicate/jobEvents";
