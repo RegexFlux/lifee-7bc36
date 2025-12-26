@@ -1,28 +1,58 @@
-import React from "react";
+import {Film} from "lucide-react";
+import {useAssetUrl} from "@/hooks/useAssetUrl";
 
-export function AssetThumb({type, thumbnailUrl, url}: {
+export function AssetThumb({
+                               assetId,
+                               type,
+                           }: {
+    assetId: string;
     type: "image" | "video";
-    thumbnailUrl?: string | null;
-    url?: string | null
 }) {
-    if (thumbnailUrl) {
-        return <img src={thumbnailUrl} alt="" className="w-full h-full object-cover"/>;
-    }
+    const {url, thumbnailUrl, isThumbPending} = useAssetUrl({
+        assetId,
+        type,
+        retryThumb: true,
+    });
 
-    if (type === "video" && url) {
+    // IMAGE
+    if (type === "image") {
         return (
-            <video
-                src={url}
-                className="w-full h-full object-cover"
-                muted
-                playsInline
-                preload="metadata"
-            />
+            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-stone-200 bg-stone-50">
+                {thumbnailUrl ? (
+                    <img src={thumbnailUrl} alt="" className="w-full h-full object-cover"/>
+                ) : (
+                    <div className="w-full h-full animate-pulse"/>
+                )}
+            </div>
         );
     }
 
-    return <div
-        className="h-full w-full grid place-items-center text-[10px] font-black text-stone-500">
-        Aperçu
-    </div>;
+    // VIDEO
+    return (
+        <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-stone-200 bg-stone-950">
+            {thumbnailUrl ? (
+                <img src={thumbnailUrl} alt="" className="w-full h-full object-contain opacity-90"/>
+            ) : (
+                <div className="w-full h-full grid place-items-center">
+                    <div className="flex flex-col items-center gap-2 text-stone-200/80">
+                        <div
+                            className="h-10 w-10 rounded-2xl bg-white/10 grid place-items-center border border-white/10">
+                            <Film size={18}/>
+                        </div>
+                        <div className="text-[11px] font-semibold">
+                            {isThumbPending ? "Aperçu en cours…" : "Vidéo"}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* petit badge si pending */}
+            {isThumbPending ? (
+                <div
+                    className="absolute bottom-2 left-2 rounded-full bg-white/85 backdrop-blur px-2 py-1 text-[10px] font-bold text-stone-700 border border-stone-200">
+                    Aperçu en préparation
+                </div>
+            ) : null}
+        </div>
+    );
 }

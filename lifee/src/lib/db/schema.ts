@@ -717,3 +717,28 @@ export const generationShares = pgTable(
         userCreatedIdx: index("generation_shares_user_created_idx").on(t.userId, t.createdAt),
     })
 );
+
+export const exportShares = pgTable(
+    "export_shares",
+    {
+        id: uuid("id").primaryKey().defaultRandom(),
+
+        exportJobId: uuid("export_job_id")
+            .notNull()
+            .references(() => exportJobs.id, {onDelete: "cascade"}),
+
+        userId: uuid("user_id")
+            .notNull()
+            .references(() => users.id, {onDelete: "cascade"}),
+
+        isActive: boolean("is_active").notNull().default(true),
+        revokedAt: timestamp("revoked_at", {withTimezone: true}),
+
+        createdAt: timestamp("created_at", {withTimezone: true}).notNull().defaultNow(),
+        updatedAt: timestamp("updated_at", {withTimezone: true}).notNull().defaultNow(),
+    },
+    (t) => ({
+        exportJobIdx: index("export_shares_export_job_idx").on(t.exportJobId),
+        userIdx: index("export_shares_user_idx").on(t.userId),
+    })
+);

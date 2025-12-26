@@ -5,14 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb/storage_v2/_src_/database/lifee_db.lCs6OQ/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb/storage_v2/_src_/database/lifee_db.lCs6OQ/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/drizzle/meta/_journal.json" beforeDir="false" afterPath="$PROJECT_DIR$/drizzle/meta/_journal.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/asset/AssetThumb.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/asset/AssetThumb.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/help/organize/OrganizeDndGrid.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/help/organize/OrganizeDndGrid.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib/db/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/db/schema.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/worker/assetThumbnailsWorker.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/worker/assetThumbnailsWorker.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/locales/en.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/locales/en.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/locales/fr.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/locales/fr.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/studio/albums/[id]/help/finalize.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/studio/albums/[id]/help/finalize.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,13 +47,13 @@
     "js.debugger.nextJs.config.created.client": "true",
     "js.debugger.nextJs.config.created.server": "true",
     "jsx.switch.disabled": "true",
-    "last_opened_file_path": "/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/src/components",
+    "last_opened_file_path": "/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/src/pages/api/share",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "npm.Next.js: server-side.executor": "Debug",
+    "npm.Next.js: server-side.executor": "Run",
     "npm.worker:thumbs:watch.executor": "Debug",
     "rearrange.code.on.save": "true",
     "settings.editor.selected.configurable": "actions.on.save",
@@ -69,11 +68,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/pages/api/share" />
       <recent name="$PROJECT_DIR$/src/components" />
       <recent name="$PROJECT_DIR$/src/components/share" />
       <recent name="$PROJECT_DIR$/src/components/animations" />
       <recent name="$PROJECT_DIR$/src/components/audio" />
-      <recent name="$PROJECT_DIR$/src/components/toast" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/worker" />
@@ -133,7 +132,7 @@
       <workItem from="1766720088052" duration="81000" />
       <workItem from="1766720178142" duration="8745000" />
       <workItem from="1766729151093" duration="14040000" />
-      <workItem from="1766743582893" duration="10557000" />
+      <workItem from="1766743582893" duration="12708000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
@@ -422,6 +421,12 @@
           <line>384</line>
           <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="114" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/worker/assetThumbnailsWorker.ts</url>
+          <line>285</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="115" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

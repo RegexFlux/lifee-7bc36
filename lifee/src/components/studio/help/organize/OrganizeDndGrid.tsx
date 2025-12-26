@@ -414,9 +414,8 @@ export function OrganizeDnDGrid(props: {
                                 >
                                     <div className="flex items-stretch">
                                         <div
-                                            className="w-[92px] sm:w-[110px] shrink-0 bg-stone-100 relative overflow-hidden">
-                                            <AssetThumb type={it.asset.type} thumbnailUrl={it.thumbnailUrl}
-                                                        url={it.assetUrl}/>
+                                            className="w-[92px] sm:w-[110px] shrink-0 bg-stone-100 relative overflow-hidden my-auto">
+                                            <AssetThumb type={it.asset.type} assetId={it.asset.id}/>
 
                                             <div className="absolute left-2 top-2">
     <span
@@ -425,8 +424,6 @@ export function OrganizeDnDGrid(props: {
     </span>
                                             </div>
                                         </div>
-                                        ✅ Résultat : si o
-
                                         <div className="flex-1 min-w-0 p-3 sm:p-4 flex flex-col justify-between gap-2">
                                             <div className="flex items-start justify-between gap-2">
                                                 <div className="min-w-0">
