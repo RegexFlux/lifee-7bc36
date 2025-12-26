@@ -369,23 +369,22 @@ export const albums = pgTable(
     {
         id: uuid("id").primaryKey().defaultRandom(),
 
-        userId: uuid("user_id")
+        userId: text("user_id")
             .notNull()
             .references(() => users.id, {onDelete: "cascade"}),
 
-        musicId: uuid("music_id").references(() => musics.id, {onDelete: "set null"}),
-
-        title: text("title"),
+        title: text("title").notNull().default("Untitled"),
         status: albumStatusEnum("status").notNull().default("draft"),
 
-        createdAt: timestamp("created_at", {withTimezone: true})
-            .notNull()
-            .defaultNow(),
+        // N albums -> 1 music
+        musicId: uuid("music_id").references(() => musics.id, {onDelete: "set null"}),
+
+        createdAt: timestamp("created_at", {withTimezone: true}).notNull().defaultNow(),
+        updatedAt: timestamp("updated_at", {withTimezone: true}).notNull().defaultNow(),
     },
     (t) => ({
-        userIdx: index("albums_user_idx").on(t.userId),
-        createdIdx: index("albums_created_idx").on(t.createdAt),
-        musicIdx: index("albums_music_idx").on(t.musicId),
+        userCreatedIdx: index("albums_user_created_idx").on(t.userId, t.createdAt),
+        userStatusIdx: index("albums_user_status_idx").on(t.userId, t.status),
     })
 );
 
@@ -410,37 +409,45 @@ export const albumItems = pgTable(
         updatedAt: timestamp("updated_at", {withTimezone: true}).notNull().defaultNow(),
     },
     (t) => ({
-        // ✅ unique (album_id, position)
-        albumPositionUidx: uniqueIndex("album_items_album_position_uidx").on(t.albumId, t.position),
-
         albumPosIdx: index("album_items_album_pos_idx").on(t.albumId, t.position),
         assetIdx: index("album_items_asset_idx").on(t.assetId),
+        albumIdx: index("album_items_album_idx").on(t.albumId),
     })
 );
 
-export const albumExportJobs = pgTable(
-    "album_export_jobs",
+export const exportJobStatusEnum = pgEnum("export_job_status", [
+    "queued",
+    "rendering",
+    "done",
+    "error",
+]);
+
+export const exportJobs = pgTable(
+    "export_jobs",
     {
         id: uuid("id").primaryKey().defaultRandom(),
+
+        userId: text("user_id")
+            .notNull()
+            .references(() => users.id, {onDelete: "cascade"}),
 
         albumId: uuid("album_id")
             .notNull()
             .references(() => albums.id, {onDelete: "cascade"}),
 
-        status: text("status").notNull(), // tu peux en faire un enum plus tard si besoin
+        status: exportJobStatusEnum("status").notNull().default("queued"),
         progress: integer("progress").notNull().default(0),
 
+        // résultat export (S3 privé)
         videoKey: text("video_key"),
-        error: text("error"),
+        errorMessage: text("error_message"),
 
-        createdAt: timestamp("created_at", {withTimezone: true})
-            .notNull()
-            .defaultNow(),
+        createdAt: timestamp("created_at", {withTimezone: true}).notNull().defaultNow(),
+        updatedAt: timestamp("updated_at", {withTimezone: true}).notNull().defaultNow(),
     },
     (t) => ({
-        albumIdx: index("album_export_jobs_album_idx").on(t.albumId),
-        statusIdx: index("album_export_jobs_status_idx").on(t.status),
-        createdIdx: index("album_export_jobs_created_idx").on(t.createdAt),
+        userCreatedIdx: index("export_jobs_user_created_idx").on(t.userId, t.createdAt),
+        albumCreatedIdx: index("export_jobs_album_created_idx").on(t.albumId, t.createdAt),
     })
 );
 
@@ -626,7 +633,7 @@ export const creditEvents = pgTable(
 
         // refs métiers (optionnelles)
         purchaseId: uuid("purchase_id").references(() => creditPurchases.id, {onDelete: "set null"}),
-        albumExportJobId: uuid("album_export_job_id").references(() => albumExportJobs.id, {
+        albumExportJobId: uuid("album_export_job_id").references(() => exportJobs.id, {
             onDelete: "set null",
         }),
         replicateJobId: uuid("replicate_job_id").references(() => replicateGenerationJobs.id, {

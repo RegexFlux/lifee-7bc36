@@ -4,7 +4,7 @@ import {z} from "zod";
 import {apiHandler} from "@/lib/api/handler";
 import {ok, fail} from "@/lib/api/response";
 import {requireViewer} from "@/lib/auth/require";
-import {presignPutObject} from "@/lib/s3/presignPut"; from "@/lib/s3/index";
+import {presignPutObject} from "@/lib/s3/presignPut";
 import {makeAssetObjectKey} from "@/lib/assets/keys";
 import {zAssetType} from "@/lib/validation/enums";
 

@@ -5,7 +5,7 @@ import {
     assets,
     albumItems,
     creditEvents,
-    replicateGenerationJobEvents
+    replicateGenerationJobEvents, albums, exportJobs
 } from "@/lib/db/schema";
 
 export type WebhookEvent = typeof webhookEvents.$inferSelect;
@@ -26,3 +26,11 @@ export type NewCreditEvent = typeof creditEvents.$inferInsert;
 
 export type ReplicateJobEvent = typeof replicateGenerationJobEvents.$inferSelect;
 export type NewReplicateJobEvent = typeof replicateGenerationJobEvents.$inferInsert;
+
+export type Album = typeof albums.$inferSelect;
+export type NewAlbum = typeof albums.$inferInsert;
+export type AlbumStatus = Album["status"];
+
+export type ExportJob = typeof exportJobs.$inferSelect;
+export type NewExportJob = typeof exportJobs.$inferInsert;
+export type ExportJobStatus = ExportJob["status"];
