@@ -1,13 +1,14 @@
-// pages/api/generations/[id]/events.ts
+// pages/api/generations/[id].ts
 import type {NextApiRequest, NextApiResponse} from "next";
 import {and, asc, eq} from "drizzle-orm";
-import {z} from "zod";
 
 import {apiHandler} from "@/lib/api/handler";
 import {ok, fail} from "@/lib/api/response";
 import {requireViewer} from "@/lib/auth/require";
 import {db} from "@/lib/db";
-import {replicateGenerationJobs, replicateGenerationJobEvents} from "@/lib/db/schema";
+import {assets, replicateGenerationJobEvents, replicateGenerationJobs} from "@/lib/db/schema";
+import {presignGetObject} from "@/lib/s3/presignGet";
+import {z} from 'zod';
 
 export default apiHandler({
     GET: async (req: NextApiRequest, res: NextApiResponse) => {
@@ -23,13 +24,37 @@ export default apiHandler({
 
         const job = (
             await db
-                .select({id: replicateGenerationJobs.id})
+                .select()
                 .from(replicateGenerationJobs)
                 .where(and(eq(replicateGenerationJobs.id, id), eq(replicateGenerationJobs.userId, viewer.user.id)))
                 .limit(1)
         )[0];
 
         if (!job) return fail(res, 404, "Not found");
+
+        const expiresInSec = 60 * 15;
+
+        let resultUrl: string | null = null;
+        let thumbnailUrl: string | null = null;
+
+        if (job.resultAssetId) {
+            const result = (await db.select().from(assets).where(eq(assets.id, job.resultAssetId)).limit(1))[0];
+            if (result) {
+                resultUrl = await presignGetObject({key: result.fileKey, expiresIn: expiresInSec});
+
+                // fallback thumbnail:
+                // 1) result.thumbnailKey
+                // 2) sinon image source (createdByAssetId) si c’est une image
+                if (result.thumbnailKey) {
+                    thumbnailUrl = await presignGetObject({key: result.thumbnailKey, expiresIn: expiresInSec});
+                } else {
+                    const source = (await db.select().from(assets).where(eq(assets.id, job.createdByAssetId)).limit(1))[0];
+                    if (source?.type === "image") {
+                        thumbnailUrl = await presignGetObject({key: source.fileKey, expiresIn: expiresInSec});
+                    }
+                }
+            }
+        }
 
         const events = await db
             .select()
@@ -38,6 +63,10 @@ export default apiHandler({
             .orderBy(asc(replicateGenerationJobEvents.createdAt))
             .limit(q.data.limit);
 
-        return ok(res, {events});
+        return ok(res, {
+            job,
+            signed: {resultUrl, thumbnailUrl, expiresInSec},
+            events
+        });
     },
 });

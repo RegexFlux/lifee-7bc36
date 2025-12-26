@@ -1,15 +1,15 @@
 // src/lib/replicate/jobEvents.ts
-import crypto from "crypto";
+import crypto from "node:crypto";
 import {db} from "@/lib/db";
 import {replicateGenerationJobEvents} from "@/lib/db/schema";
+import {PgTransaction} from "drizzle-orm/pg-core";
 
-export type DbTx = typeof db;
 
 export type JobEventLevel = "info" | "warn" | "error";
 export type JobEventSource = "server" | "replicate";
 
 export async function logReplicateJobEvent(
-    tx: DbTx,
+    tx: PgTransaction<any, any, any>,
     params: { jobId: string; status: JobEventLevel; source: JobEventSource; message: string }
 ) {
     await tx.insert(replicateGenerationJobEvents).values({
