@@ -5,9 +5,10 @@ CREATE TYPE "public"."auth_email_code_purpose" AS ENUM('login', 'change_email', 
 CREATE TYPE "public"."credit_event_type" AS ENUM('purchase', 'spend', 'refund', 'admin_adjust');--> statement-breakpoint
 CREATE TYPE "public"."credit_pack_tier" AS ENUM('standard', 'creator');--> statement-breakpoint
 CREATE TYPE "public"."credit_purchase_status" AS ENUM('created', 'paid', 'failed', 'refunded');--> statement-breakpoint
+CREATE TYPE "public"."export_job_status" AS ENUM('queued', 'rendering', 'done', 'error');--> statement-breakpoint
 CREATE TYPE "public"."job_event_level" AS ENUM('info', 'warn', 'error');--> statement-breakpoint
 CREATE TYPE "public"."job_event_source" AS ENUM('server', 'replicate');--> statement-breakpoint
-CREATE TYPE "public"."replicate_job_status" AS ENUM('uploading', 'queued', 'starting', 'processing', 'succeeded', 'failed');--> statement-breakpoint
+CREATE TYPE "public"."replicate_job_status" AS ENUM('uploading', 'queued', 'starting', 'processing', 'succeeded', 'failed', 'canceled');--> statement-breakpoint
 CREATE TYPE "public"."user_type" AS ENUM('guest', 'normal');--> statement-breakpoint
 CREATE TYPE "public"."webhook_processing_status" AS ENUM('received', 'processed', 'failed');--> statement-breakpoint
 CREATE TYPE "public"."webhook_provider" AS ENUM('stripe', 'replicate');--> statement-breakpoint
@@ -20,31 +21,23 @@ CREATE TABLE "account_links" (
 	"completed_at" timestamp with time zone
 );
 --> statement-breakpoint
-CREATE TABLE "album_export_jobs" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"album_id" uuid NOT NULL,
-	"status" text NOT NULL,
-	"progress" integer DEFAULT 0 NOT NULL,
-	"video_key" text,
-	"error" text,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL
-);
---> statement-breakpoint
 CREATE TABLE "album_items" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"album_id" uuid NOT NULL,
 	"asset_id" uuid NOT NULL,
 	"position" integer NOT NULL,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "albums" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" uuid NOT NULL,
-	"music_id" uuid,
-	"title" text,
+	"title" text DEFAULT 'Untitled' NOT NULL,
 	"status" "album_status" DEFAULT 'draft' NOT NULL,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+	"music_id" uuid,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "assets" (
@@ -56,6 +49,8 @@ CREATE TABLE "assets" (
 	"title" text,
 	"month" integer NOT NULL,
 	"year" integer NOT NULL,
+	"thumbnail_key" text,
+	"deleted_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
@@ -74,6 +69,8 @@ CREATE TABLE "auth_sessions" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" uuid NOT NULL,
 	"token_hash" text NOT NULL,
+	"ip" text NOT NULL,
+	"user_agent" text NOT NULL,
 	"expires_at" timestamp with time zone NOT NULL,
 	"revoked_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
@@ -99,6 +96,7 @@ CREATE TABLE "credit_packs" (
 	"sub_title" text,
 	"credits" integer NOT NULL,
 	"price_eur" integer NOT NULL,
+	"is_active" boolean DEFAULT true NOT NULL,
 	"badge" text,
 	"benefits" text[] DEFAULT '{}'::text[] NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
@@ -117,6 +115,45 @@ CREATE TABLE "credit_purchases" (
 	"stripe_customer_id" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"paid_at" timestamp with time zone
+);
+--> statement-breakpoint
+CREATE TABLE "demo_trials" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"ip_hash" text NOT NULL,
+	"user_id" uuid NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "export_jobs" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid NOT NULL,
+	"album_id" uuid NOT NULL,
+	"status" "export_job_status" DEFAULT 'queued' NOT NULL,
+	"progress" integer DEFAULT 0 NOT NULL,
+	"video_key" text,
+	"error_message" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "generation_shares" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"generation_job_id" uuid NOT NULL,
+	"user_id" uuid NOT NULL,
+	"is_active" boolean DEFAULT true NOT NULL,
+	"access_count" integer DEFAULT 0 NOT NULL,
+	"last_accessed_at" timestamp with time zone,
+	"revoked_at" timestamp with time zone,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "idempotency_keys" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"provider" text NOT NULL,
+	"key" text NOT NULL,
+	"user_id" uuid,
+	"response_json" jsonb,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "musics" (
@@ -150,6 +187,8 @@ CREATE TABLE "replicate_generation_job_events" (
 --> statement-breakpoint
 CREATE TABLE "replicate_generation_jobs" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid NOT NULL,
+	"album_item_id" uuid NOT NULL,
 	"created_by_asset_id" uuid NOT NULL,
 	"result_asset_id" uuid,
 	"model" text NOT NULL,
@@ -161,7 +200,8 @@ CREATE TABLE "replicate_generation_jobs" (
 	"replicate_log" text,
 	"month" integer NOT NULL,
 	"year" integer NOT NULL,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "user_email_updates" (
@@ -190,6 +230,7 @@ CREATE TABLE "webhook_events" (
 	"processed_at" timestamp with time zone,
 	"processing_status" "webhook_processing_status" DEFAULT 'received' NOT NULL,
 	"error" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"related_user_id" uuid,
 	"related_purchase_id" uuid,
 	"related_replicate_job_id" uuid
@@ -197,7 +238,6 @@ CREATE TABLE "webhook_events" (
 --> statement-breakpoint
 ALTER TABLE "account_links" ADD CONSTRAINT "account_links_guest_user_id_users_id_fk" FOREIGN KEY ("guest_user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "account_links" ADD CONSTRAINT "account_links_target_user_id_users_id_fk" FOREIGN KEY ("target_user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "album_export_jobs" ADD CONSTRAINT "album_export_jobs_album_id_albums_id_fk" FOREIGN KEY ("album_id") REFERENCES "public"."albums"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "album_items" ADD CONSTRAINT "album_items_album_id_albums_id_fk" FOREIGN KEY ("album_id") REFERENCES "public"."albums"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "album_items" ADD CONSTRAINT "album_items_asset_id_assets_id_fk" FOREIGN KEY ("asset_id") REFERENCES "public"."assets"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "albums" ADD CONSTRAINT "albums_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -207,12 +247,18 @@ ALTER TABLE "assets" ADD CONSTRAINT "generated_from_asset_id_fkey" FOREIGN KEY (
 ALTER TABLE "auth_sessions" ADD CONSTRAINT "auth_sessions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "credit_events" ADD CONSTRAINT "credit_events_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "credit_events" ADD CONSTRAINT "credit_events_purchase_id_credit_purchases_id_fk" FOREIGN KEY ("purchase_id") REFERENCES "public"."credit_purchases"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "credit_events" ADD CONSTRAINT "credit_events_album_export_job_id_album_export_jobs_id_fk" FOREIGN KEY ("album_export_job_id") REFERENCES "public"."album_export_jobs"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "credit_events" ADD CONSTRAINT "credit_events_album_export_job_id_export_jobs_id_fk" FOREIGN KEY ("album_export_job_id") REFERENCES "public"."export_jobs"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "credit_events" ADD CONSTRAINT "credit_events_replicate_job_id_replicate_generation_jobs_id_fk" FOREIGN KEY ("replicate_job_id") REFERENCES "public"."replicate_generation_jobs"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "credit_purchases" ADD CONSTRAINT "credit_purchases_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "credit_purchases" ADD CONSTRAINT "credit_purchases_credit_pack_id_credit_packs_id_fk" FOREIGN KEY ("credit_pack_id") REFERENCES "public"."credit_packs"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "export_jobs" ADD CONSTRAINT "export_jobs_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "export_jobs" ADD CONSTRAINT "export_jobs_album_id_albums_id_fk" FOREIGN KEY ("album_id") REFERENCES "public"."albums"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "generation_shares" ADD CONSTRAINT "generation_shares_generation_job_id_replicate_generation_jobs_id_fk" FOREIGN KEY ("generation_job_id") REFERENCES "public"."replicate_generation_jobs"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "generation_shares" ADD CONSTRAINT "generation_shares_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "oauth_accounts" ADD CONSTRAINT "oauth_accounts_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "replicate_generation_job_events" ADD CONSTRAINT "replicate_generation_job_events_replicate_generation_job_id_replicate_generation_jobs_id_fk" FOREIGN KEY ("replicate_generation_job_id") REFERENCES "public"."replicate_generation_jobs"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "replicate_generation_jobs" ADD CONSTRAINT "replicate_generation_jobs_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "replicate_generation_jobs" ADD CONSTRAINT "replicate_generation_jobs_album_item_id_album_items_id_fk" FOREIGN KEY ("album_item_id") REFERENCES "public"."album_items"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "replicate_generation_jobs" ADD CONSTRAINT "replicate_generation_jobs_created_by_asset_id_assets_id_fk" FOREIGN KEY ("created_by_asset_id") REFERENCES "public"."assets"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "replicate_generation_jobs" ADD CONSTRAINT "replicate_generation_jobs_result_asset_id_assets_id_fk" FOREIGN KEY ("result_asset_id") REFERENCES "public"."assets"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_email_updates" ADD CONSTRAINT "user_email_updates_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -224,15 +270,11 @@ CREATE INDEX "account_links_target_idx" ON "account_links" USING btree ("target_
 CREATE INDEX "account_links_status_idx" ON "account_links" USING btree ("status");--> statement-breakpoint
 CREATE UNIQUE INDEX "account_links_guest_pending_uidx" ON "account_links" USING btree ("guest_user_id") WHERE "account_links"."status"
             = 'pending';--> statement-breakpoint
-CREATE INDEX "album_export_jobs_album_idx" ON "album_export_jobs" USING btree ("album_id");--> statement-breakpoint
-CREATE INDEX "album_export_jobs_status_idx" ON "album_export_jobs" USING btree ("status");--> statement-breakpoint
-CREATE INDEX "album_export_jobs_created_idx" ON "album_export_jobs" USING btree ("created_at");--> statement-breakpoint
-CREATE UNIQUE INDEX "album_items_album_position_uidx" ON "album_items" USING btree ("album_id","position");--> statement-breakpoint
 CREATE INDEX "album_items_album_pos_idx" ON "album_items" USING btree ("album_id","position");--> statement-breakpoint
 CREATE INDEX "album_items_asset_idx" ON "album_items" USING btree ("asset_id");--> statement-breakpoint
-CREATE INDEX "albums_user_idx" ON "albums" USING btree ("user_id");--> statement-breakpoint
-CREATE INDEX "albums_created_idx" ON "albums" USING btree ("created_at");--> statement-breakpoint
-CREATE INDEX "albums_music_idx" ON "albums" USING btree ("music_id");--> statement-breakpoint
+CREATE INDEX "album_items_album_idx" ON "album_items" USING btree ("album_id");--> statement-breakpoint
+CREATE INDEX "albums_user_created_idx" ON "albums" USING btree ("user_id","created_at");--> statement-breakpoint
+CREATE INDEX "albums_user_status_idx" ON "albums" USING btree ("user_id","status");--> statement-breakpoint
 CREATE INDEX "assets_user_year_month_idx" ON "assets" USING btree ("user_id","year","month");--> statement-breakpoint
 CREATE INDEX "assets_generated_from_idx" ON "assets" USING btree ("generated_from_asset_id");--> statement-breakpoint
 CREATE INDEX "auth_email_codes_email_purpose_idx" ON "auth_email_codes" USING btree ("email","purpose");--> statement-breakpoint
@@ -252,12 +294,20 @@ CREATE UNIQUE INDEX "credit_purchases_stripe_checkout_uidx" ON "credit_purchases
             is not null;--> statement-breakpoint
 CREATE UNIQUE INDEX "credit_purchases_stripe_payment_intent_uidx" ON "credit_purchases" USING btree ("stripe_payment_intent_id") WHERE "credit_purchases"."stripe_payment_intent_id"
             is not null;--> statement-breakpoint
+CREATE INDEX "demo_trials_ip_created_idx" ON "demo_trials" USING btree ("ip_hash","created_at");--> statement-breakpoint
+CREATE INDEX "export_jobs_user_created_idx" ON "export_jobs" USING btree ("user_id","created_at");--> statement-breakpoint
+CREATE INDEX "export_jobs_album_created_idx" ON "export_jobs" USING btree ("album_id","created_at");--> statement-breakpoint
+CREATE UNIQUE INDEX "generation_shares_generation_uidx" ON "generation_shares" USING btree ("generation_job_id");--> statement-breakpoint
+CREATE INDEX "generation_shares_user_created_idx" ON "generation_shares" USING btree ("user_id","created_at");--> statement-breakpoint
+CREATE UNIQUE INDEX "idempotency_provider_key_uidx" ON "idempotency_keys" USING btree ("provider","key");--> statement-breakpoint
+CREATE INDEX "idempotency_user_created_idx" ON "idempotency_keys" USING btree ("user_id","created_at");--> statement-breakpoint
 CREATE INDEX "musics_active_idx" ON "musics" USING btree ("is_active");--> statement-breakpoint
 CREATE INDEX "musics_created_idx" ON "musics" USING btree ("created_at");--> statement-breakpoint
 CREATE UNIQUE INDEX "oauth_accounts_provider_uidx" ON "oauth_accounts" USING btree ("provider","provider_account_id");--> statement-breakpoint
 CREATE INDEX "oauth_accounts_user_idx" ON "oauth_accounts" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "replicate_job_events_job_idx" ON "replicate_generation_job_events" USING btree ("replicate_generation_job_id");--> statement-breakpoint
 CREATE INDEX "replicate_job_events_job_created_idx" ON "replicate_generation_job_events" USING btree ("replicate_generation_job_id","created_at");--> statement-breakpoint
+CREATE INDEX "replicate_jobs_user_created_idx" ON "replicate_generation_jobs" USING btree ("user_id","created_at");--> statement-breakpoint
 CREATE INDEX "replicate_jobs_created_by_asset_idx" ON "replicate_generation_jobs" USING btree ("created_by_asset_id");--> statement-breakpoint
 CREATE INDEX "replicate_jobs_status_idx" ON "replicate_generation_jobs" USING btree ("status");--> statement-breakpoint
 CREATE INDEX "replicate_jobs_created_idx" ON "replicate_generation_jobs" USING btree ("created_at");--> statement-breakpoint

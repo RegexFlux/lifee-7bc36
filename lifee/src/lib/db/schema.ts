@@ -287,7 +287,7 @@ export const idempotencyKeys = pgTable(
         id: uuid("id").primaryKey().defaultRandom(),
         provider: text("provider").notNull(), // ex: "replicate_create"
         key: text("key").notNull(),
-        userId: text("user_id"),
+        userId: uuid("user_id"),
         responseJson: jsonb("response_json"),
         createdAt: timestamp("created_at", {withTimezone: true}).notNull().defaultNow(),
     },
@@ -302,7 +302,7 @@ export const demoTrials = pgTable(
     {
         id: uuid("id").primaryKey().defaultRandom(),
         ipHash: text("ip_hash").notNull(),
-        userId: text("user_id").notNull(),
+        userId: uuid("user_id").notNull(),
         createdAt: timestamp("created_at", {withTimezone: true}).notNull().defaultNow(),
     },
     (t) => ({
@@ -371,7 +371,7 @@ export const albums = pgTable(
     {
         id: uuid("id").primaryKey().defaultRandom(),
 
-        userId: text("user_id")
+        userId: uuid("user_id")
             .notNull()
             .references(() => users.id, {onDelete: "cascade"}),
 
@@ -429,7 +429,7 @@ export const exportJobs = pgTable(
     {
         id: uuid("id").primaryKey().defaultRandom(),
 
-        userId: text("user_id")
+        userId: uuid("user_id")
             .notNull()
             .references(() => users.id, {onDelete: "cascade"}),
 
@@ -665,7 +665,7 @@ export const generationShares = pgTable(
             .notNull()
             .references(() => replicateGenerationJobs.id, {onDelete: "cascade"}),
 
-        userId: text("user_id")
+        userId: uuid("user_id")
             .notNull()
             .references(() => users.id, {onDelete: "cascade"}),
 

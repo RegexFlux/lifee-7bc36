@@ -5,11 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb/storage_v2/_src_/database/lifee_db.lCs6OQ/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb/storage_v2/_src_/database/lifee_db.lCs6OQ/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/drizzle/0000_open_doctor_faustus.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/drizzle/meta/0000_snapshot.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/drizzle/meta/_journal.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/EmailSharePopover.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/EmailSharePopover.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/interactiveDemo/utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/interactiveDemo/utils.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/auth/AuthModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/auth/AuthModal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/auth/MiniAuthGate.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/auth/MiniAuthGate.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useAuthGate.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useAuthGate.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useInteractiveDemo.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useInteractiveDemo.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useVideoResultModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useVideoResultModal.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useViewer.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/auth/useViewer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/auth/useViewer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/auth/viewer.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/db/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/db/schema.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib/i18n/messages.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/i18n/messages.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/_app.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/_app.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/i18n/useT.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/i18n/useT.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -111,7 +125,7 @@
       <workItem from="1766585104258" duration="176000" />
       <workItem from="1766585287848" duration="70199000" />
       <workItem from="1766720088052" duration="81000" />
-      <workItem from="1766720178142" duration="661000" />
+      <workItem from="1766720178142" duration="4053000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
@@ -335,7 +349,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/lib/auth/useViewer.ts</url>
-          <line>20</line>
+          <line>39</line>
           <option name="timeStamp" value="95" />
         </line-breakpoint>
       </breakpoints>

@@ -1,7 +1,23 @@
-// File: src/lib/auth/useViewer.ts
+// File: src/hooks/useViewer.ts
+"use client";
+
 import {useCallback, useEffect, useState} from "react";
-import {apiGet} from "@/lib/api/client";
-import {ViewerSchema, type ViewerDTO} from "@/lib/api/contracts";
+import {fetchJson} from "@/components/landing/interactiveDemo/utils";
+
+export type ViewerUserType = "guest" | "normal";
+
+export type ViewerUser = {
+    id: string;
+    email: string;
+    type: ViewerUserType;
+    credits: number;
+    createdAt: string;
+};
+
+export type Viewer = {
+    user: ViewerUser;
+    session: { id: string; isNew: boolean };
+};
 
 const REFRESH_EVENT = "lifee:viewer-refresh";
 
@@ -11,35 +27,33 @@ export function emitViewerRefresh() {
     }
 }
 
+export async function fetchViewer(): Promise<Viewer> {
+    return fetchJson<Viewer>("/api/auth/me", {method: "GET"});
+}
+
 export function useViewer() {
-    const [viewer, setViewer] = useState<ViewerDTO | null>(null);
+    const [viewer, setViewer] = useState<Viewer | null>(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<unknown>(null);
 
     const refresh = useCallback(async () => {
         setLoading(true);
-        setError(null);
         try {
-            const data = await apiGet("/api/viewer", ViewerSchema);
-            setViewer(data);
-        } catch (e) {
-            setError(e);
-            setViewer(null);
+            const v = await fetchViewer();
+            setViewer(v);
+            return v;
         } finally {
             setLoading(false);
         }
     }, []);
 
     useEffect(() => {
-        refresh();
+        void refresh();
     }, [refresh]);
 
-    useEffect(() => {
-        if (typeof window === "undefined") return;
-        const onRefresh = () => refresh();
-        window.addEventListener(REFRESH_EVENT, onRefresh);
-        return () => window.removeEventListener(REFRESH_EVENT, onRefresh);
-    }, [refresh]);
-
-    return {viewer, loading, error, refresh};
+    return {
+        viewer,
+        loading,
+        refresh,
+        isGuest: viewer?.user?.type === "guest",
+    };
 }

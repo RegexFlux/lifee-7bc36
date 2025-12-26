@@ -5,11 +5,12 @@ import React, {useRef, useState} from "react";
 import {Layers, X, Upload, Wand2} from "lucide-react";
 import {useRouter} from "next/router";
 
-import {useVideoResultModal, VideoResultModal} from "@/hooks/useVideoResultModal";
+import {useVideoResultModal} from "@/hooks/useVideoResultModal";
 import Dock from "@/components/landing/interactiveDemo/Dock";
 import PolaroidStack from "@/components/landing/interactiveDemo/PolaroidStack";
 import {useInteractiveDemo} from "@/hooks/useInteractiveDemo";
 import {useT} from "@/lib/i18n/useT";
+import {VideoResultModal} from "@/components/landing/interactiveDemo/VideoResultModal";
 
 type Props = {
     onDownloadClick: () => void;
@@ -25,7 +26,7 @@ export default function InteractiveDemo({onDownloadClick}: Props) {
 
     const resultModal = useVideoResultModal({
         videoUrl: demo.videoUrl,
-        shareUrl: demo.shareUrl,
+        generationId: demo.jobId, // ⚠️ ici on suppose jobId = replicate_generation_jobs.id
         onDownloadClick,
         studioPath: "/studio",
     });
@@ -91,12 +92,11 @@ export default function InteractiveDemo({onDownloadClick}: Props) {
             {/* Fullscreen result modal */}
             {demo.videoUrl ? (
                 <VideoResultModal
-                    jobId={demo.jobId}
+                    generationId={resultModal.generationId}
                     open={resultModal.open}
                     mounted={resultModal.mounted}
                     isMobile={resultModal.isMobile}
                     videoUrl={demo.videoUrl}
-                    shareUrl={demo.shareUrl}
                     onClose={resultModal.close}
                     onDownload={resultModal.download}
                     onGoToStudio={resultModal.goToStudio}

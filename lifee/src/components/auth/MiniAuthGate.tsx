@@ -1,23 +1,25 @@
 // File: src/components/auth/MiniAuthGate.tsx
 "use client";
 
-import React, {useEffect, useMemo, useRef, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {AnimatePresence, motion, useReducedMotion} from "framer-motion";
-import {ArrowRight, Mail, ShieldCheck, X, Loader2, AlertTriangle, Link2, Merge} from "lucide-react";
+import {ArrowRight, Mail, ShieldCheck, X, Loader2, AlertTriangle, Merge, Link2} from "lucide-react";
+
 import {fetchJson, HttpError, isValidEmail} from "@/components/landing/interactiveDemo/utils";
-import {useViewer} from "@/hooks/useViewer";
+import {useViewer} from "@/lib/auth/useViewer";
+import {useT} from "@/lib/i18n/useT";
 
-type Purpose = "link_guest" | "merge_into_existing" | "login";
+type Purpose = "link_guest" | "merge_into_existing";
+type Reason = "save" | "export" | "share";
 
-export function MiniAuthGate(props: Readonly<{
+export function MiniAuthGate(props: {
     open: boolean;
+    reason: Reason;
     onClose: () => void;
-    // à appeler quand l’utilisateur est devenu normal (ou session switch)
     onAuthed: () => Promise<void> | void;
-    // copy: pourquoi on affiche le gate
-    reason?: "save" | "export" | "share";
-}>) {
+}) {
     const reduced = useReducedMotion();
+    const {t} = useT();
     const {viewer, isGuest, refresh} = useViewer();
 
     const [step, setStep] = useState<"email" | "code">("email");
@@ -31,10 +33,10 @@ export function MiniAuthGate(props: Readonly<{
     const [hint, setHint] = useState<string | null>(null);
 
     const title = useMemo(() => {
-        if (props.reason === "share") return "Sauvegarder pour partager";
-        if (props.reason === "export") return "Sauvegarder pour exporter";
-        return "Sauvegarder votre progression";
-    }, [props.reason]);
+        if (props.reason === "export") return t("authGate.title.export");
+        if (props.reason === "share") return t("authGate.title.share");
+        return t("authGate.title.save");
+    }, [props.reason, t]);
 
     useEffect(() => {
         if (!props.open) {
@@ -48,24 +50,23 @@ export function MiniAuthGate(props: Readonly<{
         }
     }, [props.open]);
 
-    // si déjà authed (pas guest), on ferme “silencieusement”
     useEffect(() => {
         if (!props.open) return;
         if (!viewer) return;
         if (!isGuest) props.onClose();
     }, [props.open, viewer, isGuest, props]);
 
-    const close = () => props.onClose();
-
     const sendCode = async (p: Purpose) => {
         const trimmed = email.trim().toLowerCase();
         if (!isValidEmail(trimmed)) {
-            setErr("Email invalide.");
+            setErr(t("authGate.err.invalidEmail"));
             return;
         }
+
         setErr(null);
         setHint(null);
         setLoading(true);
+
         try {
             await fetchJson("/api/auth/email/send-code", {
                 method: "POST",
@@ -76,9 +77,9 @@ export function MiniAuthGate(props: Readonly<{
             setStep("code");
         } catch (e: any) {
             if (e instanceof HttpError && e.status === 429) {
-                setErr("Trop de tentatives. Réessayez dans quelques minutes.");
+                setErr(t("authGate.err.tooManyRequests"));
             } else {
-                setErr(e?.message || "Impossible d’envoyer le code.");
+                setErr(e?.message || t("authGate.err.sendFailed"));
             }
         } finally {
             setLoading(false);
@@ -88,11 +89,11 @@ export function MiniAuthGate(props: Readonly<{
     const verify = async () => {
         const trimmed = email.trim().toLowerCase();
         if (!isValidEmail(trimmed)) {
-            setErr("Email invalide.");
+            setErr(t("authGate.err.invalidEmail"));
             return;
         }
         if (code.length !== 6) {
-            setErr("Code incomplet.");
+            setErr(t("authGate.err.invalidCode"));
             return;
         }
 
@@ -107,13 +108,9 @@ export function MiniAuthGate(props: Readonly<{
                 body: JSON.stringify({email: trimmed, purpose, code}),
             });
 
-            // refresh viewer (cookie session peut changer en merge)
-            await refresh();
-
-            // si toujours guest, on n’annonce pas success
             const v = await refresh();
             if (v?.user?.type === "guest") {
-                setErr("Échec de connexion. Réessayez.");
+                setErr(t("authGate.err.invalidCode"));
                 return;
             }
 
@@ -121,18 +118,17 @@ export function MiniAuthGate(props: Readonly<{
             props.onClose();
         } catch (e: any) {
             if (e instanceof HttpError) {
-                // cas attendu: link_guest + email déjà pris
                 if (e.status === 409 && purpose === "link_guest") {
-                    setErr("Cet email a déjà un compte.");
-                    setHint("Vous pouvez fusionner vos créations invité avec ce compte.");
+                    setErr(t("authGate.err.emailInUse"));
+                    setHint(t("authGate.hint.merge"));
                     return;
                 }
                 if (e.status === 429) {
-                    setErr("Trop de tentatives. Réessayez plus tard.");
+                    setErr(t("authGate.err.tooManyRequests"));
                     return;
                 }
             }
-            setErr(e?.message || "Code invalide.");
+            setErr(e?.message || t("authGate.err.invalidCode"));
         } finally {
             setLoading(false);
         }
@@ -142,7 +138,7 @@ export function MiniAuthGate(props: Readonly<{
 
     return (
         <div className="fixed inset-0 z-[120] flex items-center justify-center px-4">
-            <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={close}/>
+            <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={props.onClose}/>
 
             <motion.div
                 initial={reduced ? false : {opacity: 0, y: 10, scale: 0.99}}
@@ -153,7 +149,7 @@ export function MiniAuthGate(props: Readonly<{
                 role="dialog"
                 aria-modal="true"
             >
-                <button onClick={close} className="absolute top-4 right-4 text-stone-400 hover:text-stone-600">
+                <button onClick={props.onClose} className="absolute top-4 right-4 text-stone-400 hover:text-stone-600">
                     <X size={18}/>
                 </button>
 
@@ -163,9 +159,7 @@ export function MiniAuthGate(props: Readonly<{
                         <Link2 size={22}/>
                     </div>
                     <h3 className="text-xl font-serif text-stone-900">{title}</h3>
-                    <p className="text-stone-500 text-sm mt-1">
-                        Pour éviter de perdre vos avancées, associez un email à votre session invitée.
-                    </p>
+                    <p className="text-stone-500 text-sm mt-1">{t("authGate.desc")}</p>
                 </div>
 
                 {err && (
@@ -192,13 +186,15 @@ export function MiniAuthGate(props: Readonly<{
                         }}
                     >
                         <div>
-                            <label className="block text-xs font-bold text-stone-500 uppercase mb-1">Email</label>
+                            <label className="block text-xs font-bold text-stone-500 uppercase mb-1">
+                                {t("authGate.label.email")}
+                            </label>
                             <div className="relative">
                                 <Mail className="absolute left-3 top-3 text-stone-400" size={18}/>
                                 <input
                                     type="email"
                                     required
-                                    placeholder="votre@email.com"
+                                    placeholder={t("authGate.placeholder.email")}
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     className="w-full bg-stone-50 border border-stone-200 rounded-lg py-3 pl-10 pr-3 text-stone-800 focus:ring-2 focus:ring-rose-200 focus:border-rose-400 outline-none transition-all"
@@ -212,10 +208,10 @@ export function MiniAuthGate(props: Readonly<{
                             className="w-full bg-stone-900 hover:bg-stone-800 disabled:opacity-60 text-white font-bold py-3 rounded-lg shadow-lg transition-all flex items-center justify-center gap-2"
                         >
                             {loading ? <Loader2 size={18} className="animate-spin"/> : null}
-                            Continuer <ArrowRight size={18}/>
+                            {t("authGate.cta.continue")} <ArrowRight size={18}/>
                         </button>
 
-                        <p className="text-center text-xs text-stone-400 pt-1">Vos données restent 100% privées.</p>
+                        <p className="text-center text-xs text-stone-400 pt-1">{t("authGate.privacy")}</p>
                     </form>
                 ) : (
                     <form
@@ -227,7 +223,7 @@ export function MiniAuthGate(props: Readonly<{
                     >
                         <div>
                             <label className="block text-xs font-bold text-stone-500 uppercase mb-1">
-                                Code (6 chiffres)
+                                {t("authGate.label.code")}
                             </label>
                             <input
                                 inputMode="numeric"
@@ -238,18 +234,18 @@ export function MiniAuthGate(props: Readonly<{
                                 onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                                 className="w-full bg-stone-50 border border-stone-200 rounded-lg py-3 px-3 text-stone-800 focus:ring-2 focus:ring-rose-200 focus:border-rose-400 outline-none transition-all font-mono tracking-widest text-center"
                             />
+
                             <div className="mt-2 text-xs text-stone-500 flex items-center justify-between">
                 <span>
-                  Envoyé à: <span className="text-stone-800 font-mono">{email.trim().toLowerCase()}</span>
+                  {email.trim().toLowerCase()}
                 </span>
-
                                 <button
                                     type="button"
                                     onClick={() => void sendCode(purpose)}
                                     disabled={loading}
                                     className="text-stone-700 hover:text-stone-900 underline underline-offset-2 disabled:opacity-60"
                                 >
-                                    Renvoyer
+                                    {t("authGate.cta.resend")}
                                 </button>
                             </div>
                         </div>
@@ -260,11 +256,10 @@ export function MiniAuthGate(props: Readonly<{
                             className="w-full bg-stone-900 hover:bg-stone-800 disabled:opacity-60 text-white font-bold py-3 rounded-lg shadow-lg transition-all flex items-center justify-center gap-2"
                         >
                             {loading ? <Loader2 size={18} className="animate-spin"/> : <ShieldCheck size={18}/>}
-                            Valider
+                            {t("authGate.cta.verify")}
                         </button>
 
-                        {/* merge option si link_guest conflict */}
-                        {purpose === "link_guest" && err?.includes("déjà un compte") ? (
+                        {purpose === "link_guest" && !!hint ? (
                             <button
                                 type="button"
                                 onClick={() => void sendCode("merge_into_existing")}
@@ -272,11 +267,11 @@ export function MiniAuthGate(props: Readonly<{
                                 className="w-full border border-stone-200 bg-white hover:bg-stone-50 text-stone-900 font-bold py-3 rounded-lg transition-all flex items-center justify-center gap-2"
                             >
                                 <Merge size={18}/>
-                                Fusionner avec ce compte
+                                {t("authGate.cta.merge")}
                             </button>
                         ) : null}
 
-                        <p className="text-center text-xs text-stone-400 pt-1">Vos données restent 100% privées.</p>
+                        <p className="text-center text-xs text-stone-400 pt-1">{t("authGate.privacy")}</p>
                     </form>
                 )}
             </motion.div>

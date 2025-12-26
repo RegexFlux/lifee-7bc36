@@ -2,7 +2,7 @@
 "use client";
 
 import React, {createContext, useContext, useMemo, useRef, useState} from "react";
-import {useViewer} from "@/hooks/useViewer";
+import {useViewer} from "@/lib/auth/useViewer";
 import {MiniAuthGate} from "@/components/auth/MiniAuthGate";
 
 type Reason = "save" | "export" | "share";
@@ -14,7 +14,7 @@ type Ctx = {
 const AuthGateCtx = createContext<Ctx | null>(null);
 
 export function AuthGateProvider({children}: { children: React.ReactNode }) {
-    const {viewer, isGuest, refresh} = useViewer();
+    const {viewer, refresh} = useViewer();
 
     const [open, setOpen] = useState(false);
     const [reason, setReason] = useState<Reason>("save");
@@ -22,7 +22,6 @@ export function AuthGateProvider({children}: { children: React.ReactNode }) {
     const resolverRef = useRef<((ok: boolean) => void) | null>(null);
 
     const requireLinked = async (r: Reason) => {
-        // si pas encore hydraté, on refresh
         const v = viewer ?? (await refresh());
         if (v?.user?.type !== "guest") return true;
 
@@ -34,7 +33,7 @@ export function AuthGateProvider({children}: { children: React.ReactNode }) {
         });
     };
 
-    const ctx = useMemo<Ctx>(() => ({requireLinked}), [requireLinked]);
+    const ctx = useMemo<Ctx>(() => ({requireLinked}), [viewer, refresh]);
 
     return (
         <AuthGateCtx.Provider value={ctx}>
@@ -49,7 +48,6 @@ export function AuthGateProvider({children}: { children: React.ReactNode }) {
                     resolverRef.current = null;
                 }}
                 onAuthed={async () => {
-                    // on valide que c'est bien non-guest maintenant
                     const v = await refresh();
                     const ok = v?.user?.type !== "guest";
                     setOpen(false);
