@@ -6,8 +6,7 @@ import NavBar from "@/components/landing/sections/NavBar";
 import WelcomeLayout from "@/components/studio/welcome/WelcomeLayout";
 import {AlbumOrganizeScreen} from "@/components/studio/organize/AlbumOrganizeScreen";
 
-import type {TourStep} from "@/oldComponents/tutorial/TutorialOverlay";
-import {TutorialOverlay} from "@/components/tutorial/TutorialOverlay";
+import {TourStep, TutorialOverlay} from "@/components/tutorial/TutorialOverlay";
 
 const studioOrganizeSteps: TourStep[] = [
     {

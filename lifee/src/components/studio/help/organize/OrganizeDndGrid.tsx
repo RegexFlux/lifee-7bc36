@@ -16,6 +16,7 @@ import {
 import {fetchJson} from "@/components/landing/interactiveDemo/utils";
 import {cx, glassCard, pillBase} from "@/components/studio/help/ui";
 import type {AlbumItemDTO} from "@/types/studioHelp";
+import {AssetThumb} from "@/components/asset/AssetThumb";
 
 function monthLabelFR(month: number) {
     const d = new Date(Date.UTC(2024, Math.max(0, Math.min(11, month - 1)), 1));
@@ -412,20 +413,19 @@ export function OrganizeDnDGrid(props: {
                                     )}
                                 >
                                     <div className="flex items-stretch">
-                                        <div className="w-[92px] sm:w-[110px] shrink-0 bg-stone-100 relative">
-                                            <img
-                                                src={it.thumbnailUrl}
-                                                className="h-full w-full object-cover"
-                                                alt=""
-                                                loading="lazy"
-                                            />
+                                        <div
+                                            className="w-[92px] sm:w-[110px] shrink-0 bg-stone-100 relative overflow-hidden">
+                                            <AssetThumb type={it.asset.type} thumbnailUrl={it.thumbnailUrl}
+                                                        url={it.assetUrl}/>
+
                                             <div className="absolute left-2 top-2">
-                        <span
-                            className="inline-flex items-center rounded-full border border-stone-200 bg-white px-2 py-0.5 text-[10px] font-black text-stone-600">
-                          {prettyType(it.asset.type)}
-                        </span>
+    <span
+        className="inline-flex items-center rounded-full border border-stone-200 bg-white px-2 py-0.5 text-[10px] font-black text-stone-600">
+      {it.asset.type === "video" ? "VID" : "IMG"}
+    </span>
                                             </div>
                                         </div>
+                                        ✅ Résultat : si o
 
                                         <div className="flex-1 min-w-0 p-3 sm:p-4 flex flex-col justify-between gap-2">
                                             <div className="flex items-start justify-between gap-2">

@@ -70,7 +70,6 @@ export async function renderAlbumExport(params: { exportJobId: string }) {
                             updatedAt: new Date()
                         }).where(eq(exportJobs.id, job.id));
                         await tx.update(albums).set({
-                            status: "exported",
                             updatedAt: new Date()
                         }).where(eq(albums.id, album.id));
                     });
@@ -123,7 +122,7 @@ export async function renderAlbumExport(params: { exportJobId: string }) {
                     videoKey: finalKey,
                     updatedAt: new Date()
                 }).where(eq(exportJobs.id, job.id));
-                await tx.update(albums).set({status: "exported", updatedAt: new Date()}).where(eq(albums.id, album.id));
+                await tx.update(albums).set({updatedAt: new Date()}).where(eq(albums.id, album.id));
             });
 
             return {videoKey: finalKey};
@@ -219,7 +218,7 @@ export async function renderAlbumExport(params: { exportJobId: string }) {
                 videoKey: finalKey,
                 updatedAt: new Date()
             }).where(eq(exportJobs.id, job.id));
-            await tx.update(albums).set({status: "exported", updatedAt: new Date()}).where(eq(albums.id, album.id));
+            await tx.update(albums).set({updatedAt: new Date()}).where(eq(albums.id, album.id));
         });
 
         return {videoKey: finalKey};

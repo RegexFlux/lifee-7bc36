@@ -1,4 +1,4 @@
-// pages/api/assets/[id]/url.ts
+// File: pages/api/assets/[id]/url.ts
 import type {NextApiRequest, NextApiResponse} from "next";
 import {and, eq, isNull} from "drizzle-orm";
 import {apiHandler} from "@/lib/api/handler";
@@ -24,25 +24,29 @@ export default apiHandler({
 
         if (!row) return fail(res, 404, "Not found");
 
-        if (row.type === 'video' && row.generatedFromAssetId) {
-            const source = (
-                await db
-                    .select()
-                    .from(assets)
-                    .where(and(eq(assets.id, row.generatedFromAssetId), eq(assets.userId, viewer.user.id), isNull(assets.deletedAt)))
-                    .limit(1)
-            )[0];
+        // ---- thumbnailKey rules (fallback) ----
+        let thumbnailKey: string | null = row.thumbnailKey ?? null;
 
-            if (source) {
-                row.thumbnailKey = source.fileKey;
+        if (row.type === "image") {
+            thumbnailKey = row.fileKey;
+        }
+
+        if (row.type === "video" && row.generatedFromAssetId) {
+            // généré => thumb = source.fileKey
+            if (!thumbnailKey) {
+                const source = (
+                    await db
+                        .select({fileKey: assets.fileKey})
+                        .from(assets)
+                        .where(and(eq(assets.id, row.generatedFromAssetId), eq(assets.userId, viewer.user.id), isNull(assets.deletedAt)))
+                        .limit(1)
+                )[0];
+                if (source) thumbnailKey = source.fileKey;
             }
         }
 
         const url = await presignGetObject({key: row.fileKey, expiresIn: 60 * 15});
-        const thumbnailUrl = row.thumbnailKey ? await presignGetObject({
-            key: row.thumbnailKey,
-            expiresIn: 60 * 15
-        }) : null;
+        const thumbnailUrl = thumbnailKey ? await presignGetObject({key: thumbnailKey, expiresIn: 60 * 15}) : null;
 
         return ok(res, {url, thumbnailUrl, expiresInSec: 60 * 15});
     },

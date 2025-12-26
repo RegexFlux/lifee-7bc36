@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "worker:thumbs": "node --enable-source-maps dist/worker/assetThumbnailsWorker.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.956.0",

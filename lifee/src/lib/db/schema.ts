@@ -26,7 +26,7 @@ import {
     WEBHOOK_PROVIDERS,
     WEBHOOK_PROCESSING_STATUSES,
     ACCOUNT_LINK_STATUSES,
-    CREDIT_EVENT_TYPES, ALBUM_MODES,
+    CREDIT_EVENT_TYPES, ALBUM_MODES, ASSET_THUMBNAIL_JOB_STATUS,
 } from "@/lib/shared/enums";
 
 /* ----------------------------- ENUMS (PG) ----------------------------- */
@@ -100,8 +100,8 @@ export const authSessions = pgTable(
             .references(() => users.id, {onDelete: "cascade"}),
 
         tokenHash: text("token_hash").notNull(),
-        ip: text("ip").notNull(),
-        userAgent: text("user_agent").notNull(),
+        ip: text("ip"),
+        userAgent: text("user_agent"),
 
         expiresAt: timestamp("expires_at", {withTimezone: true}).notNull(),
         revokedAt: timestamp("revoked_at", {withTimezone: true}),
@@ -224,6 +224,38 @@ export const assets = pgTable(
             foreignColumns: [t.id],
             name: 'generated_from_asset_id_fkey'
         })
+    })
+);
+
+export const assetThumbnailJobStatusEnum = pgEnum("asset_thumbnail_job_status", ASSET_THUMBNAIL_JOB_STATUS);
+
+export const assetThumbnailJobs = pgTable(
+    "asset_thumbnail_jobs",
+    {
+        id: uuid("id").primaryKey().defaultRandom(),
+
+        userId: uuid("user_id")
+            .notNull()
+            .references(() => users.id, {onDelete: "cascade"}),
+
+        assetId: uuid("asset_id")
+            .notNull()
+            .references(() => assets.id, {onDelete: "cascade"}),
+
+        status: assetThumbnailJobStatusEnum("status").notNull().default("queued"),
+        attempts: integer("attempts").notNull().default(0),
+
+        lastError: text("last_error"),
+        lockedAt: timestamp("locked_at", {withTimezone: true}),
+        doneAt: timestamp("done_at", {withTimezone: true}),
+
+        createdAt: timestamp("created_at", {withTimezone: true}).notNull().defaultNow(),
+        updatedAt: timestamp("updated_at", {withTimezone: true}).notNull().defaultNow(),
+    },
+    (t) => ({
+        assetUidx: uniqueIndex("asset_thumbnail_jobs_asset_uidx").on(t.assetId),
+        statusCreatedIdx: index("asset_thumbnail_jobs_status_created_idx").on(t.status, t.createdAt),
+        userCreatedIdx: index("asset_thumbnail_jobs_user_created_idx").on(t.userId, t.createdAt),
     })
 );
 

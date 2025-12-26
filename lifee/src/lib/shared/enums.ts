@@ -20,6 +20,8 @@ export const REPLICATE_JOB_STATUSES = [
     "canceled",
 ] as const;
 
+export const ASSET_THUMBNAIL_JOB_STATUS = ["queued", "processing", "done", "error", "skipped"] as const;
+
 export const JOB_EVENT_LEVELS = ["info", "warn", "error"] as const;
 export const JOB_EVENT_SOURCES = ["server", "replicate"] as const;
 

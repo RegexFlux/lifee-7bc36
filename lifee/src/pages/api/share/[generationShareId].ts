@@ -162,13 +162,14 @@ export default apiHandler({
             return ok(res, base);
         }
 
-        const result = (
-            await db
-                .select()
-                .from(assets)
-                .where(and(eq(assets.id, job.resultAssetId), isNull(assets.deletedAt)))
-                .limit(1)
-        )[0];
+        const result =
+            job.resultAssetId ? (
+                await db
+                    .select()
+                    .from(assets)
+                    .where(and(eq(assets.id, job.resultAssetId), isNull(assets.deletedAt)))
+                    .limit(1)
+            )[0] : null;
 
         if (!result) return fail(res, 404, "Not found");
 

@@ -25,7 +25,7 @@ export default function InteractiveDemo({onDownloadClick}: Props) {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const resultModal = useVideoResultModal({
-        resultUrl: demo.videoUrl,
+        videoUrl: demo.videoUrl,
         generationId: demo.generationId, // ⚠️ ici on suppose jobId = replicate_generation_jobs.id
         onDownloadClick,
         studioPath: "/studio",

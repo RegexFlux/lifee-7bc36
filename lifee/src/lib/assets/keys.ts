@@ -10,3 +10,8 @@ export function makeAssetObjectKey(params: { userId: string; ext: string; kind: 
     const clean = sanitizeExt(params.ext);
     return `lifee/users/${params.userId}/assets/${params.kind}/${id}.${clean}`;
 }
+
+export function makeAssetThumbnailObjectKey(params: { userId: string; assetId: string; ext?: string }) {
+    const ext = (params.ext || "jpg").replace(/^\./, "");
+    return `lifee/users/${params.userId}/assets/thumbs/${params.assetId}.${ext}`;
+}

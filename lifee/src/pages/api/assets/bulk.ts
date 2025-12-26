@@ -1,4 +1,4 @@
-// pages/api/assets/bulk.ts
+// File: pages/api/assets/bulk.ts
 import type {NextApiRequest, NextApiResponse} from "next";
 import {z} from "zod";
 import {apiHandler} from "@/lib/api/handler";
@@ -6,6 +6,7 @@ import {ok, fail} from "@/lib/api/response";
 import {requireViewer} from "@/lib/auth/require";
 import {db} from "@/lib/db";
 import {assets} from "@/lib/db/schema";
+import {assetThumbnailJobs} from "@/lib/db/schema";
 import {zAssetType} from "@/lib/validation/enums";
 
 const zItem = z.object({
@@ -33,7 +34,7 @@ export default apiHandler({
         }
 
         const rows = await db.transaction(async (tx) => {
-            return tx
+            const inserted = await tx
                 .insert(assets)
                 .values(
                     parsed.data.items.map((it) => ({
@@ -43,9 +44,20 @@ export default apiHandler({
                         title: it.title,
                         month: it.month,
                         year: it.year,
+                        thumbnailKey: it.type === "image" ? it.fileKey : null,
                     }))
                 )
                 .returning();
+
+            const videoUploads = inserted.filter((a) => a.type === "video" && !a.generatedFromAssetId);
+            if (videoUploads.length) {
+                await tx
+                    .insert(assetThumbnailJobs)
+                    .values(videoUploads.map((a) => ({userId: viewer.user.id, assetId: a.id})))
+                    .onConflictDoNothing();
+            }
+
+            return inserted;
         });
 
         return ok(res, {assets: rows}, 201);

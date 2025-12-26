@@ -5,8 +5,9 @@ import {
     assets,
     albumItems,
     creditEvents,
-    replicateGenerationJobEvents, albums, exportJobs, generationShares
+    replicateGenerationJobEvents, albums, exportJobs, generationShares, assetThumbnailJobs
 } from "@/lib/db/schema";
+import {InferInsertModel, InferSelectModel} from "drizzle-orm";
 
 export type WebhookEvent = typeof webhookEvents.$inferSelect;
 export type NewWebhookEvent = typeof webhookEvents.$inferInsert;
@@ -29,7 +30,12 @@ export type NewReplicateJobEvent = typeof replicateGenerationJobEvents.$inferIns
 
 export type Album = typeof albums.$inferSelect;
 export type NewAlbum = typeof albums.$inferInsert;
-export type AlbumStatus = Album["status"];
+
+export type AssetRow = InferSelectModel<typeof assets>;
+export type NewAssetRow = InferInsertModel<typeof assets>;
+
+export type AssetThumbnailJobRow = InferSelectModel<typeof assetThumbnailJobs>;
+export type NewAssetThumbnailJobRow = InferInsertModel<typeof assetThumbnailJobs>;
 
 export type ExportJob = typeof exportJobs.$inferSelect;
 export type NewExportJob = typeof exportJobs.$inferInsert;

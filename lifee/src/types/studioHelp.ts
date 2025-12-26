@@ -18,5 +18,6 @@ export type AlbumItemDTO = {
         year: number;
         month: number;
     };
-    thumbnailUrl: string;
+    thumbnailUrl?: string;
+    assetUrl: string;
 };

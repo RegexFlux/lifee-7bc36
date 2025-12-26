@@ -9,9 +9,8 @@ import {StudioHelpShell} from "@/components/studio/help/StudioHelpShell";
 import {WelcomeUploadCard} from "@/components/studio/help/upload/WelcomeUploadCard";
 import {cx, glassCard, pillBase} from "@/components/studio/help/ui";
 import {useT} from "@/lib/i18n/useT";
-import {TourStep} from "@/oldComponents/tutorial/TutorialOverlay";
+import {TourStep} from "@/components/tutorial/TutorialOverlay";
 import {TutorialOverlay} from "@/components/tutorial/TutorialOverlay";
-import {router} from "next/client";
 
 
 const studioWelcomeSteps: TourStep[] = [
