@@ -23,7 +23,7 @@ type Props = {
     onMinimize: () => void;
 
     state: DemoState;
-    jobId: string | null;
+    generationId: string | null;
     shareUrl: string | null;
     videoUrl: string | null;
     error: string | null;
@@ -83,7 +83,7 @@ export default function Dock(props: Props) {
             setSendError(t("dock.email.invalid"));
             return;
         }
-        if (!props.shareUrl || !props.jobId) {
+        if (!props.shareUrl || !props.generationId) {
             setSendError(t("dock.email.unavailable"));
             return;
         }
@@ -277,10 +277,10 @@ export default function Dock(props: Props) {
                         <div className="pt-1">
                             <button
                                 onClick={() => setEmailOpen((v) => !v)}
-                                disabled={!canShare || !props.jobId}
+                                disabled={!canShare || !props.generationId}
                                 className={[
                                     "w-full rounded-2xl border px-3 py-2 text-xs font-black transition flex items-center justify-center gap-2",
-                                    canShare && props.jobId
+                                    canShare && props.generationId
                                         ? "border-stone-200 bg-white/70 hover:bg-white text-stone-900"
                                         : "border-stone-200 bg-stone-50 text-stone-400 cursor-not-allowed",
                                 ].join(" ")}

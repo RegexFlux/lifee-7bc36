@@ -57,7 +57,7 @@ export function useInteractiveDemo({router}: Params) {
     const [demoState, setDemoState] = useState<DemoState>("idle");
     const [videoUrl, setVideoUrl] = useState<string | null>(null);
     const [shareUrl, setShareUrl] = useState<string | null>(null);
-    const [jobId, setJobIdState] = useState<string | null>(null); // = generationId
+    const [generationId, setGenerationId] = useState<string | null>(null); // = generationId
     const [error, setError] = useState<string | null>(null);
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
@@ -82,7 +82,7 @@ export function useInteractiveDemo({router}: Params) {
     }, [photoPreview]);
 
     const setJobId = async (id: string | null) => {
-        setJobIdState(id);
+        setGenerationId(id);
         try {
             if (id) localStorage.setItem("lifee:lastDemoGenerationId", id);
         } catch {
@@ -123,12 +123,10 @@ export function useInteractiveDemo({router}: Params) {
             try {
                 const data = await fetchJson<JobStatusResponse>(`/api/generations/${encodeURIComponent(generationId)}`);
 
-                const status = safeFirstString((data as any)?.status) || "";
-                const vUrl =
-                    safeFirstString((data as any)?.resultUrl) ||
-                    safeFirstString((data as any)?.videoUrl) ||
-                    null;
+                const status = safeFirstString(data.job.status) || "";
+                const vUrl = safeFirstString(data.signed.resultUrl)
 
+                console.log('ss', data)
                 if ((status === "succeeded" || status === "done") && vUrl) {
                     setVideoUrl(vUrl);
                     setDemoState("success");
@@ -137,7 +135,7 @@ export function useInteractiveDemo({router}: Params) {
                 }
 
                 if (status === "failed" || status === "error") {
-                    setError(safeFirstString((data as any)?.error) || t("demo.error.generation_failed"));
+                    setError(safeFirstString((data.job.error) || t("demo.error.generation_failed")));
                     setDemoState("failed");
                     stopPolling();
                     return;
@@ -205,7 +203,7 @@ export function useInteractiveDemo({router}: Params) {
             return URL.createObjectURL(file);
         });
 
-        await setJobId(null);
+        await setGenerationId(null);
         setDemoState("analyzing");
 
         try {
@@ -222,9 +220,9 @@ export function useInteractiveDemo({router}: Params) {
                 // Optionnel mais recommandé: idempotence côté front
                 // headers: {"Content-Type":"application/json","Idempotency-Key": crypto.randomUUID()},
             });
-
+            console.log('pp', payload);
             const generationId =
-                safeFirstString((payload as any)?.jobId) ||
+                safeFirstString((payload as any)?.generation) ||
                 safeFirstString((payload as any)?.id) ||
                 null;
 
@@ -268,17 +266,25 @@ export function useInteractiveDemo({router}: Params) {
         window.open(shareUrl, "_blank", "noreferrer");
     };
 
+    useEffect(() => {
+        if (router.query.generationId) {
+            setJobId(router.query.generationId);
+            pollJob(router.query.generationId);
+            ensureShareUrl(generationId);
+        }
+    }, [router.query.generationId])
+
     return {
         demoState,
         videoUrl,
         shareUrl,
-        jobId,
+        generationId,
         error,
         photoPreview,
         uploadAndGenerate,
         openShare,
         pollJob,
         stopPolling,
-        setJobId,
+        setGenerationId,
     };
 }

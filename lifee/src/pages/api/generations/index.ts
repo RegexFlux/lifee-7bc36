@@ -22,10 +22,11 @@ import {getClientIp, hashIp} from "@/lib/security/ip";
 import {resolveReplicateVersion} from "@/lib/replicate/resolveVersion";
 import {logReplicateJobEvent} from "@/lib/replicate/jobEvents";
 
-const PAID_MODEL_OWNER = "kwaivgi";
-const PAID_MODEL = "kling-v2.1";
-const DEMO_MODEL_OWNER = "wan-video";
-const DEMO_MODEL = "wan-2.2-i2v-fast";
+const localtunnel = require("localtunnel");
+
+import {match} from 'ts-pattern';
+import {getDemoModel, getKlingInput, getKlingModel, getWanInput} from "@/lib/replicate/index";
+
 const GEN_COST = 2;
 
 const zCreate = z.object({
@@ -136,12 +137,35 @@ export default apiHandler({
             if (it[0].assetId !== source.id) return fail(res, 409, "Album item no longer points to source asset");
         }
 
-        const model = paid ? `${PAID_MODEL_OWNER}/${PAID_MODEL}` : `${DEMO_MODEL_OWNER}/${DEMO_MODEL}`;
+        // start_image signé
+        const startImageUrl = await presignGetObject({key: source.fileKey, expiresIn: 60 * 60 * 2});
 
-        // Resolve version (✅ tu as confirmé que tu utilises version)
+        const {model, input} = await match(paid)
+            .with(false, async () => ({
+                model: await getDemoModel(),
+                input: getWanInput(
+                    parsed.data.prompt,
+                    startImageUrl,
+                    5,
+                    parsed.data.aspectRatio,
+                    parsed.data.negativePrompt
+                )
+            }))
+            .with(true, async () => ({
+                model: await getKlingModel(),
+                input: getKlingInput(
+                    parsed.data.prompt,
+                    startImageUrl,
+                    5,
+                    parsed.data.aspectRatio,
+                    parsed.data.negativePrompt,
+                )
+            })).exhaustive();
+
+
         const version = await resolveReplicateVersion(model);
 
-        let jobId: string;
+        let generationId: string;
 
         try {
             const created = await db.transaction(async (tx) => {
@@ -190,7 +214,7 @@ export default apiHandler({
                     .returning();
 
                 await logReplicateJobEvent(tx, {
-                    jobId: job.id,
+                    generationId: job.id,
                     status: "info",
                     source: "server",
                     message: `Job created (model=${model})`,
@@ -199,28 +223,20 @@ export default apiHandler({
                 return job;
             });
 
-            jobId = created.id;
+            generationId = created.id;
         } catch (e: any) {
             const status = typeof e?.status === "number" ? e.status : 500;
             return fail(res, status, e?.message || "Create failed");
         }
 
-        // start_image signé
-        const startImageUrl = await presignGetObject({key: source.fileKey, expiresIn: 60 * 60 * 2});
+        // TODO REMOVE
+        const tunnel = await localtunnel({port: 3000});
+        const webhookUrl = `${tunnel.url}/api/webhooks/replicate?generationId=${generationId}`;
+        console.log('webhookUrl', webhookUrl);
 
-        const appUrl = (process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || "").replace(/\/$/, "");
-        const webhookUrl = `${appUrl}/api/webhooks/replicate?jobId=${jobId}`;
-
-        // Replicate create prediction (✅ version)
         const body = {
             version,
-            input: {
-                prompt: parsed.data.prompt,
-                negative_prompt: parsed.data.negativePrompt,
-                duration: parsed.data.duration,
-                start_image: startImageUrl,
-                aspect_ratio: parsed.data.aspectRatio,
-            },
+            input,
             webhook: webhookUrl,
             webhook_events_filter: ["completed"],
         };
@@ -241,10 +257,10 @@ export default apiHandler({
                 await tx.update(replicateGenerationJobs).set({
                     status: "failed",
                     updatedAt: new Date(),
-                }).where(eq(replicateGenerationJobs.id, jobId));
+                }).where(eq(replicateGenerationJobs.id, generationId));
 
                 await logReplicateJobEvent(tx, {
-                    jobId,
+                    generationId: generationId,
                     status: "error",
                     source: "replicate",
                     message: `Create failed: ${data?.detail || "unknown"}`,
@@ -261,12 +277,12 @@ export default apiHandler({
                     userId: viewer.user.id,
                     type: "refund",
                     delta: GEN_COST,
-                    metadata: {reason: "replicate_create_failed", jobId},
+                    metadata: {reason: "replicate_create_failed", generationId},
                 });
 
                 if (idemKey) {
                     await tx.update(idempotencyKeys).set({
-                        responseJson: {jobId, status: "failed"},
+                        responseJson: {generationId, status: "failed"},
                     }).where(and(eq(idempotencyKeys.provider, "replicate_create"), eq(idempotencyKeys.key, idemKey)));
                 }
             });
@@ -282,10 +298,10 @@ export default apiHandler({
                 replicatePredictionId: predictionId ?? null,
                 status: status === "processing" ? "processing" : "starting",
                 updatedAt: new Date(),
-            }).where(eq(replicateGenerationJobs.id, jobId));
+            }).where(eq(replicateGenerationJobs.id, generationId));
 
             await logReplicateJobEvent(tx, {
-                jobId,
+                generationId,
                 status: "info",
                 source: "replicate",
                 message: `Prediction created (${predictionId ?? "no-id"}) status=${status}`,
@@ -293,11 +309,11 @@ export default apiHandler({
 
             if (idemKey) {
                 await tx.update(idempotencyKeys).set({
-                    responseJson: {jobId, replicateId: predictionId ?? null, status},
+                    responseJson: {generationId, status},
                 }).where(and(eq(idempotencyKeys.provider, "replicate_create"), eq(idempotencyKeys.key, idemKey)));
             }
         });
 
-        return ok(res, {jobId, replicateId: predictionId ?? null, status}, 201);
+        return ok(res, {generationId, status}, 201);
     },
 });

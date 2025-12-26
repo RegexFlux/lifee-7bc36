@@ -54,7 +54,7 @@ export default function InteractiveDemo({onDownloadClick}: Props) {
                     onOpen={() => setDockOpen(true)}
                     onMinimize={() => setDockOpen(false)}
                     state={demo.demoState}
-                    jobId={demo.jobId}
+                    generationId={demo.generationId}
                     shareUrl={demo.shareUrl}
                     videoUrl={demo.videoUrl}
                     error={demo.error}
@@ -90,7 +90,7 @@ export default function InteractiveDemo({onDownloadClick}: Props) {
             {/* Fullscreen result modal */}
             {demo.videoUrl ? (
                 <VideoResultModal
-                    jobId={demo.jobId}
+                    jobId={demo.generationId}
                     open={resultModal.open}
                     mounted={resultModal.mounted}
                     isMobile={resultModal.isMobile}

@@ -3,20 +3,32 @@ export type DemoState = "idle" | "analyzing" | "generating" | "success" | "faile
 export type LifeeJobStatus = "uploading" | "queued" | "starting" | "processing" | "succeeded" | "failed";
 
 export type JobStatusResponse = {
+    ok: boolean,
+    job: Job,
+    signed: {
+        "resultUrl": string | null;
+        "thumbnailUrl": string | null;
+        "expiresInSec": number
+    }
+}
+
+export type Job = {
+    userId: "69576f7a-b026-493a-9744-fdd4f60c7964",
+    albumItemId: string | null,
+    createdByAssetId: string,
+    resultAssetId: string | null,
+    "progressMessage": null,
+    month: number,
+    year: number,
     id: string;
     shareUrl: string;
     status: LifeeJobStatus;
     progress: number;
-    message: string | null;
     error: string | null;
-
-    videoUrl: string | null;
-    thumbnailUrl: string | null;
-    videoSource: "s3" | "replicate" | null;
-
     createdAt: string | Date;
-    events: { at: string | Date; type: string; message: string }[];
+    updatedAt: string | Date;
 };
+
 
 export type CreateJobResponse = {
     jobId: string;

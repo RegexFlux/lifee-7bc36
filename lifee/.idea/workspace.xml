@@ -6,9 +6,19 @@
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/auth/useViewer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/auth/useViewer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/db/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/db/schema.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/auth/AuthModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/auth/AuthModal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/interactiveDemo/Dock.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/interactiveDemo/Dock.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useInteractiveDemo.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useInteractiveDemo.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useVideoResultModal.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useVideoResultModal.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/replicate/jobEvents.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/replicate/jobEvents.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/s3/putRemoteUrlToS3.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/s3/putRemoteUrlToS3.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oldComponents/landing/AuthModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/landing/AuthModal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oldComponents/landing/InteractiveDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/landing/InteractiveDemo.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/generations/[id]/retry.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/generations/[id]/retry.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/api/generations/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/generations/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/webhooks/replicate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/webhooks/replicate.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types/interactiveDemo.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/interactiveDemo.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -111,7 +121,7 @@
       <workItem from="1766585287848" duration="70199000" />
       <workItem from="1766720088052" duration="81000" />
       <workItem from="1766720178142" duration="8745000" />
-      <workItem from="1766729151093" duration="334000" />
+      <workItem from="1766729151093" duration="4664000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
@@ -229,11 +239,6 @@
           <option name="timeStamp" value="30" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/src/pages/api/webhooks/replicate.ts</url>
-          <line>40</line>
-          <option name="timeStamp" value="32" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/pages/api/studio/timeline/clips/[clipId]/get.ts</url>
           <line>20</line>
           <option name="timeStamp" value="34" />
@@ -340,15 +345,27 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/pages/api/generations/index.ts</url>
-          <line>165</line>
+          <line>189</line>
           <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="99" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/pages/api/generations/index.ts</url>
-          <line>203</line>
+          <line>227</line>
           <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="100" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/pages/api/webhooks/replicate.ts</url>
+          <line>43</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="101" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/pages/api/generations/index.ts</url>
+          <line>236</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="102" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

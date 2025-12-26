@@ -127,7 +127,7 @@ export default apiHandler({
                 }).where(eq(replicateGenerationJobs.id, job.id));
 
                 await logReplicateJobEvent(tx, {
-                    jobId: job.id,
+                    generationId: job.id,
                     status: "info",
                     source: "server",
                     message: "Retry requested (credits spent, job reset to queued)",
@@ -177,7 +177,7 @@ export default apiHandler({
                 }).where(eq(replicateGenerationJobs.id, job.id));
 
                 await logReplicateJobEvent(tx, {
-                    jobId: job.id,
+                    generationId: job.id,
                     status: "error",
                     source: "replicate",
                     message: `Retry create failed: ${data?.detail || "unknown"}`,
@@ -204,7 +204,7 @@ export default apiHandler({
             }).where(eq(replicateGenerationJobs.id, job.id));
 
             await logReplicateJobEvent(tx, {
-                jobId: job.id,
+                generationId: job.id,
                 status: "info",
                 source: "replicate",
                 message: `Retry prediction created (${predictionId ?? "no-id"}) status=${status}`,

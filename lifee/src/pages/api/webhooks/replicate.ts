@@ -41,8 +41,8 @@ const TERMINAL: readonly ReplicateJobStatus[] = ["succeeded", "failed", "cancele
 
 export default apiHandler({
     POST: async (req: NextApiRequest, res: NextApiResponse) => {
-        const jobId = (req.query.jobId as string | undefined)?.trim();
-        if (!jobId) return fail(res, 400, "Missing jobId");
+        const generationId = (req.query.generationId as string | undefined)?.trim();
+        if (!generationId) return fail(res, 400, "Missing generationId");
 
         const rawBody = await readRawBody(req);
 
@@ -72,10 +72,10 @@ export default apiHandler({
             provider: "replicate",
             eventId,
             payload,
-            relatedReplicateJobId: jobId,
+            relatedReplicateJobId: generationId,
         });
 
-        const job = (await db.select().from(replicateGenerationJobs).where(eq(replicateGenerationJobs.id, jobId)).limit(1))[0];
+        const job = (await db.select().from(replicateGenerationJobs).where(eq(replicateGenerationJobs.id, generationId)).limit(1))[0];
         if (!job) return ok(res, {status: "ok"});
 
         if (TERMINAL.includes(job.status)) return ok(res, {status: "ok"});
@@ -89,12 +89,12 @@ export default apiHandler({
                 status: nextStatus,
                 replicatePredictionId: predictionId ?? null,
                 updatedAt: new Date(),
-            }).where(eq(replicateGenerationJobs.id, jobId));
+            }).where(eq(replicateGenerationJobs.id, generationId));
 
             const err = payload?.error ? String(payload.error) : null;
             await logReplicateJobEvent(tx, {
-                jobId,
-                status: err ? "warn" : "info",
+                generationId: generationId,
+                status: err ? "warn" : (nextStatus === 'succeeded' ? 'success' : "info"),
                 source: "replicate",
                 message: err ? `Status=${nextStatus} error=${err}` : `Status=${nextStatus}`,
             });
@@ -109,9 +109,9 @@ export default apiHandler({
                 await tx.update(replicateGenerationJobs).set({
                     status: "failed",
                     updatedAt: new Date()
-                }).where(eq(replicateGenerationJobs.id, jobId));
+                }).where(eq(replicateGenerationJobs.id, generationId));
                 await logReplicateJobEvent(tx, {
-                    jobId,
+                    generationId: generationId,
                     status: "error",
                     source: "replicate",
                     message: "Missing output URL"
@@ -126,9 +126,9 @@ export default apiHandler({
                 await tx.update(replicateGenerationJobs).set({
                     status: "failed",
                     updatedAt: new Date()
-                }).where(eq(replicateGenerationJobs.id, jobId));
+                }).where(eq(replicateGenerationJobs.id, generationId));
                 await logReplicateJobEvent(tx, {
-                    jobId,
+                    generationId: generationId,
                     status: "error",
                     source: "server",
                     message: "Missing source asset"
@@ -137,7 +137,7 @@ export default apiHandler({
             return ok(res, {status: "ok"});
         }
 
-        const videoKey = `lifee/users/${source.userId}/assets/video/${jobId}.mp4`;
+        const videoKey = `lifee/users/${source.userId}/assets/video/${generationId}.mp4`;
         await putRemoteUrlToS3({key: videoKey, url: outUrl, contentType: "video/mp4"});
 
         await db.transaction(async (tx) => {
@@ -155,11 +155,11 @@ export default apiHandler({
                 status: "succeeded",
                 resultAssetId: videoAsset.id,
                 updatedAt: new Date(),
-            }).where(eq(replicateGenerationJobs.id, jobId));
+            }).where(eq(replicateGenerationJobs.id, generationId));
 
             await logReplicateJobEvent(tx, {
-                jobId,
-                status: "info",
+                generationId: generationId,
+                status: "success",
                 source: "server",
                 message: `Video saved to S3 (assetId=${videoAsset.id})`,
             });
@@ -174,14 +174,14 @@ export default apiHandler({
 
                 if (r.length) {
                     await logReplicateJobEvent(tx, {
-                        jobId,
+                        generationId: generationId,
                         status: "info",
                         source: "server",
                         message: `Album item replaced (albumItemId=${job.albumItemId})`,
                     });
                 } else {
                     await logReplicateJobEvent(tx, {
-                        jobId,
+                        generationId: generationId,
                         status: "warn",
                         source: "server",
                         message: `Album item not replaced (item changed meanwhile)`,

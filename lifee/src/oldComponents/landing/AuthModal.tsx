@@ -34,7 +34,7 @@ export default function AuthModal({onAuthed}: Props) {
     const {viewer} = useViewer();
 
     const isOpen = useMemo(() => String(router.query.auth || "") === "1", [router.query.auth]);
-    const jobId = useMemo(() => router.query.jobId, [router.query.jobId]); // conservé (ancien)
+    const generationId = useMemo(() => router.query.generationId, [router.query.generationId]); // conservé (ancien)
     const queryPurpose = useMemo(() => String(router.query.purpose || ""), [router.query.purpose]);
 
     const inferredPurpose: Purpose = useMemo(() => {
@@ -77,7 +77,7 @@ export default function AuthModal({onAuthed}: Props) {
     }, [isOpen]);
 
     const handleGoogleLogin = () => {
-        const jid = jobId ? `?jobId=${encodeURIComponent(String(jobId))}` : "";
+        const jid = generationId ? `?generationId=${encodeURIComponent(String(generationId))}` : "";
         window.location.href = `/api/auth/google/start${jid}`;
     };
 

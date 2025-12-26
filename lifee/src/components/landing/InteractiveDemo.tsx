@@ -19,6 +19,7 @@ type Props = {
 export default function InteractiveDemo({onDownloadClick}: Props) {
     const router = useRouter();
     const demo = useInteractiveDemo({router});
+    console.log('demo', demo);
     const {t} = useT();
 
     const [dockOpen, setDockOpen] = useState(true);
@@ -26,10 +27,12 @@ export default function InteractiveDemo({onDownloadClick}: Props) {
 
     const resultModal = useVideoResultModal({
         videoUrl: demo.videoUrl,
-        generationId: demo.jobId, // ⚠️ ici on suppose jobId = replicate_generation_jobs.id
+        generationId: demo.generationId, // ⚠️ ici on suppose jobId = replicate_generation_jobs.id
         onDownloadClick,
         studioPath: "/studio",
     });
+
+    console.log('vad', demo.generationId);
 
     const polaroidSrc = demo.photoPreview ?? "examples/landing.jpg";
 
@@ -55,7 +58,7 @@ export default function InteractiveDemo({onDownloadClick}: Props) {
                     onOpen={() => setDockOpen(true)}
                     onMinimize={() => setDockOpen(false)}
                     state={demo.demoState}
-                    jobId={demo.jobId}
+                    generationId={demo.generationId}
                     shareUrl={demo.shareUrl}
                     videoUrl={demo.videoUrl}
                     error={demo.error}

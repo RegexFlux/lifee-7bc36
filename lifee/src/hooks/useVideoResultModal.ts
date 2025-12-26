@@ -3,7 +3,6 @@
 
 import {useEffect, useRef, useState} from "react";
 import {useRouter} from "next/router";
-import {fetchViewer} from "@/hooks/useViewer";
 
 function useIsMobile(max = 640) {
     const [mounted, setMounted] = useState(false);
