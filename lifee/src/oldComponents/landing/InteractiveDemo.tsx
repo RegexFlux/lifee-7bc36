@@ -1,4 +1,3 @@
-// File: src/components/landing/interactiveDemo.tsx
 "use client";
 
 import React, {useRef, useState} from "react";
@@ -6,10 +5,10 @@ import {Layers, X, Upload, Wand2} from "lucide-react";
 import {useRouter} from "next/router";
 
 import {useVideoResultModal, VideoResultModal} from "@/hooks/useVideoResultModal";
+
 import Dock from "@/components/landing/interactiveDemo/Dock";
 import PolaroidStack from "@/components/landing/interactiveDemo/PolaroidStack";
 import {useInteractiveDemo} from "@/hooks/useInteractiveDemo";
-import {useT} from "@/lib/i18n/useT";
 
 type Props = {
     onDownloadClick: () => void;
@@ -18,9 +17,9 @@ type Props = {
 export default function InteractiveDemo({onDownloadClick}: Props) {
     const router = useRouter();
     const demo = useInteractiveDemo({router});
-    const {t} = useT();
 
     const [dockOpen, setDockOpen] = useState(true);
+
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const resultModal = useVideoResultModal({
@@ -45,6 +44,7 @@ export default function InteractiveDemo({onDownloadClick}: Props) {
         await demo.uploadAndGenerate(f);
     };
 
+    console.log({...demo})
     return (
         <div className="relative group perspective-1000 lg:pl-10">
             {/* ✅ TOP-RIGHT Dock */}
@@ -60,8 +60,7 @@ export default function InteractiveDemo({onDownloadClick}: Props) {
                     error={demo.error}
                     onOpenResult={() => resultModal.setOpen(true)}
                     onOpenShare={demo.openShare}
-                />
-            )}
+                />)}
 
             {/* Left polaroids */}
             <div className="absolute -left-12 -top-12 z-20 hidden lg:block pointer-events-none select-none">
@@ -116,7 +115,7 @@ export default function InteractiveDemo({onDownloadClick}: Props) {
                         <div className="w-3 h-3 rounded-full bg-green-500/20"/>
                     </div>
                     <p className="text-xs text-slate-500 flex items-center gap-4">
-                        {t("demo.header")}
+                        Transformez votre premier souvenir
                         <X size={12}/>
                     </p>
                 </div>
@@ -149,15 +148,15 @@ export default function InteractiveDemo({onDownloadClick}: Props) {
                                 <Upload size={32} className="text-slate-400"/>
                             </div>
                             <div>
-                                <h3 className="text-lg font-medium text-white">{t("demo.drop.title")}</h3>
-                                <p className="text-sm text-slate-500">{t("demo.drop.subtitle")}</p>
+                                <h3 className="text-lg font-medium text-white">Créer mon Album Vidéo</h3>
+                                <p className="text-sm text-slate-500">Cliquez ou glissez vos photos ici</p>
                             </div>
                         </div>
                     )}
 
                     {demo.demoState === "analyzing" && (
                         <div className="absolute inset-0 bg-slate-950/90 flex flex-col items-center justify-center">
-                            <p className="text-sm font-mono text-indigo-300 animate-pulse">{t("demo.state.analyzing")}</p>
+                            <p className="text-sm font-mono text-indigo-300 animate-pulse">Upload & préparation…</p>
                         </div>
                     )}
 
@@ -165,8 +164,7 @@ export default function InteractiveDemo({onDownloadClick}: Props) {
                         <div className="absolute inset-0 bg-slate-950/90 flex flex-col items-center justify-center">
                             <div
                                 className="w-16 h-16 border-4 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin mb-4"/>
-                            <p className="text-sm font-mono text-cyan-300">{t("demo.state.generating")}</p>
-
+                            <p className="text-sm font-mono text-cyan-300">Génération vidéo en cours…</p>
                             {demo.shareUrl && (
                                 <button
                                     className="mt-3 text-xs text-cyan-200/80 underline"
@@ -175,20 +173,21 @@ export default function InteractiveDemo({onDownloadClick}: Props) {
                                         demo.openShare();
                                     }}
                                 >
-                                    {t("demo.state.generating.openShare")}
+                                    Ouvrir le lien de partage
                                 </button>
                             )}
-
-                            <p className="mt-2 text-[11px] text-slate-400">{t("demo.state.generating.hint")}</p>
+                            <p className="mt-2 text-[11px] text-slate-400">
+                                Vous pouvez continuer à parcourir le site (dock en haut à droite).
+                            </p>
                         </div>
                     )}
 
                     {demo.demoState === "failed" && (
                         <div
                             className="absolute inset-0 bg-slate-950/90 flex flex-col items-center justify-center text-center px-6">
-                            <p className="text-sm font-mono text-red-300">{t("demo.state.failed.title")}</p>
-                            <p className="text-xs text-slate-400 mt-2">{demo.error || t("dock.card.failed.body")}</p>
-                            <p className="text-xs text-slate-500 mt-3">{t("demo.state.failed.retry")}</p>
+                            <p className="text-sm font-mono text-red-300">Erreur</p>
+                            <p className="text-xs text-slate-400 mt-2">{demo.error || "Une erreur est survenue."}</p>
+                            <p className="text-xs text-slate-500 mt-3">Clique pour réessayer</p>
                         </div>
                     )}
 
@@ -200,7 +199,7 @@ export default function InteractiveDemo({onDownloadClick}: Props) {
                                            className="w-full h-full object-cover"/>
                                 ) : (
                                     <div
-                                        className="text-white/70 flex items-center justify-center h-full">{t("demo.loading")}</div>
+                                        className="text-white/70 flex items-center justify-center h-full">Chargement…</div>
                                 )}
                             </div>
 
@@ -212,7 +211,7 @@ export default function InteractiveDemo({onDownloadClick}: Props) {
                                     }}
                                     className="px-4 py-2 rounded-xl bg-white/10 border border-white/20 text-white text-xs font-bold hover:bg-white/15 backdrop-blur active:scale-[0.99] transition"
                                 >
-                                    {t("demo.state.success.openFullscreen")}
+                                    Ouvrir en plein écran
                                 </button>
                             </div>
                         </div>

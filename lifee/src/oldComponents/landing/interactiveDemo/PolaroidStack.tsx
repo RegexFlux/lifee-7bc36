@@ -1,12 +1,9 @@
-// File: src/components/landing/interactiveDemo/PolaroidStack.tsx
+// /components/landing/interactiveDemo/PolaroidStack.tsx
 "use client";
 
 import React from "react";
-import {useT} from "@/lib/i18n/useT";
 
 export default function PolaroidStack({src}: { src: string }) {
-    const {t} = useT();
-
     return (
         <div
             className="relative w-36 h-44 transform -rotate-6 transition-transform group-hover:-rotate-12 duration-500">
@@ -36,7 +33,7 @@ export default function PolaroidStack({src}: { src: string }) {
 
             <div
                 className="absolute bottom-1.5 left-1/2 -translate-x-1/2 text-xs font-handwriting text-slate-400 whitespace-nowrap">
-                {t("polaroid.label")}
+                Vos Photos
             </div>
         </div>
     );
