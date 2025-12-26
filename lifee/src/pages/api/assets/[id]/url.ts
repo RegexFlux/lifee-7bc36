@@ -24,6 +24,20 @@ export default apiHandler({
 
         if (!row) return fail(res, 404, "Not found");
 
+        if (row.type === 'video' && row.generatedFromAssetId) {
+            const source = (
+                await db
+                    .select()
+                    .from(assets)
+                    .where(and(eq(assets.id, row.generatedFromAssetId), eq(assets.userId, viewer.user.id), isNull(assets.deletedAt)))
+                    .limit(1)
+            )[0];
+
+            if (source) {
+                row.thumbnailKey = source.fileKey;
+            }
+        }
+
         const url = await presignGetObject({key: row.fileKey, expiresIn: 60 * 15});
         const thumbnailUrl = row.thumbnailKey ? await presignGetObject({
             key: row.thumbnailKey,

@@ -51,6 +51,7 @@ export default apiHandler({
         if (recent.length >= 3) return fail(res, 429, "Too many requests");
 
         const code = make6DigitCode();
+        console.log(code);
         const minutes = 10;
         const expiresAt = new Date(Date.now() + minutes * 60 * 1000);
 
@@ -65,12 +66,13 @@ export default apiHandler({
         // Template: il faut aligner le template sur vos purposes
         const tpl = authCodeEmail({code, minutes, purpose});
 
-        await sendEmail({
-            to: email,
-            subject: tpl.subject,
-            html: tpl.html,
-            text: tpl.text,
-        });
+        // TODO RESTORE
+        // await sendEmail({
+        //     to: email,
+        //     subject: tpl.subject,
+        //     html: tpl.html,
+        //     text: tpl.text,
+        // });
 
         return ok(res, {status: "sent"}, 201);
     },

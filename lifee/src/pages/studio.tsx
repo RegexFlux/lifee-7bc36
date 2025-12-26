@@ -2,8 +2,7 @@
 import React from "react";
 import {useViewer} from "@/lib/auth/useViewer";
 import Head from "next/head";
-import {StudioOpening} from "@/components/effects/StudioOpening";
-import StudioApp from "@/components/studio/StudioApp";
+import {StudioOpening} from "@/oldComponents/effects/StudioOpening";
 
 export default function StudioPage() {
     const {viewer, loading, error, refresh} = useViewer();

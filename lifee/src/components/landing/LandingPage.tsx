@@ -14,7 +14,7 @@ import {useRouter} from "next/router";
 
 export default function LandingPage() {
     const router = useRouter();
-    const showAuthModal = () => router.push({query: {...router.query, auth: "1"}}, undefined, {shallow: true});
+    const goToStudio = async () => await router.push("/studio");
 
     return (
         <div
@@ -28,13 +28,13 @@ export default function LandingPage() {
 
             <BackgroundEffects/>
 
-            <NavBar onLoginClick={() => showAuthModal()}/>
+            <NavBar onLoginClick={() => goToStudio()}/>
 
 
-            <Hero onDownloadClick={showAuthModal}/>
+            <Hero onDownloadClick={goToStudio}/>
             <ShowCase/>
             <StudioShowcase screenshotSrc="/examples/studio/dashboard.png"
-                            onPrimaryCta={() => showAuthModal()}/>
+                            onPrimaryCta={() => goToStudio()}/>
 
             <Solution/>
             <HowItWorks/>

@@ -12,10 +12,8 @@ const zItem = z.object({
     fileKey: z.string().min(1),
     type: zAssetType,
     title: z.string().max(120).optional(),
-    month: z.number().int().min(1).max(12),
-    year: z.number().int().min(1900).max(2100),
-    generatedFromAssetId: z.string().uuid().optional(),
-    thumbnailKey: z.string().min(1).optional(),
+    month: z.number().int().min(1).max(12).default(1),
+    year: z.number().int().min(1900).max(2100).default(2025),
 });
 
 const zBody = z.object({
@@ -45,8 +43,6 @@ export default apiHandler({
                         title: it.title,
                         month: it.month,
                         year: it.year,
-                        generatedFromAssetId: it.generatedFromAssetId,
-                        thumbnailKey: it.thumbnailKey,
                     }))
                 )
                 .returning();
