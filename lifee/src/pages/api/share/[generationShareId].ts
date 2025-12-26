@@ -1,18 +1,98 @@
 // File: pages/api/share/[generationShareId].ts
 import type {NextApiRequest, NextApiResponse} from "next";
 import {and, eq, isNull, sql} from "drizzle-orm";
+import {match} from "ts-pattern";
 
 import {apiHandler} from "@/lib/api/handler";
 import {ok, fail} from "@/lib/api/response";
 import {db} from "@/lib/db/index";
 import {assets, generationShares, replicateGenerationJobs} from "@/lib/db/schema";
 import {presignGetObject} from "@/lib/s3/presignGet";
-import {LifeeJobStatus} from "@/types/interactiveDemo";
-import {match} from "ts-pattern";
+
+/**
+ * i18n: on ne renvoie PLUS de strings FR "hardcodées".
+ * On renvoie des keys + un fallback "safe".
+ */
+type JobStatusKey =
+    | "starting"
+    | "uploading"
+    | "queued"
+    | "processing"
+    | "canceled"
+    | "failed"
+    | "succeeded";
+
+type StatusLineKey =
+    | "share.status.starting"
+    | "share.status.uploading"
+    | "share.status.queued"
+    | "share.status.processing"
+    | "share.status.canceled"
+    | "share.status.failed"
+    | "share.status.succeeded";
+
+function getLocale(req: NextApiRequest) {
+    // simple: header custom > accept-language > default
+    const h = (req.headers["x-lifee-locale"] || req.headers["x-locale"]) as string | undefined;
+    if (h?.startsWith("fr")) return "fr-FR";
+    if (h?.startsWith("en")) return "en-US";
+
+    const al = req.headers["accept-language"];
+    if (typeof al === "string") {
+        if (al.toLowerCase().includes("fr")) return "fr-FR";
+        if (al.toLowerCase().includes("en")) return "en-US";
+    }
+    return "fr-FR";
+}
+
+function formatCreatedLabel(params: {
+    month?: number | null;
+    year?: number | null;
+    createdAt?: Date | null;
+    locale: string
+}) {
+    const {month, year, createdAt, locale} = params;
+
+    if (month && year) {
+        // month/year = date du souvenir (info produit)
+        const mm = String(month).padStart(2, "0");
+        return locale.startsWith("fr") ? `Souvenir • ${mm}/${year}` : `Memory • ${mm}/${year}`;
+    }
+
+    if (createdAt) {
+        const label = new Intl.DateTimeFormat(locale, {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        }).format(createdAt);
+        return locale.startsWith("fr") ? `Créé le ${label}` : `Created on ${label}`;
+    }
+
+    return locale.startsWith("fr") ? "Créé récemment" : "Created recently";
+}
+
+export type PublicShareGetResponse = {
+    status: JobStatusKey;
+    progress: number;
+    statusLineKey: StatusLineKey;
+    title: string | null;
+    createdLabel: string;
+    createdBy: string;
+
+    thumbnailUrl: string;
+    resultUrl?: string;
+
+    shareUrl: string;
+};
 
 export default apiHandler({
     GET: async (req: NextApiRequest, res: NextApiResponse) => {
-        const generationShareId = Array.isArray(req.query.generationShareId) ? req.query.generationShareId[0] : req.query.generationShareId;
+        const locale = getLocale(req);
+
+        const generationShareId = Array.isArray(req.query.generationShareId)
+            ? req.query.generationShareId[0]
+            : req.query.generationShareId;
+
         if (!generationShareId) return fail(res, 400, "Missing generationShareId");
 
         const share = (
@@ -45,61 +125,41 @@ export default apiHandler({
 
         if (!source) return fail(res, 404, "Not found");
 
-        const {preResponse, statusLine} = match(job.status)
-            .with('starting', () => ({
-                statusLine: 'Démarré',
-                preResponse: true
-            }))
-            .with('uploading', () => ({
-                statusLine: 'En cours de chargement',
-                preResponse: true
-            }))
-            .with('queued', () => ({
-                statusLine: 'Dans la file d\'attente',
-                preResponse: true
-            }))
-            .with('processing', () => ({
-                statusLine: 'En cours de traitement',
-                preResponse: true
-            }))
-            .with('canceled', () => ({
-                statusLine: 'Annulé',
-                preResponse: true
-            }))
-            .with('failed', () => ({
-                statusLine: 'Echec',
-                preResponse: true
-            }))
-            .with('succeeded', () => ({
-                statusLine: 'Prêt',
-                preResponse: false
-            })).exhaustive();
+        const status = job.status as JobStatusKey;
 
-        const createdLabel =
-            job.month && job.year
-                ? `Souvenir • ${String(job.month).padStart(2, "0")}/${job.year}`
-                : job.createdAt
-                    ? `Créé le ${new Intl.DateTimeFormat("fr-FR", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                    }).format(new Date(job.createdAt as any))}`
-                    : "Créé récemment";
+        const {preResponse, statusLineKey} = match(status)
+            .with("starting", () => ({preResponse: true, statusLineKey: "share.status.starting" as const}))
+            .with("uploading", () => ({preResponse: true, statusLineKey: "share.status.uploading" as const}))
+            .with("queued", () => ({preResponse: true, statusLineKey: "share.status.queued" as const}))
+            .with("processing", () => ({preResponse: true, statusLineKey: "share.status.processing" as const}))
+            .with("canceled", () => ({preResponse: true, statusLineKey: "share.status.canceled" as const}))
+            .with("failed", () => ({preResponse: true, statusLineKey: "share.status.failed" as const}))
+            .with("succeeded", () => ({preResponse: false, statusLineKey: "share.status.succeeded" as const}))
+            .exhaustive();
+
+        const createdLabel = formatCreatedLabel({
+            month: job.month,
+            year: job.year,
+            createdAt: job.createdAt ? new Date(job.createdAt) : null,
+            locale,
+        });
 
         const expiresInSec = 60 * 15;
-        const thumbnailUrl: string = await presignGetObject({key: source.fileKey, expiresIn: expiresInSec})
+        const thumbnailUrl = await presignGetObject({key: source.fileKey, expiresIn: expiresInSec});
+
+        const base: PublicShareGetResponse = {
+            status,
+            progress: status === 'succeeded' ? 1 : Number(job.progress ?? 0),
+            statusLineKey,
+            title: source.title ?? locale.startsWith("fr") ? "Un souvenir presque oublié" : "A forgotten memory",
+            createdLabel,
+            createdBy: locale.startsWith("fr") ? "un proche" : "a loved one",
+            thumbnailUrl,
+            shareUrl: `/share/${share.id}`,
+        };
 
         if (preResponse) {
-            return ok(res, {
-                status: job.status,
-                progress: job.progress,
-                statusLine,
-                title: source.title,
-                createdLabel,
-                createdBy: 'un proche',
-                thumbnailUrl,
-                shareUrl: `/share/${share.id}`
-            });
+            return ok(res, base);
         }
 
         const result = (
@@ -114,8 +174,6 @@ export default apiHandler({
 
         const resultUrl = await presignGetObject({key: result.fileKey, expiresIn: expiresInSec});
 
-        if (!result) return fail(res, 404, "Not found");
-
         // stats (best-effort)
         await db.execute(sql`
             UPDATE "generation_shares"
@@ -124,16 +182,6 @@ export default apiHandler({
             WHERE "id" = ${generationShareId}
         `);
 
-        return ok(res, {
-            status: job.status,
-            progress: job.progress,
-            statusLine,
-            title: source.title,
-            createdLabel,
-            createdBy: 'un proche',
-            thumbnailUrl,
-            resultUrl,
-            shareUrl: `/share/${share.id}`
-        });
+        return ok(res, {...base, resultUrl});
     },
 });

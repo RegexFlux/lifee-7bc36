@@ -155,5 +155,12 @@
   "videoModal.saveCta": "Save",
   "videoModal.saved": "Saved ✓",
   "videoModal.exportCta": "Export (Studio)",
-  "videoModal.share": "Share"
+  "videoModal.share": "Share",
+  "share.status.starting": "Starting",
+  "share.status.uploading": "Preparing",
+  "share.status.queued": "Queued",
+  "share.status.processing": "Generating",
+  "share.status.canceled": "Canceled",
+  "share.status.failed": "Generation failed",
+  "share.status.succeeded": "Video ready"
 }

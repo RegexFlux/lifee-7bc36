@@ -5,19 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
-      <change afterPath="$PROJECT_DIR$/src/pages/share/[generationShareId].tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/EmailSharePopover.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/EmailSharePopover.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/useInteractiveDemo.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useInteractiveDemo.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/email/templates/generationReady.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/email/templates/generationReady.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oldComponents/landing/InteractiveDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/landing/InteractiveDemo.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/generations/[id]/share.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/generations/[id]/share.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/public/generations/[generationId].ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/share/[generationShareId].ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/slug/[generationId].ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/workders/exports/run.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/workers/exports/run.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/v/[slug].tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/interactiveDemo.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/interactiveDemo.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/locales/en.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/locales/en.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/locales/fr.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/locales/fr.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/share/[generationShareId].ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/share/[generationShareId].ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/share/[generationShareId].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/share/[generationShareId].tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -79,11 +71,11 @@
       <recent name="$PROJECT_DIR$/src/components/landing/sections" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/lib/public" />
       <recent name="$PROJECT_DIR$/src/pages/api/share" />
       <recent name="$PROJECT_DIR$/src/locales" />
       <recent name="$PROJECT_DIR$/src/components/landing" />
       <recent name="$PROJECT_DIR$/src/components/landing/interactiveDemo" />
-      <recent name="$PROJECT_DIR$/src/components/auth" />
     </key>
   </component>
   <component name="RunManager" selected="npm.Next.js: server-side">
@@ -120,7 +112,7 @@
       <workItem from="1766585287848" duration="70199000" />
       <workItem from="1766720088052" duration="81000" />
       <workItem from="1766720178142" duration="8745000" />
-      <workItem from="1766729151093" duration="10435000" />
+      <workItem from="1766729151093" duration="11534000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />

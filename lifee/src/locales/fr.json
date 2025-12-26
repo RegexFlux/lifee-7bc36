@@ -155,5 +155,12 @@
   "videoModal.saveCta": "Sauvegarder",
   "videoModal.saved": "Sauvegardé ✓",
   "videoModal.exportCta": "Exporter (Studio)",
-  "videoModal.share": "Partager"
+  "videoModal.share": "Partager",
+  "share.status.starting": "Démarrage",
+  "share.status.uploading": "Préparation en cours",
+  "share.status.queued": "En attente",
+  "share.status.processing": "Génération en cours",
+  "share.status.canceled": "Annulé",
+  "share.status.failed": "Échec de la génération",
+  "share.status.succeeded": "Vidéo prête"
 }

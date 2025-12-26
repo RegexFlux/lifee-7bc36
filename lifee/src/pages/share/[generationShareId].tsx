@@ -10,6 +10,8 @@ import NavBar from "@/components/landing/sections/NavBar";
 import {Tilt3D} from "@/components/animations/fx/Tilt3D";
 import {PlayerCard} from "@/components/share/PlayerCard";
 import {ConversionCard} from "@/components/share/ConversionCard";
+import {usePublicShare} from "@/lib/public/usePublicShare";
+import {useT} from "@/lib/i18n/useT";
 
 const FXBackdrop = dynamic(() => import("@/components/animations/fx/FXBackdrop"), {ssr: false});
 
@@ -47,7 +49,11 @@ export default function SharedMemorySlugPage({
         router.push({query: {...router.query, auth: "1"}}, undefined, {shallow: true});
     }, [router]);
 
-    const {videoUrl, thumbnailUrl, statusLine, progress} = usePublicShare(generationShareId);
+    const publicShare = usePublicShare({
+        generationShareId
+    });
+
+    const {t} = useT();
 
     return (
         <div
@@ -88,13 +94,13 @@ export default function SharedMemorySlugPage({
                     <div className="lg:col-span-8">
                         <Tilt3D className="rounded-3xl" intensity={6}>
                             <PlayerCard
-                                videoUrl={videoUrl}
-                                thumbnailUrl={thumbnailUrl}
-                                title={title}
-                                createdLabel={createdLabel}
-                                createdBy={createdBy}
-                                progress={progress}
-                                statusText={statusLine}
+                                videoUrl={publicShare.videoUrl}
+                                thumbnailUrl={publicShare.thumbnailUrl}
+                                title={publicShare.data.title ?? ''}
+                                createdLabel={publicShare.data.createdLabel}
+                                createdBy={publicShare.data.createdBy}
+                                progress={publicShare.progress}
+                                statusText={t(publicShare.data.statusLineKey)}
                             />
                         </Tilt3D>
                     </div>
@@ -102,10 +108,10 @@ export default function SharedMemorySlugPage({
                     <div className="lg:col-span-4">
                         <Tilt3D className="rounded-3xl" intensity={6}>
                             <ConversionCard
-                                canReplay={Boolean(videoUrl)}
-                                statusLine={statusLine}
-                                progress={progress}
-                                shareUrl={shareUrl}
+                                canReplay={Boolean(publicShare.videoUrl)}
+                                statusLine={t(publicShare.data.statusLineKey)}
+                                progress={publicShare.progress}
+                                shareUrl={publicShare.data.shareUrl}
                                 onUnlock={openAuth} // CTA: “Sauvegarder / Export / Share”
                                 createdAt={null}
                                 variant="light"
