@@ -1,4 +1,4 @@
-// src/lib/exports/ffmpeg.ts
+// File: src/lib/exports/ffmpeg.ts
 import {spawn} from "child_process";
 
 export function runCmd(cmd: string, args: string[], opts?: { cwd?: string }) {
@@ -13,26 +13,24 @@ export function runCmd(cmd: string, args: string[], opts?: { cwd?: string }) {
     });
 }
 
-export async function ffprobeDurationSec(inputPath: string) {
+export async function ffprobeHasAudio(inputPath: string) {
     const r = await runCmd("ffprobe", [
         "-v",
         "error",
+        "-select_streams",
+        "a:0",
         "-show_entries",
-        "format=duration",
+        "stream=codec_type",
         "-of",
-        "default=noprint_wrappers=1:nokey=1",
+        "csv=p=0",
         inputPath,
     ]);
-    if (r.code !== 0) throw new Error(`ffprobe failed: ${r.stderr || r.stdout}`);
-    const sec = Number(String(r.stdout).trim());
-    if (!Number.isFinite(sec) || sec <= 0) throw new Error("ffprobe invalid duration");
-    return sec;
+    if (r.code !== 0) return false;
+    return String(r.stdout).trim().length > 0;
 }
 
 /**
- * Normalise chaque clip pour concat safe (même fps/size/audio).
- * - encode vidéo: h264
- * - audio: aac (ou silence si pas d’audio)
+ * Normalise n'importe quel input (video AVEC ou SANS audio) -> mp4 h264+aac (audio silence si absent).
  */
 export async function ffmpegNormalizeClip(params: {
     inPath: string;
@@ -44,16 +42,90 @@ export async function ffmpegNormalizeClip(params: {
     const {inPath, outPath, width, height, fps} = params;
 
     const vf = `scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2,format=yuv420p,fps=${fps}`;
-    const af = "aresample=48000";
+    const hasAudio = await ffprobeHasAudio(inPath);
+
+    const common = ["-y", "-i", inPath, "-vf", vf, "-c:v", "libx264", "-preset", "veryfast", "-crf", "20"];
+
+    const r = hasAudio
+        ? await runCmd("ffmpeg", [
+            ...common,
+            "-af",
+            "aresample=48000",
+            "-c:a",
+            "aac",
+            "-b:a",
+            "192k",
+            outPath,
+        ])
+        : await runCmd("ffmpeg", [
+            "-y",
+            "-i",
+            inPath,
+            "-f",
+            "lavfi",
+            "-i",
+            "anullsrc=channel_layout=stereo:sample_rate=48000",
+            "-vf",
+            vf,
+            "-map",
+            "0:v:0",
+            "-map",
+            "1:a:0",
+            "-c:v",
+            "libx264",
+            "-preset",
+            "veryfast",
+            "-crf",
+            "20",
+            "-c:a",
+            "aac",
+            "-b:a",
+            "192k",
+            "-shortest",
+            outPath,
+        ]);
+
+    if (r.code !== 0) throw new Error(`ffmpeg normalize failed: ${r.stderr || r.stdout}`);
+}
+
+/**
+ * Image (jpg/png/webp) -> clip MP4 h264+aac, duration fix, Ken Burns léger + audio silence.
+ */
+export async function ffmpegImageToClip(params: {
+    imagePath: string;
+    outPath: string;
+    width: number;
+    height: number;
+    fps: number;
+    durationSec: number;
+}) {
+    const {imagePath, outPath, width, height, fps, durationSec} = params;
+
+    const frames = Math.max(1, Math.round(durationSec * fps));
+    const base = `scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2`;
+    const zoom = `zoompan=z='1.0+0.0009*on':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=${frames}:s=${width}x${height}`;
+    const vf = `${base},${zoom},format=yuv420p,fps=${fps}`;
 
     const r = await runCmd("ffmpeg", [
         "-y",
+        "-loop",
+        "1",
+        "-t",
+        String(durationSec),
         "-i",
-        inPath,
+        imagePath,
+        "-f",
+        "lavfi",
+        "-t",
+        String(durationSec),
+        "-i",
+        "anullsrc=channel_layout=stereo:sample_rate=48000",
         "-vf",
         vf,
-        "-af",
-        af,
+        "-map",
+        "0:v:0",
+        "-map",
+        "1:a:0",
         "-c:v",
         "libx264",
         "-preset",
@@ -64,33 +136,18 @@ export async function ffmpegNormalizeClip(params: {
         "aac",
         "-b:a",
         "192k",
+        "-shortest",
         outPath,
     ]);
 
-    if (r.code !== 0) throw new Error(`ffmpeg normalize failed: ${r.stderr || r.stdout}`);
+    if (r.code !== 0) throw new Error(`ffmpeg image->clip failed: ${r.stderr || r.stdout}`);
 }
 
 export async function ffmpegConcatFromList(params: { listFilePath: string; outPath: string }) {
-    const r = await runCmd("ffmpeg", [
-        "-y",
-        "-f",
-        "concat",
-        "-safe",
-        "0",
-        "-i",
-        params.listFilePath,
-        "-c",
-        "copy",
-        params.outPath,
-    ]);
+    const r = await runCmd("ffmpeg", ["-y", "-f", "concat", "-safe", "0", "-i", params.listFilePath, "-c", "copy", params.outPath]);
     if (r.code !== 0) throw new Error(`ffmpeg concat failed: ${r.stderr || r.stdout}`);
 }
 
-/**
- * Ajoute une musique (loop) et remplace l’audio (v1 simple).
- * - vidéo copiée
- * - audio = musique loopée + -shortest
- */
 export async function ffmpegAddMusic(params: { videoIn: string; musicIn: string; outPath: string }) {
     const r = await runCmd("ffmpeg", [
         "-y",
