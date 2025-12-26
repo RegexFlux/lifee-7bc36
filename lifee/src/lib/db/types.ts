@@ -1,5 +1,12 @@
 // src/lib/db/types.ts
-import {webhookEvents, replicateGenerationJobs, assets, albumItems, creditEvents} from "@/lib/db/schema";
+import {
+    webhookEvents,
+    replicateGenerationJobs,
+    assets,
+    albumItems,
+    creditEvents,
+    replicateGenerationJobEvents
+} from "@/lib/db/schema";
 
 export type WebhookEvent = typeof webhookEvents.$inferSelect;
 export type NewWebhookEvent = typeof webhookEvents.$inferInsert;
@@ -17,3 +24,5 @@ export type NewAlbumItem = typeof albumItems.$inferInsert;
 export type CreditEvent = typeof creditEvents.$inferSelect;
 export type NewCreditEvent = typeof creditEvents.$inferInsert;
 
+export type ReplicateJobEvent = typeof replicateGenerationJobEvents.$inferSelect;
+export type NewReplicateJobEvent = typeof replicateGenerationJobEvents.$inferInsert;
