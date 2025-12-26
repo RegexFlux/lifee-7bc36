@@ -285,5 +285,15 @@
   "share.actions.email": "Email",
   "share.actions.more_apps": "More apps",
   "share.actions.mobile_hint": "On mobile, the share sheet can show Instagram/Snapchat/Messages if installed.",
-  "share.actions.desktop_hint": "Tip: “More apps” appears if your browser supports native sharing."
+  "share.actions.desktop_hint": "Tip: “More apps” appears if your browser supports native sharing.",
+  "studio.finalize.export.title": "Export (full album)",
+  "studio.finalize.export.sub": "Render your album into a single video (best quality is in Pro mode).",
+  "studio.finalize.export.none": "No export in progress yet.",
+  "studio.finalize.export.cta": "Export",
+  "studio.finalize.export.running": "Exporting…",
+  "studio.export.status.queued": "Queued",
+  "studio.export.status.rendering": "Rendering",
+  "studio.export.status.done": "Done",
+  "studio.export.status.error": "Error",
+  "studio.export.error_generic": "An error occurred during export."
 }

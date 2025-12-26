@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from "react";
 import type {GetServerSideProps, InferGetServerSidePropsType} from "next";
 import {useRouter} from "next/router";
-import {ArrowLeft, Crown, Download} from "lucide-react";
+import {ArrowLeft, Crown, Download, Loader2} from "lucide-react";
 
 import {fetchJson} from "@/components/landing/interactiveDemo/utils";
 import type {AlbumItemDTO} from "@/types/studioHelp";
@@ -10,6 +10,7 @@ import {StudioHelpShell} from "@/components/studio/help/StudioHelpShell";
 import {cx, glassCard, pillBase} from "@/components/studio/help/ui";
 import {useT} from "@/lib/i18n/useT";
 import {TourStep} from "@/components/tutorial/TutorialOverlay";
+import {useAlbumExportLatest} from "@/hooks/useAlbumExportLatest";
 
 
 export const studioHelpFinalizeSteps: TourStep[] = [
@@ -51,6 +52,7 @@ export default function HelpFinalizePage({albumId}: InferGetServerSidePropsType<
 
     const [items, setItems] = useState<AlbumItemDTO[]>([]);
     const [busyPro, setBusyPro] = useState(false);
+    const [busy, setBusy] = useState(false);
 
     const [busyExport, setBusyExport] = useState(false);
     const [exportErr, setExportErr] = useState<string | null>(null);
@@ -113,6 +115,21 @@ export default function HelpFinalizePage({albumId}: InferGetServerSidePropsType<
 
     const disabledActions = items.length === 0;
 
+    const exportState = useAlbumExportLatest(albumId);
+
+    const startExport = async () => {
+        setBusy(true);
+        try {
+            const r = await fetchJson<{ exportJob: any }>(`/api/albums/${encodeURIComponent(albumId)}/exports`, {
+                method: "POST",
+            });
+            // refresh to show immediately
+            await exportState.refresh();
+        } finally {
+            setBusy(false);
+        }
+    };
+
     return (
         <StudioHelpShell
             albumId={albumId}
@@ -121,7 +138,7 @@ export default function HelpFinalizePage({albumId}: InferGetServerSidePropsType<
             subtitle={t("studio.finalize.sub")}
             right={
                 <div className="flex items-center gap-2">
-                    <button
+                    {!exportState.job && (<button
                         type="button"
                         onClick={exportAlbum}
                         disabled={busyExport || disabledActions}
@@ -135,7 +152,7 @@ export default function HelpFinalizePage({albumId}: InferGetServerSidePropsType<
                     >
                         <Download size={16}/>
                         {busyExport ? t("studio.finalize.exporting") : t("studio.finalize.export")}
-                    </button>
+                    </button>)}
 
                     <button
                         type="button"
@@ -156,7 +173,8 @@ export default function HelpFinalizePage({albumId}: InferGetServerSidePropsType<
             }
         >
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-                <div className="lg:col-span-8">
+
+                {!exportState.job ? (<div className="lg:col-span-8">
                     <div className={cx(glassCard(), "p-6")} data-tour="recap">
                         <div className={pillBase()}>
                             <Crown size={14} className="text-rose-600"/>
@@ -201,6 +219,56 @@ export default function HelpFinalizePage({albumId}: InferGetServerSidePropsType<
                                 {t("studio.finalize.back")}
                             </button>
                         </div>
+                    </div>
+                </div>) : (<></>)}
+
+                <div className="lg:col-span-8">
+                    <div className={cx(glassCard(), "p-6")}>
+                        <div className="text-sm font-black text-stone-900">{t("studio.finalize.export.title")}</div>
+                        <div className="mt-1 text-xs text-stone-600">{t("studio.finalize.export.sub")}</div>
+
+                        {exportState.job ? (
+                            <div className="mt-4 rounded-2xl border border-stone-200 bg-white/70 p-4">
+                                <div className="flex items-center justify-between gap-3">
+                                    <div className="text-xs font-bold text-stone-800">
+                                        {t(`studio.export.status.${exportState.job.status}`)}
+                                    </div>
+                                    <div className="text-[11px] font-mono text-stone-500">{exportState.job.progress}%
+                                    </div>
+                                </div>
+
+                                <div className="mt-2 h-2 rounded-full bg-stone-200 overflow-hidden">
+                                    <div className="h-full bg-gradient-to-r from-rose-600 to-amber-500"
+                                         style={{width: `${exportState.job.progress}%`}}/>
+                                </div>
+
+                                {exportState.job.status === "error" ? (
+                                    <div className="mt-2 text-[11px] font-semibold text-rose-600">
+                                        {exportState.job.errorMessage || t("studio.export.error_generic")}
+                                    </div>
+                                ) : null}
+                            </div>
+                        ) : (
+                            <div className="mt-3 text-[11px] text-stone-500">
+                                {t("studio.finalize.export.none")}
+                            </div>
+                        )}
+
+                        <button
+                            type="button"
+                            onClick={startExport}
+                            disabled={busy || exportState.isRunning || items.length === 0}
+                            className={cx(
+                                "mt-4 w-full rounded-2xl px-4 py-3 text-sm font-black transition inline-flex items-center justify-center gap-2",
+                                busy || exportState.isRunning || items.length === 0
+                                    ? "bg-stone-200 text-stone-500"
+                                    : "bg-stone-900 text-white hover:bg-stone-800 active:scale-[0.99]"
+                            )}
+                        >
+                            {exportState.isRunning ? <Loader2 size={16} className="animate-spin"/> :
+                                <Download size={16}/>}
+                            {exportState.isRunning ? t("studio.finalize.export.running") : t("studio.finalize.export.cta")}
+                        </button>
                     </div>
                 </div>
 

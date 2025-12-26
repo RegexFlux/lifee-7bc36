@@ -6,7 +6,8 @@ import {apiHandler} from "@/lib/api/handler";
 import {ok, fail} from "@/lib/api/response";
 import {requireViewer} from "@/lib/auth/require";
 import {db} from "@/lib/db";
-import {albums} from "@/lib/db/schema";
+import {albums, replicateGenerationJobs} from "@/lib/db/schema";
+import {zAlbumModes} from "@/lib/validation/enums";
 
 export default apiHandler({
     GET: async (req: NextApiRequest, res: NextApiResponse) => {
@@ -50,6 +51,29 @@ export default apiHandler({
                 title: body.data.title ?? "Untitled",
                 mode: "studio_help",
             })
+            .returning();
+
+        return ok(res, {album: row}, 201);
+    },
+    PATCH: async (req: NextApiRequest, res: NextApiResponse) => {
+        await requireViewer(req, res);
+
+        const albumId = Array.isArray(req.query.albumId) ? req.query.albumId[0] : req.query.albumId;
+        if (!albumId) return fail(res, 400, "Missing album id");
+
+        const body = z
+            .object({
+                mode: zAlbumModes,
+            })
+            .safeParse(req.body ?? {});
+        if (!body.success) return fail(res, 400, "Invalid body", body.error.flatten());
+
+        const [row] = await db
+            .update(albums)
+            .set({
+                mode: body.data.mode,
+            })
+            .where(eq(albums.id, albumId))
             .returning();
 
         return ok(res, {album: row}, 201);

@@ -7,7 +7,7 @@ import {apiHandler} from "@/lib/api/handler";
 import {ok, fail} from "@/lib/api/response";
 import {requireViewer} from "@/lib/auth/require";
 import {db} from "@/lib/db";
-import {albums, albumItems, assets} from "@/lib/db/schema";
+import {albums, albumItems, assets, exportJobs} from "@/lib/db/schema";
 
 const zBody = z.object({
     assetIds: z.array(z.string().uuid()).min(1).max(300),
@@ -31,6 +31,24 @@ export default apiHandler({
                 .limit(1)
         )[0];
         if (!album) return fail(res, 404, "Album not found");
+
+        const active = (
+            await db
+                .select()
+                .from(exportJobs)
+                .where(
+                    and(
+                        eq(exportJobs.albumId, albumId),
+                        eq(exportJobs.userId, viewer.user.id),
+                        inArray(exportJobs.status, ["queued", "rendering"])
+                    )
+                )
+                .orderBy(desc(exportJobs.createdAt))
+                .limit(1)
+        )[0];
+        if (active) {
+            return fail(res, 403, "Export already running")
+        }
 
         // assets owned + not deleted
         const owned = await db

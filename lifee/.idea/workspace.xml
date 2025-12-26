@@ -6,13 +6,14 @@
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/drizzle/meta/_journal.json" beforeDir="false" afterPath="$PROJECT_DIR$/drizzle/meta/_journal.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/share/ConversionCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/share/ConversionCard.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/locales/en.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/locales/en.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/locales/fr.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/locales/fr.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/exports/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/exports/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/share/exports/[id].ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/share/exports/[id].ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/share/[generationShareId].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/share/[generationShareId].tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/share/exports/[id].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/share/exports/bck.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/albums/[albumId].ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/albums/[albumId].ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/albums/[albumId]/items/[itemId].ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/albums/[albumId]/items/[itemId].ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/albums/[albumId]/items/bulk.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/albums/[albumId]/items/bulk.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/albums/[albumId]/items/reorder.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/albums/[albumId]/items/reorder.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/studio/albums/[id]/help/finalize.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/studio/albums/[id]/help/finalize.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,11 +77,11 @@
       <recent name="$PROJECT_DIR$/src/components/audio" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/pages/api/albums/[albumId]" />
       <recent name="$PROJECT_DIR$/src/pages/share/exports" />
       <recent name="$PROJECT_DIR$/src/pages/share/exports/[exportShareId]" />
       <recent name="$PROJECT_DIR$/src/worker" />
       <recent name="$PROJECT_DIR$/src/pages/api/workers" />
-      <recent name="$PROJECT_DIR$/src/pages/studio/albums/[id]" />
     </key>
   </component>
   <component name="RunManager" selected="npm.Next.js: server-side">
@@ -133,7 +134,7 @@
       <workItem from="1766720088052" duration="81000" />
       <workItem from="1766720178142" duration="8745000" />
       <workItem from="1766729151093" duration="14040000" />
-      <workItem from="1766743582893" duration="14219000" />
+      <workItem from="1766743582893" duration="15303000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />

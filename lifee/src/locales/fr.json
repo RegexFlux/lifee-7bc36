@@ -285,5 +285,15 @@
   "share.actions.email": "Email",
   "share.actions.more_apps": "Autres apps",
   "share.actions.mobile_hint": "Sur mobile, le partage ouvre Instagram/Snapchat/Messages si installés.",
-  "share.actions.desktop_hint": "Astuce : “Autres apps” apparaît si votre navigateur supporte le partage natif."
+  "share.actions.desktop_hint": "Astuce : “Autres apps” apparaît si votre navigateur supporte le partage natif.",
+  "studio.finalize.export.title": "Export (album complet)",
+  "studio.finalize.export.sub": "Compile votre album en une seule vidéo (le plus beau rendu est en mode Pro).",
+  "studio.finalize.export.none": "Aucun export en cours pour l’instant.",
+  "studio.finalize.export.cta": "Exporter",
+  "studio.finalize.export.running": "Export en cours…",
+  "studio.export.status.queued": "En attente",
+  "studio.export.status.rendering": "Export en cours",
+  "studio.export.status.done": "Terminé",
+  "studio.export.status.error": "Erreur",
+  "studio.export.error_generic": "Une erreur est survenue pendant l’export."
 }
