@@ -6,66 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/next.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/next.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ConversionCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/ConversionCard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/CopyButton.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/CopyButton.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/EmailSharePopover.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/EmailSharePopover.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MiniAudioWidget.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/MiniAudioWidget.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/PlayerCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/PlayerCard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/PromoRoulette.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/PromoRoulette.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/VideoPlayer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/VideoPlayer.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/album/AlbumShowcase.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/album/AlbumShowcase.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/album/AlbumSimple.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/album/AlbumSimple.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/album/AlbumSimpleLauncher.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/album/AlbumSimpleLauncher.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/effects/StarDustRain.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/effects/StarDustRain.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/effects/StudioOpening.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/effects/StudioOpening.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/fx/FXBackdrop.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/fx/FXBackdrop.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/fx/Tilt3D.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/fx/Tilt3D.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/Animations.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/landing/Animations.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/AuthModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/landing/AuthModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/BackgroundEffects.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/landing/BackgroundEffects.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/Bonus.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/landing/Bonus.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/Footer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/landing/Footer.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/GoFurther.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/landing/GoFurther.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/Hero.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/landing/Hero.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/HowItWorks.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/landing/HowItWorks.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/InteractiveDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/landing/InteractiveDemo.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/LandingPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/landing/LandingPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/NavBar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/landing/NavBar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/Showcase.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/landing/Showcase.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/SocialProof.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/landing/SocialProof.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/Solution.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/landing/Solution.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/StudioShowcase.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/landing/StudioShowcase.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/interactiveDemo/Dock.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/landing/interactiveDemo/Dock.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/interactiveDemo/PolaroidStack.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/landing/interactiveDemo/PolaroidStack.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/interactiveDemo/utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/landing/interactiveDemo/utils.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/LibraryItemCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/LibraryItemCard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/LibraryList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/LibraryList.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/Sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/Sidebar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/StudioApp.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/StudioApp.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/StudioTutorial.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/StudioTutorial.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/TimelineCanvas.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/TimelineCanvas.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/TimelineCanvasItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/TimelineCanvasItem.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/TimelineCanvasView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/TimelineCanvasView.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/TimelineItemMenu.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/TimelineItemMenu.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/Toolbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/Toolbar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/aigen/AIGenModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/aigen/AIGenModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/aigen/AdvancedDrawer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/aigen/AdvancedDrawer.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/aigen/AdvancedInspectorOverlay.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/aigen/AdvancedInspectorOverlay.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/aigen/CardShell.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/aigen/CardShell.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/aigen/GenerateDialog.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/aigen/GenerateDialog.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/aigen/ResultDialog.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/aigen/ResultDialog.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/aigen/SegButton.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/aigen/SegButton.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/aigen/SourceDialog.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/aigen/SourceDialog.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/modals/CreditModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/modals/CreditModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/modals/ExportModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/modals/ExportModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/modals/GuestLinkAccountNudgeModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/modals/GuestLinkAccountNudgeModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/modals/MusicModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/modals/MusicModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/studio/modals/UploadModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/studio/modals/UploadModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/tutorial/TutorialOverlay.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/tutorial/TutorialOverlay.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ui/ConfirmDialog.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/ui/ConfirmDialog.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ui/ToastProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/ui/ToastProvider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/useLifeeJobStatus.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/oldComponents/useLifeeJobStatus.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/EmailSharePopover.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/EmailSharePopover.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing/interactiveDemo/utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/interactiveDemo/utils.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/i18n/messages.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/i18n/messages.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/_app.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/_app.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,13 +44,13 @@
     "git-widget-placeholder": "refacto",
     "js.debugger.nextJs.config.created.client": "true",
     "js.debugger.nextJs.config.created.server": "true",
-    "last_opened_file_path": "/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/src/lib/shared",
+    "last_opened_file_path": "/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/src/components/animations",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "npm.Next.js: server-side.executor": "Debug",
+    "npm.Next.js: server-side.executor": "Run",
     "rearrange.code.on.save": "true",
     "settings.editor.selected.configurable": "actions.on.save",
     "ts.external.directory.path": "/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/node_modules/typescript/lib",
@@ -120,11 +64,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src/lib/shared" />
-      <recent name="$PROJECT_DIR$/src/lib/s3" />
-      <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/public/audio" />
-      <recent name="$PROJECT_DIR$/src/pages/api/studio/timeline/clips/[clipId]" />
+      <recent name="$PROJECT_DIR$/src/components/animations" />
+      <recent name="$PROJECT_DIR$/src/components/audio" />
+      <recent name="$PROJECT_DIR$/src/components/toast" />
+      <recent name="$PROJECT_DIR$/src/components/landing/sections" />
+      <recent name="$PROJECT_DIR$/src/components/landing" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/components/landing" />
@@ -150,13 +94,6 @@
       <method v="2" />
     </configuration>
   </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-WS-252.27397.92" />
-      </set>
-    </attachedChunks>
-  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="" />
@@ -172,7 +109,9 @@
       <workItem from="1766482629813" duration="43111000" />
       <workItem from="1766584822328" duration="272000" />
       <workItem from="1766585104258" duration="176000" />
-      <workItem from="1766585287848" duration="68808000" />
+      <workItem from="1766585287848" duration="70199000" />
+      <workItem from="1766720088052" duration="81000" />
+      <workItem from="1766720178142" duration="661000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
@@ -307,115 +246,96 @@
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/pages/api/lifee/video/index.ts</url>
           <line>233</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="36" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts</url>
           <line>110</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="37" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts</url>
           <line>65</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="39" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts</url>
           <line>88</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="40" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/pages/api/webhooks/replicate.ts</url>
           <line>95</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="42" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/pages/api/lifee/video/[jobId].ts</url>
           <line>58</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="43" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/pages/api/auth/guest.ts</url>
           <line>32</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="61" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/lib/studio/importJobToLibrary.ts</url>
           <line>30</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="69" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/lib/studio/importJobToLibrary.ts</url>
           <line>21</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="70" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/oldComponents/album/AlbumSimple.tsx</url>
           <line>54</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="85" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/oldComponents/album/AlbumSimple.tsx</url>
           <line>482</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="86" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/pages/api/album/checkout.ts</url>
           <line>64</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="87" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/pages/api/album/status/[orderId].ts</url>
           <line>16</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="88" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/pages/api/album/confirm.ts</url>
           <line>258</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="89" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/pages/api/album/confirm.ts</url>
           <line>183</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="90" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/pages/api/album/confirm.ts</url>
           <line>108</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="91" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/pages/api/album/confirm.ts</url>
           <line>250</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="92" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/pages/api/auth/code/verify.ts</url>
           <line>1</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="93" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/lib/auth/useViewer.ts</url>
           <line>20</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="95" />
         </line-breakpoint>
       </breakpoints>

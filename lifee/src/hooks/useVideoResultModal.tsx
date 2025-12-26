@@ -18,8 +18,6 @@ import {useRouter} from "next/router";
 
 import {useT} from "@/lib/i18n/useT";
 import {EmailSharePopover} from "@/components/EmailSharePopover";
-import {AlbumSimpleLauncher, ensureGuestSession} from "@/components/album/AlbumSimpleLauncher";
-import {fetchUser} from "@/components/studio/StudioApp";
 
 /** Aligné avec credit_packs (table) */
 export type PackTier = "standard" | "creator";
@@ -80,14 +78,6 @@ export function useVideoResultModal(params: {
 
     const goToStudio = async () => {
         if (params.onGoToStudio) return params.onGoToStudio();
-
-        // On reste permissif: si fetchUser fail -> ensureGuestSession (au cas où)
-        try {
-            await fetchUser();
-        } catch {
-            await ensureGuestSession();
-        }
-
         const path = params.studioPath || "/studio";
         await router.push(path);
     };
@@ -329,7 +319,7 @@ export function VideoResultModal(props: Readonly<{
 
                                     <div className="shrink-0 flex items-center gap-2">
                                         {props.jobId ? (
-                                            <EmailSharePopover jobId={props.jobId} size="md"
+                                            <EmailSharePopover size="md"
                                                                label={t("videoModal.emailCta")}/>
                                         ) : null}
 
