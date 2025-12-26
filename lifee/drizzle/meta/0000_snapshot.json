@@ -1,5 +1,5 @@
 {
-  "id": "a215fc21-682f-42f3-922e-629dc00bc0a2",
+  "id": "a3970c07-a7ff-4825-9e9d-05161fbb8b4e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -301,13 +301,13 @@
           "notNull": true,
           "default": "'Untitled'"
         },
-        "status": {
-          "name": "status",
-          "type": "album_status",
+        "mode": {
+          "name": "mode",
+          "type": "album_modes",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
-          "default": "'draft'"
+          "default": "'studio_help'"
         },
         "music_id": {
           "name": "music_id",
@@ -342,27 +342,6 @@
             },
             {
               "expression": "created_at",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "albums_user_status_idx": {
-          "name": "albums_user_status_idx",
-          "columns": [
-            {
-              "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "status",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -2020,7 +1999,7 @@
           "name": "album_item_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "created_by_asset_id": {
           "name": "created_by_asset_id",
@@ -2632,12 +2611,12 @@
         "cancelled"
       ]
     },
-    "public.album_status": {
-      "name": "album_status",
+    "public.album_modes": {
+      "name": "album_modes",
       "schema": "public",
       "values": [
-        "draft",
-        "exported"
+        "studio_pro",
+        "studio_help"
       ]
     },
     "public.asset_type": {

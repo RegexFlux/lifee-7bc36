@@ -7,7 +7,7 @@ import {ok, fail} from "@/lib/api/response";
 import {requireViewer} from "@/lib/auth/require";
 import {db} from "@/lib/db";
 import {albums} from "@/lib/db/schema";
-import {eq} from "drizzle-orm";
+import {and, desc, eq} from "drizzle-orm";
 
 const zCreate = z.object({
     title: z.string().min(1).max(80).optional(),
@@ -34,10 +34,26 @@ export default apiHandler({
     GET: async (req: NextApiRequest, res: NextApiResponse) => {
         const viewer = await requireViewer(req, res);
 
+        const q = z
+            .object({
+                limit: z.coerce.number().int().min(1).max(50).default(25),
+            })
+            .safeParse(req.query);
+
+        if (!q.success) return fail(res, 400, "Invalid query", q.error.flatten());
+
         const rows = await db
-            .select()
+            .select({
+                id: albums.id,
+                title: albums.title,
+                mode: albums.mode,
+                createdAt: albums.createdAt,
+                updatedAt: albums.updatedAt,
+            })
             .from(albums)
-            .where(eq(albums.userId, viewer.user.id));
+            .where(and(eq(albums.userId, viewer.user.id)))
+            .orderBy(desc(albums.updatedAt), desc(albums.createdAt))
+            .limit(q.data.limit);
 
         return ok(res, {albums: rows});
     },

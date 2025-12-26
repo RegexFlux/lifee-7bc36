@@ -1,5 +1,5 @@
 CREATE TYPE "public"."account_link_status" AS ENUM('pending', 'completed', 'cancelled');--> statement-breakpoint
-CREATE TYPE "public"."album_status" AS ENUM('draft', 'exported');--> statement-breakpoint
+CREATE TYPE "public"."album_modes" AS ENUM('studio_pro', 'studio_help');--> statement-breakpoint
 CREATE TYPE "public"."asset_type" AS ENUM('image', 'video');--> statement-breakpoint
 CREATE TYPE "public"."auth_email_code_purpose" AS ENUM('login', 'change_email', 'link_guest', 'merge_into_existing');--> statement-breakpoint
 CREATE TYPE "public"."credit_event_type" AS ENUM('purchase', 'spend', 'refund', 'admin_adjust');--> statement-breakpoint
@@ -34,7 +34,7 @@ CREATE TABLE "albums" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" uuid NOT NULL,
 	"title" text DEFAULT 'Untitled' NOT NULL,
-	"status" "album_status" DEFAULT 'draft' NOT NULL,
+	"mode" "album_modes" DEFAULT 'studio_help' NOT NULL,
 	"music_id" uuid,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
@@ -188,7 +188,7 @@ CREATE TABLE "replicate_generation_job_events" (
 CREATE TABLE "replicate_generation_jobs" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" uuid NOT NULL,
-	"album_item_id" uuid NOT NULL,
+	"album_item_id" uuid,
 	"created_by_asset_id" uuid NOT NULL,
 	"result_asset_id" uuid,
 	"model" text NOT NULL,
@@ -274,7 +274,6 @@ CREATE INDEX "album_items_album_pos_idx" ON "album_items" USING btree ("album_id
 CREATE INDEX "album_items_asset_idx" ON "album_items" USING btree ("asset_id");--> statement-breakpoint
 CREATE INDEX "album_items_album_idx" ON "album_items" USING btree ("album_id");--> statement-breakpoint
 CREATE INDEX "albums_user_created_idx" ON "albums" USING btree ("user_id","created_at");--> statement-breakpoint
-CREATE INDEX "albums_user_status_idx" ON "albums" USING btree ("user_id","status");--> statement-breakpoint
 CREATE INDEX "assets_user_year_month_idx" ON "assets" USING btree ("user_id","year","month");--> statement-breakpoint
 CREATE INDEX "assets_generated_from_idx" ON "assets" USING btree ("generated_from_asset_id");--> statement-breakpoint
 CREATE INDEX "auth_email_codes_email_purpose_idx" ON "auth_email_codes" USING btree ("email","purpose");--> statement-breakpoint

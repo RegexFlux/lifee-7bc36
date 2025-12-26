@@ -7,13 +7,12 @@ import {
     REPLICATE_JOB_STATUSES,
     JOB_EVENT_LEVELS,
     JOB_EVENT_SOURCES,
-    ALBUM_STATUSES,
     CREDIT_PACK_TIERS,
     CREDIT_PURCHASE_STATUSES,
     WEBHOOK_PROVIDERS,
     WEBHOOK_PROCESSING_STATUSES,
     ACCOUNT_LINK_STATUSES,
-    CREDIT_EVENT_TYPES,
+    CREDIT_EVENT_TYPES, ALBUM_MODES,
 } from "@/lib/shared/enums";
 
 export const zUserType = z.enum(USER_TYPES);
@@ -24,7 +23,7 @@ export const zReplicateJobStatus = z.enum(REPLICATE_JOB_STATUSES);
 export const zJobEventLevel = z.enum(JOB_EVENT_LEVELS);
 export const zJobEventSource = z.enum(JOB_EVENT_SOURCES);
 
-export const zAlbumStatus = z.enum(ALBUM_STATUSES);
+export const zAlbumModes = z.enum(ALBUM_MODES);
 
 export const zCreditPackTier = z.enum(CREDIT_PACK_TIERS);
 export const zCreditPurchaseStatus = z.enum(CREDIT_PURCHASE_STATUSES);
