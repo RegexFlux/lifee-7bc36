@@ -6,14 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/auth/AuthModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/auth/AuthModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/i18n/LocaleSwitch.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/i18n/LocaleSwitch.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/i18n/messages.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/i18n/useT.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/locales/en/common.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/locales/en.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/locales/fr/common.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/locales/fr.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/_app.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/_app.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useInteractiveDemo.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useInteractiveDemo.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/generations/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/generations/index.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +48,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "npm.Next.js: server-side.executor": "Run",
+    "npm.Next.js: server-side.executor": "Debug",
     "rearrange.code.on.save": "true",
     "settings.editor.selected.configurable": "actions.on.save",
     "ts.external.directory.path": "/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/node_modules/typescript/lib",
@@ -115,7 +109,7 @@
       <workItem from="1766585104258" duration="176000" />
       <workItem from="1766585287848" duration="70199000" />
       <workItem from="1766720088052" duration="81000" />
-      <workItem from="1766720178142" duration="5132000" />
+      <workItem from="1766720178142" duration="6632000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
@@ -341,6 +335,12 @@
           <url>file://$PROJECT_DIR$/src/lib/auth/useViewer.ts</url>
           <line>39</line>
           <option name="timeStamp" value="95" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/pages/api/generations/index.ts</url>
+          <line>65</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="98" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

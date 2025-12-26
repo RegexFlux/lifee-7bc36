@@ -350,7 +350,6 @@ export function useInteractiveDemo({router}: Params) {
         fd.append("file", file);
 
         try {
-            // nouveau endpoint: /api/generations (pages/api/generations/index.ts)
             const payload = await fetchJson<CreateJobResponse>("/api/generations", {
                 method: "POST",
                 body: fd,

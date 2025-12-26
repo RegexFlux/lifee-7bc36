@@ -30,9 +30,9 @@ const GEN_COST = 2;
 
 const zCreate = z.object({
     sourceAssetId: z.string().uuid(),
-    prompt: z.string().min(1).max(2000),
+    prompt: z.string().min(1).max(2000).optional(),
     negativePrompt: z.string().max(2000).optional(),
-    duration: z.number().int().min(1).max(10).default(5),
+    duration: z.number().int().min(5).max(5).default(5),
     aspectRatio: z.string().max(12).optional(),
     albumItemId: z.string().uuid().optional(),
 });
