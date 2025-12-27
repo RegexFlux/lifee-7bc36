@@ -5,33 +5,36 @@ import {VideoPlayer} from "@/components/video/VideoPlayer";
 export function AssetThumb({
                                assetId,
                                type,
+                               overlay
                            }: {
     assetId: string;
     type: "image" | "video";
+    overlay?: any;
 }) {
     const {url, thumbnailUrl, isThumbPending} = useAssetUrl({
         assetId,
         type,
         retryThumb: true,
     });
-    console.log('url', type, url);
 
     // IMAGE
     if (type === "image") {
         return (
-            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-stone-200 bg-stone-50">
+            <div
+                className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-stone-200 bg-stone-50 group">
                 {url ? (
                     <img src={url} alt="" className="w-full h-full object-cover"/>
                 ) : (
                     <div className="w-full h-full animate-pulse"/>
                 )}
+                {overlay}
             </div>
         );
     }
 
     // VIDEO
     return (
-        <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-stone-200 bg-stone-950">
+        <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-stone-200 bg-stone-950 group">
             {url ?
                 (
                     <div className="w-full h-full animate-pulse">
@@ -63,6 +66,7 @@ export function AssetThumb({
                     Aperçu en préparation
                 </div>
             ) : null}
+            {overlay}
         </div>
     );
 }

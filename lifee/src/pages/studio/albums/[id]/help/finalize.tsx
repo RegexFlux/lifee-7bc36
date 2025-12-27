@@ -239,7 +239,7 @@ export default function HelpFinalizePage({albumId}: InferGetServerSidePropsType<
                         <div className="text-sm font-black text-stone-900">{t("studio.finalize.export.title")}</div>
                         <div className="mt-1 text-xs text-stone-600">{t("studio.finalize.export.sub")}</div>
 
-                        {exportState.isRunning ? (
+                        {exportState.job && exportState.isRunning ? (
                             <div className="mt-4 rounded-2xl border border-stone-200 bg-white/70 p-4">
                                 <div className="flex items-center justify-between gap-3">
                                     <div className="text-xs font-bold text-stone-800">
@@ -251,7 +251,7 @@ export default function HelpFinalizePage({albumId}: InferGetServerSidePropsType<
 
                                 <div className="mt-2 h-2 rounded-full bg-stone-200 overflow-hidden">
                                     <div className="h-full bg-gradient-to-r from-rose-600 to-amber-500"
-                                         style={{width: `${exportState.job.progress}%`}}/>
+                                         style={{width: `${exportState.job?.progress}%`}}/>
                                 </div>
 
                                 {exportState.job.status === "error" ? (

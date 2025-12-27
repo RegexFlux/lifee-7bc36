@@ -6,7 +6,7 @@ import {AnimatePresence, motion} from "framer-motion";
 import {
     Calendar,
     ChevronDown,
-    ChevronUp,
+    ChevronUp, ImageUp,
     Loader2,
     Pencil,
     Save,
@@ -19,6 +19,8 @@ import type {AlbumItemDto} from "@/types/studioHelp";
 import {AssetThumb} from "@/components/asset/AssetThumb";
 import {toast} from "react-hot-toast";
 import {useAlbumExportLatest} from "@/hooks/useAlbumExportLatest";
+import OrganizeAssetImportModal from "@/components/studio/help/organize/OrganizeAssetImportModal";
+import {Asset} from "@/lib/db/types";
 
 function monthLabelFR(month: number) {
     const d = new Date(Date.UTC(2024, Math.max(0, Math.min(11, month - 1)), 1));
@@ -293,6 +295,7 @@ export function OrganizeDnDGrid(props: {
     const [savingOrder, setSavingOrder] = useState(false);
     const [savedPulse, setSavedPulse] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
+    const [importAssetOpen, setImportAssetOpen] = useState(false);
     const [editItemId, setEditItemId] = useState<string | null>(null);
 
     // anti-spam: queue last order
@@ -393,8 +396,37 @@ export function OrganizeDnDGrid(props: {
 
     const exportState = useAlbumExportLatest(props.albumId);
 
+    const importAssets = async (assets: Asset[]) => {
+        try {
+            const body: {
+                assetIds: string[];
+            } = {
+                assetIds: assets.map((asset) => asset.id),
+            };
+            await fetchJson(`/api/albums/${encodeURIComponent(props.albumId)}/items`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(body),
+            });
+            const albumItems = await fetchJson<{
+                items: AlbumItemDto[]
+            }>(`/api/albums/${encodeURIComponent(props.albumId)}/items`);
+            
+            props.onChangeItems(albumItems.items);
+            setImportAssetOpen(false)
+        } catch {
+            toast.error(`Impossible d’importer certains assets`);
+        }
+    }
+
     return (
         <>
+            <OrganizeAssetImportModal
+                open={importAssetOpen}
+                onClose={() => setImportAssetOpen(false)}
+                onSave={importAssets}
+                alreadyImported={props.items.map((it) => it.asset.id)}
+            />
             <EditAssetSheet
                 open={editOpen}
                 item={editItem}
@@ -409,9 +441,19 @@ export function OrganizeDnDGrid(props: {
                 <div className="p-4 sm:p-5 border-b border-stone-100 bg-gradient-to-b from-stone-50 to-white">
                     <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                            <div className={pillBase()}>
-                                <ChevronUp size={14} className="text-stone-700"/>
-                                Organisation
+                            <div className="flex gap-4">
+                                <div className={pillBase()}>
+                                    <ChevronUp size={14} className="text-stone-700"/>
+                                    Organisation
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setImportAssetOpen(true)}
+                                    className="h-12 w-max px-4 rounded-2xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-900 text-sm font-medium transition inline-flex items-center justify-center gap-2"
+                                >
+                                    <ImageUp size={16} className="text-stone-700"/>
+                                    Importer depuis votre bibliothèque
+                                </button>
                             </div>
                             <div className="mt-2 text-sm font-black text-stone-900">
                                 Réordonnez avec les flèches (simple et fiable)

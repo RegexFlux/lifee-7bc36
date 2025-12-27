@@ -107,6 +107,6 @@ export default apiHandler({
             .orderBy(desc(assets.year), desc(assets.month), desc(assets.createdAt))
             .limit(limit);
 
-        return ok(res, {assets: rows, nextCursor: rows.at(-1)?.id ?? null});
+        return ok(res, {assets: rows});
     },
 });

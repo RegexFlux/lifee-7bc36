@@ -5,29 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
-      <change afterPath="$PROJECT_DIR$/src/components/share/StoryTimeline.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb/storage_v2/_src_/database/lifee_db.lCs6OQ/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7bb12c73-a4bc-4ad6-8f3c-2b06c91c68bb/storage_v2/_src_/database/lifee_db.lCs6OQ/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/drizzle/meta/_journal.json" beforeDir="false" afterPath="$PROJECT_DIR$/drizzle/meta/_journal.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/asset/AssetThumb.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/asset/AssetThumb.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/interactiveDemo/utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/interactiveDemo/utils.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/studio/help/organize/OrganizeDndGrid.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/help/organize/OrganizeDndGrid.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/db/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/db/schema.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/public/usePublicExportShare.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/public/usePublicExportShare.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/locales/en.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/locales/en.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/locales/fr.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/locales/fr.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/albums/[albumId]/exports.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/albums/[albumId]/exports.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/albums/[albumId]/items/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/albums/[albumId]/items/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/assets/[id].ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/assets/[id].ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/exports/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/exports/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/share/exports/[id].ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/share/exports/[id].ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/share/exports/[exportShareId].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/share/exports/[exportShareId].tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/studio.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/studio.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/assets/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/assets/index.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/studio/albums/[id]/help/finalize.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/studio/albums/[id]/help/finalize.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/studio/albums/[id]/help/organize.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/studio/albums/[id]/help/organize.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/studio/albums/[id]/help/welcome.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/studio/albums/[id]/help/welcome.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/studioHelp.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/studioHelp.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,7 +51,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "npm.Next.js: server-side.executor": "Debug",
+    "npm.Next.js: server-side.executor": "Run",
     "npm.worker:thumbs:watch.executor": "Debug",
     "rearrange.code.on.save": "true",
     "settings.editor.selected.configurable": "actions.on.save",
@@ -148,7 +130,7 @@
       <workItem from="1766720088052" duration="81000" />
       <workItem from="1766720178142" duration="8745000" />
       <workItem from="1766729151093" duration="14040000" />
-      <workItem from="1766743582893" duration="25516000" />
+      <workItem from="1766743582893" duration="31442000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
