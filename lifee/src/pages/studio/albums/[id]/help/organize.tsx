@@ -4,7 +4,7 @@ import {useRouter} from "next/router";
 import {ArrowRight} from "lucide-react";
 
 import {fetchJson} from "@/components/landing/interactiveDemo/utils";
-import type {AlbumItemDTO} from "@/types/studioHelp";
+import type {AlbumItemDto} from "@/types/studioHelp";
 import {StudioHelpShell} from "@/components/studio/help/StudioHelpShell";
 import {OrganizeDnDGrid} from "@/components/studio/help/organize/OrganizeDndGrid";
 import {DiscreetAddButton} from "@/components/studio/help/organize/DiscreetAddButton";
@@ -21,11 +21,11 @@ export const getServerSideProps: GetServerSideProps<{ albumId: string }> = async
 export default function HelpOrganizePage({albumId}: InferGetServerSidePropsType<typeof getServerSideProps>) {
     const {t} = useT();
     const router = useRouter();
-    const [items, setItems] = useState<AlbumItemDTO[]>([]);
+    const [items, setItems] = useState<AlbumItemDto[]>([]);
     const [busyAdd, setBusyAdd] = useState(false);
 
     const load = async () => {
-        const data = await fetchJson<{ items: AlbumItemDTO[] }>(`/api/albums/${encodeURIComponent(albumId)}/items`, {
+        const data = await fetchJson<{ items: AlbumItemDto[] }>(`/api/albums/${encodeURIComponent(albumId)}/items`, {
             method: "GET",
         });
         setItems(data.items);

@@ -15,8 +15,10 @@ import {
 } from "lucide-react";
 import {fetchJson} from "@/components/landing/interactiveDemo/utils";
 import {cx, glassCard, pillBase} from "@/components/studio/help/ui";
-import type {AlbumItemDTO} from "@/types/studioHelp";
+import type {AlbumItemDto} from "@/types/studioHelp";
 import {AssetThumb} from "@/components/asset/AssetThumb";
+import {toast} from "react-hot-toast";
+import {useAlbumExportLatest} from "@/hooks/useAlbumExportLatest";
 
 function monthLabelFR(month: number) {
     const d = new Date(Date.UTC(2024, Math.max(0, Math.min(11, month - 1)), 1));
@@ -39,7 +41,7 @@ function MonthYearPill(props: { month: number; year: number }) {
     );
 }
 
-type PatchAssetBody = { title?: string; month?: number; year?: number };
+type PatchAssetBody = { title?: string; month?: number; year?: number; description?: string };
 
 async function patchAsset(assetId: string, body: PatchAssetBody) {
     return fetchJson<{ asset: any }>(`/api/assets/${encodeURIComponent(assetId)}`, {
@@ -71,7 +73,7 @@ function prettyType(t: string) {
 /** Bottom sheet */
 function EditAssetSheet(props: {
     open: boolean;
-    item: AlbumItemDTO | null;
+    item: AlbumItemDto | null;
     onClose: () => void;
     onSaved: (patch: PatchAssetBody) => void;
     onRemoveFromAlbum: () => void;
@@ -80,6 +82,7 @@ function EditAssetSheet(props: {
     const [title, setTitle] = useState("");
     const [month, setMonth] = useState<number>(1);
     const [year, setYear] = useState<number>(new Date().getFullYear());
+    const [description, setDescription] = useState<string>("");
     const [saving, setSaving] = useState(false);
     const [err, setErr] = useState<string | null>(null);
 
@@ -88,6 +91,7 @@ function EditAssetSheet(props: {
         setTitle(item.asset.title || "");
         setMonth(item.asset.month || 1);
         setYear(item.asset.year || new Date().getFullYear());
+        setDescription(item.asset.description || "");
         setErr(null);
     }, [item, props.open]);
 
@@ -106,8 +110,10 @@ function EditAssetSheet(props: {
                 title: title.trim() || undefined,
                 month,
                 year,
+                description
             };
             await patchAsset(item.asset.id, body);
+            console.log('yoyoyoy', body);
             props.onSaved(body);
             props.onClose();
         } catch (e: any) {
@@ -217,6 +223,18 @@ function EditAssetSheet(props: {
                                         </select>
                                     </div>
                                 </div>
+                                <div className="rounded-2xl border border-stone-200 bg-white p-3">
+                                    <label className="block text-[11px] font-bold text-stone-700">
+                                        Description
+                                    </label>
+                                    <textarea
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
+                                        placeholder="Ex: Vacances à Nice"
+                                        rows={4}
+                                        className="mt-2 py-2 w-full rounded-2xl border border-stone-200 bg-white px-3 text-[13px] font-semibold text-stone-800 placeholder:text-stone-400 outline-none focus:ring-2 focus:ring-amber-300/60"
+                                    />
+                                </div>
 
                                 {err ? (
                                     <div
@@ -269,8 +287,8 @@ function EditAssetSheet(props: {
 
 export function OrganizeDnDGrid(props: {
     albumId: string;
-    items: AlbumItemDTO[];
-    onChangeItems: (items: AlbumItemDTO[]) => void;
+    items: AlbumItemDto[];
+    onChangeItems: (items: AlbumItemDto[]) => void;
 }) {
     const [savingOrder, setSavingOrder] = useState(false);
     const [savedPulse, setSavedPulse] = useState(false);
@@ -306,6 +324,9 @@ export function OrganizeDnDGrid(props: {
             await reorderAlbumItems(props.albumId, ids);
             setSavedPulse(true);
             window.setTimeout(() => setSavedPulse(false), 650);
+            return true;
+        } catch {
+            toast.error("Vous ne pouvez actuellement pas modifier l'ordre")
         } finally {
             setSavingOrder(false);
             inFlightRef.current = false;
@@ -318,18 +339,25 @@ export function OrganizeDnDGrid(props: {
     };
 
     const move = async (itemId: string, dir: -1 | 1) => {
-        const idx = props.items.findIndex((x) => x.id === itemId);
-        if (idx < 0) return;
-        const to = idx + dir;
-        if (to < 0 || to >= props.items.length) return;
+        const initial = [...props.items];
+        try {
+            const idx = props.items.findIndex((x) => x.id === itemId);
+            if (idx < 0) return;
+            const to = idx + dir;
+            if (to < 0 || to >= props.items.length) return;
 
-        const next = [...props.items];
-        const tmp = next[idx];
-        next[idx] = next[to];
-        next[to] = tmp;
+            const next = [...props.items];
+            const tmp = next[idx];
+            next[idx] = next[to];
+            next[to] = tmp;
 
-        props.onChangeItems(next);
-        await persistOrder(next.map((x) => x.id));
+            const result = await persistOrder(next.map((x) => x.id));
+            if (result) {
+                props.onChangeItems(next);
+            }
+        } catch {
+            props.onChangeItems(initial);
+        }
     };
 
     const removeFromAlbum = async (itemId: string) => {
@@ -356,161 +384,17 @@ export function OrganizeDnDGrid(props: {
                     ...(patch.title !== undefined ? {title: patch.title} : {}),
                     ...(patch.month !== undefined ? {month: patch.month} : {}),
                     ...(patch.year !== undefined ? {year: patch.year} : {}),
+                    ...(patch.description !== undefined ? {description: patch.description} : {}),
                 },
             };
         });
         props.onChangeItems(next);
     };
 
+    const exportState = useAlbumExportLatest(props.albumId);
+
     return (
-        <div className={cx(glassCard(), "overflow-hidden")} data-tour="timeline">
-            <div className="p-4 sm:p-5 border-b border-stone-100 bg-gradient-to-b from-stone-50 to-white">
-                <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                        <div className={pillBase()}>
-                            <ChevronUp size={14} className="text-stone-700"/>
-                            Organisation
-                        </div>
-                        <div className="mt-2 text-sm font-black text-stone-900">
-                            Réordonnez avec les flèches (simple et fiable)
-                        </div>
-                        <div className="mt-1 text-xs text-stone-500">
-                            Éditez la date si nécessaire — ça rend l’album plus lisible.
-                        </div>
-                    </div>
-
-                    <div className="shrink-0 text-[11px] font-semibold">
-                        {savingOrder ? (
-                            <span className="text-stone-500 inline-flex items-center gap-2">
-                <Loader2 size={14} className="animate-spin"/> Sauvegarde…
-              </span>
-                        ) : (
-                            <span className={cx("transition", savedPulse ? "text-emerald-700" : "text-stone-500")}>
-                {props.items.length ? "Sauvegardé" : ""}
-              </span>
-                        )}
-                    </div>
-                </div>
-            </div>
-
-            <div className="p-3 sm:p-5">
-                {props.items.length === 0 ? (
-                    <div className="rounded-2xl border border-stone-200 bg-white p-4 text-xs text-stone-600">
-                        Album vide : ajoutez des fichiers, puis revenez ici pour les trier.
-                    </div>
-                ) : (
-                    <div className="space-y-2">
-                        {props.items.map((it, index) => {
-                            const canUp = index > 0;
-                            const canDown = index < props.items.length - 1;
-
-                            return (
-                                <div
-                                    key={it.id}
-                                    className={cx(
-                                        "rounded-3xl border border-stone-200 bg-white/90 backdrop-blur",
-                                        "shadow-[0_1px_0_rgba(0,0,0,0.03)] overflow-hidden"
-                                    )}
-                                >
-                                    <div className="flex items-stretch">
-                                        <div
-                                            className="w-[92px] sm:w-[110px] shrink-0 bg-stone-100 relative overflow-hidden my-auto">
-                                            <AssetThumb type={it.asset.type} assetId={it.asset.id}/>
-
-                                            <div className="absolute left-2 top-2">
-    <span
-        className="inline-flex items-center rounded-full border border-stone-200 bg-white px-2 py-0.5 text-[10px] font-black text-stone-600">
-      {it.asset.type === "video" ? "VID" : "IMG"}
-    </span>
-                                            </div>
-                                        </div>
-                                        <div className="flex-1 min-w-0 p-3 sm:p-4 flex flex-col justify-between gap-2">
-                                            <div className="flex items-start justify-between gap-2">
-                                                <div className="min-w-0">
-                                                    <div
-                                                        className="text-[13px] sm:text-[14px] font-black text-stone-900 truncate">
-                                                        {it.asset.title || "Sans titre"}
-                                                    </div>
-                                                    <div className="mt-1 flex items-center gap-2 flex-wrap">
-                                                        <MonthYearPill month={it.asset.month} year={it.asset.year}/>
-                                                        <span className="text-[11px] text-stone-500">#{index + 1}</span>
-                                                    </div>
-                                                </div>
-
-                                                <div className="shrink-0 flex items-center gap-2">
-                                                    {/* Move up/down */}
-                                                    <div className="flex flex-col gap-2">
-                                                        <button
-                                                            type="button"
-                                                            disabled={!canUp}
-                                                            onClick={() => void move(it.id, -1)}
-                                                            className={cx(
-                                                                "h-10 w-10 rounded-2xl border grid place-items-center transition active:scale-[0.99]",
-                                                                canUp
-                                                                    ? "border-stone-200 bg-white hover:bg-stone-50"
-                                                                    : "border-stone-200 bg-stone-50 text-stone-300 cursor-not-allowed"
-                                                            )}
-                                                            aria-label="Monter"
-                                                            title="Monter"
-                                                        >
-                                                            <ChevronUp size={16} className="text-stone-700"/>
-                                                        </button>
-
-                                                        <button
-                                                            type="button"
-                                                            disabled={!canDown}
-                                                            onClick={() => void move(it.id, +1)}
-                                                            className={cx(
-                                                                "h-10 w-10 rounded-2xl border grid place-items-center transition active:scale-[0.99]",
-                                                                canDown
-                                                                    ? "border-stone-200 bg-white hover:bg-stone-50"
-                                                                    : "border-stone-200 bg-stone-50 text-stone-300 cursor-not-allowed"
-                                                            )}
-                                                            aria-label="Descendre"
-                                                            title="Descendre"
-                                                        >
-                                                            <ChevronDown size={16} className="text-stone-700"/>
-                                                        </button>
-                                                    </div>
-
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => {
-                                                            setEditItemId(it.id);
-                                                            setEditOpen(true);
-                                                        }}
-                                                        className="h-10 w-10 rounded-2xl border border-stone-200 bg-white hover:bg-stone-50 grid place-items-center transition active:scale-[0.99]"
-                                                        aria-label="Éditer"
-                                                        title="Éditer"
-                                                    >
-                                                        <Pencil size={16} className="text-stone-700"/>
-                                                    </button>
-
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => void removeFromAlbum(it.id)}
-                                                        className="h-10 w-10 rounded-2xl border border-stone-200 bg-white hover:bg-stone-50 grid place-items-center transition active:scale-[0.99]"
-                                                        aria-label="Retirer de l’album"
-                                                        title="Retirer de l’album"
-                                                    >
-                                                        <Trash2 size={16} className="text-stone-700"/>
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            <div className="text-[11px] text-stone-500">
-                                                Astuce : mettez vos moments clés au début, puis affinez dans
-                                                “Finaliser”.
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
-            </div>
-
+        <>
             <EditAssetSheet
                 open={editOpen}
                 item={editItem}
@@ -521,6 +405,161 @@ export function OrganizeDnDGrid(props: {
                     void removeFromAlbum(editItem.id);
                 }}
             />
-        </div>
+            <div className={cx(glassCard())} data-tour="timeline">
+                <div className="p-4 sm:p-5 border-b border-stone-100 bg-gradient-to-b from-stone-50 to-white">
+                    <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                            <div className={pillBase()}>
+                                <ChevronUp size={14} className="text-stone-700"/>
+                                Organisation
+                            </div>
+                            <div className="mt-2 text-sm font-black text-stone-900">
+                                Réordonnez avec les flèches (simple et fiable)
+                            </div>
+                            {exportState.isRunning && (
+                                <div className="mt-1 text-xs text-red-500">
+                                    Vous ne pouvez pas modifier l&#39;ordre des éléments durant l&#39;export
+                                </div>)
+                            }
+                        </div>
+
+                        <div className="shrink-0 text-[11px] font-semibold">
+                            {savingOrder ? (
+                                <span className="text-stone-500 inline-flex items-center gap-2">
+                <Loader2 size={14} className="animate-spin"/> Sauvegarde…
+              </span>
+                            ) : (
+                                <span className={cx("transition", savedPulse ? "text-emerald-700" : "text-stone-500")}>
+                {props.items.length ? "Sauvegardé" : ""}
+              </span>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="p-3 sm:p-5">
+                    {props.items.length === 0 ? (
+                        <div className="rounded-2xl border border-stone-200 bg-white p-4 text-xs text-stone-600">
+                            Album vide : ajoutez des fichiers, puis revenez ici pour les trier.
+                        </div>
+                    ) : (
+                        <div className="space-y-2">
+                            {props.items.map((it, index) => {
+                                const canUp = index > 0;
+                                const canDown = index < props.items.length - 1;
+
+                                return (
+                                    <div
+                                        key={it.id}
+                                        className={cx(
+                                            "rounded-3xl border border-stone-200 bg-white/90 backdrop-blur",
+                                            "shadow-[0_1px_0_rgba(0,0,0,0.03)] overflow-hidden"
+                                        )}
+                                    >
+                                        <div className="flex flex-col md:flex-row items-stretch">
+                                            <div
+                                                className="w-full md:w-96 shrink-0 bg-stone-100 relative overflow-hidden my-auto">
+                                                <AssetThumb type={it.asset.type} assetId={it.asset.id}/>
+
+                                                <div className="absolute left-2 top-2">
+    <span
+        className="inline-flex items-center rounded-full border border-stone-200 bg-white px-2 py-0.5 text-[10px] font-black text-stone-600">
+      {it.asset.type === "video" ? "VID" : "IMG"}
+    </span>
+                                                </div>
+                                            </div>
+                                            <div
+                                                className="flex-1 min-w-0 p-3 sm:p-4 flex flex-col justify-between gap-2">
+                                                <div
+                                                    className="flex md:flex-col md:justify-between md:h-full items-start justify-between gap-2">
+                                                    <div className="min-w-0">
+                                                        <div
+                                                            className="text-[13px] sm:text-[14px] font-black text-stone-900 truncate">
+                                                            {it.asset.title || "Sans titre"}
+                                                        </div>
+                                                        <div className="mt-1 flex items-center gap-2 flex-wrap">
+                                                            <MonthYearPill month={it.asset.month} year={it.asset.year}/>
+                                                            <span
+                                                                className="text-[11px] text-stone-500">#{index + 1}</span>
+                                                        </div>
+                                                        {it.asset.description && (
+                                                            <div
+                                                                className="text-[11px] text-stone-500 wrap-break-word pt-2">
+                                                                {it.asset.description}
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    {!exportState.isRunning && (
+                                                        <div className="shrink-0 flex items-center gap-2">
+                                                            {/* Move up/down */}
+                                                            <div className="flex flex-col gap-2">
+                                                                <button
+                                                                    type="button"
+                                                                    disabled={!canUp}
+                                                                    onClick={() => void move(it.id, -1)}
+                                                                    className={cx(
+                                                                        "h-10 w-10 rounded-2xl border grid place-items-center transition active:scale-[0.99]",
+                                                                        canUp
+                                                                            ? "border-stone-200 bg-white hover:bg-stone-50"
+                                                                            : "border-stone-200 bg-stone-50 text-stone-300 cursor-not-allowed"
+                                                                    )}
+                                                                    aria-label="Monter"
+                                                                    title="Monter"
+                                                                >
+                                                                    <ChevronUp size={16} className="text-stone-700"/>
+                                                                </button>
+
+                                                                <button
+                                                                    type="button"
+                                                                    disabled={!canDown}
+                                                                    onClick={() => void move(it.id, +1)}
+                                                                    className={cx(
+                                                                        "h-10 w-10 rounded-2xl border grid place-items-center transition active:scale-[0.99]",
+                                                                        canDown
+                                                                            ? "border-stone-200 bg-white hover:bg-stone-50"
+                                                                            : "border-stone-200 bg-stone-50 text-stone-300 cursor-not-allowed"
+                                                                    )}
+                                                                    aria-label="Descendre"
+                                                                    title="Descendre"
+                                                                >
+                                                                    <ChevronDown size={16} className="text-stone-700"/>
+                                                                </button>
+                                                            </div>
+
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setEditItemId(it.id);
+                                                                    setEditOpen(true);
+                                                                }}
+                                                                className="h-10 w-10 rounded-2xl border border-stone-200 bg-white hover:bg-stone-50 grid place-items-center transition active:scale-[0.99]"
+                                                                aria-label="Éditer"
+                                                                title="Éditer"
+                                                            >
+                                                                <Pencil size={16} className="text-stone-700"/>
+                                                            </button>
+
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => void removeFromAlbum(it.id)}
+                                                                className="h-10 w-10 rounded-2xl border border-stone-200 bg-white hover:bg-stone-50 grid place-items-center transition active:scale-[0.99]"
+                                                                aria-label="Retirer de l’album"
+                                                                title="Retirer de l’album"
+                                                            >
+                                                                <Trash2 size={16} className="text-stone-700"/>
+                                                            </button>
+                                                        </div>)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </>
     );
 }

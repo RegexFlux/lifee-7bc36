@@ -67,7 +67,7 @@ export default apiHandler({
                     and(
                         eq(exportJobs.albumId, albumId),
                         eq(exportJobs.userId, viewer.user.id),
-                        inArray(exportJobs.status, ["queued", "rendering"] as any)
+                        inArray(exportJobs.status, ["queued", "rendering"])
                     )
                 )
                 .orderBy(desc(exportJobs.createdAt))
@@ -87,5 +87,23 @@ export default apiHandler({
             .returning();
 
         return ok(res, {exportJob: created, mode: "created"}, 201);
+    },
+
+    DELETE: async (req: NextApiRequest, res: NextApiResponse) => {
+        const viewer = await requireViewer(req, res);
+
+        const albumId = Array.isArray(req.query.albumId) ? req.query.albumId[0] : req.query.albumId;
+        if (!albumId) return fail(res, 400, "Missing album id");
+
+        const q = zQuery.safeParse(req.query);
+        if (!q.success) return fail(res, 400, "Invalid query", q.error.flatten());
+
+        const rows = await db
+            .update(exportJobs)
+            .set({status: "canceled"})
+            .where(and(eq(exportJobs.albumId, albumId), eq(exportJobs.userId, viewer.user.id)))
+            .returning();
+
+        return ok(res, {exports: rows, latest: rows[0] ?? null});
     },
 });

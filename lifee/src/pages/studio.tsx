@@ -3,12 +3,12 @@ import Head from "next/head";
 import {useRouter} from "next/router";
 import {Loader2} from "lucide-react";
 import {fetchJson} from "@/components/landing/interactiveDemo/utils";
-import type {AlbumDTO} from "@/types/studioHelp";
+import type {AlbumDto} from "@/types/studioHelp";
 
-type AlbumsResp = { albums: AlbumDTO[] };
-type CreateAlbumResp = { album: AlbumDTO };
+type AlbumsResp = { albums: AlbumDto[] };
+type CreateAlbumResp = { album: AlbumDto };
 
-function routeForAlbum(a: AlbumDTO) {
+function routeForAlbum(a: AlbumDto) {
     if (a.mode === "studio_pro") return `/studio/albums/${encodeURIComponent(a.id)}/pro`;
     return `/studio/albums/${encodeURIComponent(a.id)}/help/welcome`;
 }

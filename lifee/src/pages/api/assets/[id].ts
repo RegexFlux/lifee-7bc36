@@ -10,8 +10,9 @@ import {assets} from "@/lib/db/schema";
 
 const zPatch = z.object({
     title: z.string().max(120).optional(),
+    description: z.string().max(1200).optional(),
     month: z.number().int().min(1).max(12).optional(),
-    year: z.number().int().min(1900).max(2100).optional(),
+    year: z.number().int().min(0).max(2100).optional(),
 });
 
 export default apiHandler({

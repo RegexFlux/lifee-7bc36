@@ -4,7 +4,7 @@ import {useRouter} from "next/router";
 import {ArrowRight, LibraryBig, Sparkles} from "lucide-react";
 
 import {fetchJson} from "@/components/landing/interactiveDemo/utils";
-import type {AlbumItemDTO} from "@/types/studioHelp";
+import type {AlbumItemDto} from "@/types/studioHelp";
 import {StudioHelpShell} from "@/components/studio/help/StudioHelpShell";
 import {WelcomeUploadCard} from "@/components/studio/help/upload/WelcomeUploadCard";
 import {cx, glassCard, pillBase} from "@/components/studio/help/ui";
@@ -43,10 +43,10 @@ export const getServerSideProps: GetServerSideProps<{ albumId: string }> = async
 export default function HelpWelcomePage({albumId}: InferGetServerSidePropsType<typeof getServerSideProps>) {
     const {t} = useT();
     const router = useRouter();
-    const [items, setItems] = useState<AlbumItemDTO[] | null>(null);
+    const [items, setItems] = useState<AlbumItemDto[] | null>(null);
 
     const load = async () => {
-        const data = await fetchJson<{ items: AlbumItemDTO[] }>(`/api/albums/${encodeURIComponent(albumId)}/items`, {
+        const data = await fetchJson<{ items: AlbumItemDto[] }>(`/api/albums/${encodeURIComponent(albumId)}/items`, {
             method: "GET",
         });
         setItems(data.items);

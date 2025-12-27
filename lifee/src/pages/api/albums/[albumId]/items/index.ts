@@ -41,6 +41,7 @@ export default apiHandler({
                 month: assets.month,
                 createdAt: albumItems.createdAt,
                 updatedAt: albumItems.updatedAt,
+                description: assets.description,
             })
             .from(albumItems)
             .innerJoin(assets, eq(assets.id, albumItems.assetId))
@@ -68,6 +69,7 @@ export default apiHandler({
                         title: r.title,
                         year: r.year,
                         month: r.month,
+                        description: r.description,
                     },
                     thumbnailUrl,
                 };

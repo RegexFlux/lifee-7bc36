@@ -41,9 +41,8 @@ export default apiHandler({
         )[0];
         if (!hasItems) return fail(res, 400, "Album is empty");
 
-        // anti-spam simple: max 3 exports / 2 minutes
-        const twoMinAgo = new Date(Date.now() - 120_000);
-        const runningJob = await db
+
+        const [runningJob] = await db
             .select({id: exportJobs.id})
             .from(exportJobs)
             .where(and(eq(exportJobs.albumId, albumId), eq(exportJobs.status, 'rendering'))).limit(1);
@@ -51,6 +50,8 @@ export default apiHandler({
             return fail(res, 429, "Un export est déja en cours");
         }
 
+        // anti-spam simple: max 3 exports / 2 minutes
+        const twoMinAgo = new Date(Date.now() - 120_000);
         const recent = await db
             .select({id: exportJobs.id})
             .from(exportJobs)

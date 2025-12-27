@@ -1,0 +1,1 @@
+ALTER TYPE "public"."export_job_status" ADD VALUE 'canceled' BEFORE 'rendering';

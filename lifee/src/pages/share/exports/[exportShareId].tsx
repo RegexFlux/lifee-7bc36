@@ -13,6 +13,7 @@ import {PlayerCard} from "@/components/share/PlayerCard";
 import {ConversionCard} from "@/components/share/ConversionCard";
 import {usePublicExportShare} from "@/lib/public/usePublicExportShare";
 import {useT} from "@/lib/i18n/useT";
+import {StoryTimeline} from "@/components/share/StoryTimeline";
 
 const FXBackdrop = dynamic(() => import("@/components/animations/fx/FXBackdrop"), {ssr: false});
 
@@ -122,6 +123,20 @@ export default function ExportSharePage({
                             </div>
                         </div>
                     </div>
+                </div>
+
+                {/* Timeline */}
+                <div className="mt-10 md:mt-12">
+                    {publicShare.album ? (
+                        <StoryTimeline
+                            album={publicShare.album}
+                        />
+                    ) : (
+                        <div
+                            className="rounded-2xl border border-stone-200 bg-white/70 backdrop-blur p-6 text-stone-600">
+                            Aucun souvenir listé pour ce partage.
+                        </div>
+                    )}
                 </div>
             </main>
         </div>

@@ -1,6 +1,8 @@
 // File: src/components/landing/interactiveDemo/utils.ts
 "use client";
 
+import {toast} from "@/components/toast/ToastProvider";
+
 export class HttpError extends Error {
     status: number;
     payload: any;
@@ -13,7 +15,7 @@ export class HttpError extends Error {
     }
 }
 
-export async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
+export async function fetchJson<T>(url: string, init?: RequestInit, displayError = false): Promise<T> {
     const r = await fetch(url, init);
 
     const text = await r.text().catch(() => "");
@@ -25,7 +27,10 @@ export async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> 
             (data && typeof data === "object" && (data as any).message) ||
             r.statusText ||
             "Request failed";
-        throw new HttpError(r.status, String(msg), data);
+        if (displayError) {
+            toast.error(msg);
+        }
+        throw new Error(msg);
     }
 
     return (data as T) ?? ({} as T);

@@ -5,8 +5,11 @@ import {and, eq} from "drizzle-orm";
 import {apiHandler} from "@/lib/api/handler";
 import {ok, fail} from "@/lib/api/response";
 import {db} from "@/lib/db";
-import {exportJobs, exportShares, albums, users} from "@/lib/db/schema";
+import {exportJobs, exportShares, albums, users, albumItems, assets} from "@/lib/db/schema";
 import {presignGetObject} from "@/lib/s3/presignGet";
+import albumId from "@/pages/api/albums/[albumId]";
+import {AlbumDto, AlbumItemDto} from "@/types/studioHelp";
+import {AlbumItem} from "@/lib/db/types";
 
 function makeCreatedLabel(d?: Date | string | null) {
     try {
@@ -36,6 +39,7 @@ export default apiHandler({
         const row = (
             await db
                 .select({
+                    albumId: albums.id,
                     shareId: exportShares.id,
                     isActive: exportShares.isActive,
                     revokedAt: exportShares.revokedAt,
@@ -69,7 +73,33 @@ export default apiHandler({
         // (Plus tard: si tu génères un poster export, mets-le ici)
         const thumbnailUrl: string | null = null;
 
+        const album = await db.query.albums.findFirst({
+            where: eq(albums.id, row.albumId),
+        }) as AlbumDto | undefined;
+
+        const items = await db
+            .select({
+                albumItem: albumItems,
+                asset: assets,
+            })
+            .from(albumItems)
+            .innerJoin(assets, eq(assets.id, albumItems.assetId))
+            .where(eq(albumItems.albumId, row.albumId));
+
+        if (album) {
+            const mapped = items.map(async (item) => ({
+                ...item.albumItem,
+                asset: item.asset,
+                thumbnailUrl: item.asset.thumbnailKey ? await presignGetObject({
+                    key: item.asset.thumbnailKey,
+                    expiresIn: 60 * 60
+                }) : undefined,
+            } as AlbumItemDto));
+            album.items = await Promise.all(mapped);
+        }
+
         return ok(res, {
+            album,
             exportJobId: row.exportJobId,
             albumTitle: row.albumTitle,
             status: row.status,
@@ -77,7 +107,7 @@ export default apiHandler({
             videoUrl,
             thumbnailUrl,
             errorMessage: row.errorMessage ?? null,
-            createdLabel: makeCreatedLabel(row.createdAt as any),
+            createdLabel: makeCreatedLabel(row.createdAt),
             createdBy: makeCreatedBy(row.ownerEmail),
             expiresInSec: 60 * 15,
         });

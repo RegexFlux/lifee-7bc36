@@ -50,6 +50,20 @@
       "when": 1766758055872,
       "tag": "0006_cuddly_cannonball",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1766839814215,
+      "tag": "0007_deep_caretaker",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1766842312111,
+      "tag": "0008_familiar_the_professor",
+      "breakpoints": true
     }
   ]
 }

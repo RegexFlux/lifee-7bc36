@@ -2,10 +2,10 @@
 import React, {useEffect, useState} from "react";
 import type {GetServerSideProps, InferGetServerSidePropsType} from "next";
 import {useRouter} from "next/router";
-import {ArrowLeft, Crown, Download, Loader2} from "lucide-react";
+import {ArrowLeft, Crown, Download, Loader2, X} from "lucide-react";
 
 import {fetchJson} from "@/components/landing/interactiveDemo/utils";
-import type {AlbumItemDTO} from "@/types/studioHelp";
+import type {AlbumItemDto} from "@/types/studioHelp";
 import {StudioHelpShell} from "@/components/studio/help/StudioHelpShell";
 import {cx, glassCard, pillBase} from "@/components/studio/help/ui";
 import {useT} from "@/lib/i18n/useT";
@@ -50,7 +50,7 @@ export default function HelpFinalizePage({albumId}: InferGetServerSidePropsType<
     const {t} = useT();
     const router = useRouter();
 
-    const [items, setItems] = useState<AlbumItemDTO[]>([]);
+    const [items, setItems] = useState<AlbumItemDto[]>([]);
     const [busyPro, setBusyPro] = useState(false);
     const [busy, setBusy] = useState(false);
 
@@ -60,7 +60,7 @@ export default function HelpFinalizePage({albumId}: InferGetServerSidePropsType<
     useEffect(() => {
         (async () => {
             const data = await fetchJson<{
-                items: AlbumItemDTO[]
+                items: AlbumItemDto[]
             }>(`/api/albums/${encodeURIComponent(albumId)}/items`, {
                 method: "GET",
             });
@@ -117,11 +117,11 @@ export default function HelpFinalizePage({albumId}: InferGetServerSidePropsType<
 
     const exportState = useAlbumExportLatest(albumId);
 
-    const startExport = async () => {
+    const cancelExport = async () => {
         setBusy(true);
         try {
-            const r = await fetchJson<{ exportJob: any }>(`/api/albums/${encodeURIComponent(albumId)}/exports`, {
-                method: "POST",
+            await fetchJson(`/api/albums/${encodeURIComponent(albumId)}/exports`, {
+                method: "DELETE",
             });
             // refresh to show immediately
             await exportState.refresh();
@@ -138,7 +138,7 @@ export default function HelpFinalizePage({albumId}: InferGetServerSidePropsType<
             subtitle={t("studio.finalize.sub")}
             right={
                 <div className="flex items-center gap-2">
-                    {!exportState.job && (<button
+                    {!exportState.isRunning ? (<button
                         type="button"
                         onClick={exportAlbum}
                         disabled={busyExport || disabledActions}
@@ -151,7 +151,19 @@ export default function HelpFinalizePage({albumId}: InferGetServerSidePropsType<
                         data-tour="export"
                     >
                         <Download size={16}/>
-                        {busyExport ? t("studio.finalize.exporting") : t("studio.finalize.export")}
+                        {t("studio.finalize.export")}
+                    </button>) : (<button
+                        type="button"
+                        onClick={cancelExport}
+                        disabled={busyExport || disabledActions}
+                        className={cx(
+                            "rounded-2xl px-4 py-2 text-sm font-black transition inline-flex items-center gap-2",
+                            "bg-rose-600 text-white hover:bg-stone-800 active:scale-[0.99]"
+                        )}
+                        data-tour="export"
+                    >
+                        <X size={16}/>
+                        {t("studio.finalize.cancel_export")}
                     </button>)}
 
                     <button
@@ -174,7 +186,7 @@ export default function HelpFinalizePage({albumId}: InferGetServerSidePropsType<
         >
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
 
-                {!exportState.job ? (<div className="lg:col-span-8">
+                <div className="lg:col-span-8">
                     <div className={cx(glassCard(), "p-6")} data-tour="recap">
                         <div className={pillBase()}>
                             <Crown size={14} className="text-rose-600"/>
@@ -220,14 +232,14 @@ export default function HelpFinalizePage({albumId}: InferGetServerSidePropsType<
                             </button>
                         </div>
                     </div>
-                </div>) : (<></>)}
+                </div>
 
                 <div className="lg:col-span-8">
                     <div className={cx(glassCard(), "p-6")}>
                         <div className="text-sm font-black text-stone-900">{t("studio.finalize.export.title")}</div>
                         <div className="mt-1 text-xs text-stone-600">{t("studio.finalize.export.sub")}</div>
 
-                        {exportState.job ? (
+                        {exportState.isRunning ? (
                             <div className="mt-4 rounded-2xl border border-stone-200 bg-white/70 p-4">
                                 <div className="flex items-center justify-between gap-3">
                                     <div className="text-xs font-bold text-stone-800">
@@ -256,7 +268,7 @@ export default function HelpFinalizePage({albumId}: InferGetServerSidePropsType<
 
                         <button
                             type="button"
-                            onClick={startExport}
+                            onClick={exportAlbum}
                             disabled={busy || exportState.isRunning || items.length === 0}
                             className={cx(
                                 "mt-4 w-full rounded-2xl px-4 py-3 text-sm font-black transition inline-flex items-center justify-center gap-2",

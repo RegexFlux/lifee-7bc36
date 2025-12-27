@@ -151,6 +151,7 @@
   "studio.finalize.export": "Exporter",
   "studio.finalize.export_failed": "Impossible de lancer l’export.",
   "studio.finalize.exporting": "Export…",
+  "studio.finalize.cancel_export": "Annuler l'export",
   "studio.finalize.more": "autres…",
   "studio.finalize.pro_album_scoped": "Le mode Pro est lié à cet album uniquement.",
   "studio.finalize.pro_b1": "• Génération vidéo + exports (avec crédits)",

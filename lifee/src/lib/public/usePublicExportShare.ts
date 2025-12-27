@@ -4,6 +4,9 @@
 import {useEffect, useMemo, useRef, useState} from "react";
 import {fetchJson} from "@/components/landing/interactiveDemo/utils";
 import {match} from "ts-pattern";
+import {AssetType} from "@/types/studio";
+import {AlbumItem, Asset} from "@/lib/db/types";
+import {AlbumDto, AlbumItemDto} from "@/types/studioHelp";
 
 export type ApiRespStatus = "queued" | "rendering" | "done" | "error";
 
@@ -17,6 +20,7 @@ type ApiResp = {
     errorMessage: string | null;
     createdLabel?: string | null;
     createdBy?: string | null;
+    album: AlbumDto;
 };
 
 function statusToKey(status: ApiResp["status"]): ApiRespStatus {
@@ -47,6 +51,7 @@ export function usePublicExportShare(params: { exportShareId: string }) {
     const [title, setTitle] = useState<string>("");
     const [createdLabel, setCreatedLabel] = useState<string>(""); // string ready-to-render
     const [createdBy, setCreatedBy] = useState<string>("");
+    const [album, setAlbum] = useState<AlbumDto>();
 
     const [statusKey, setStatusKey] = useState<ApiRespStatus>(statusToKey("queued"));
 
@@ -82,6 +87,8 @@ export function usePublicExportShare(params: { exportShareId: string }) {
                 setCreatedLabel(data.createdLabel ?? "Créé récemment");
                 setCreatedBy(data.createdBy ?? "un proche");
 
+                setAlbum(data.album)
+
                 const done = data.status === "done" || data.status === "error";
                 if (!done) {
                     timerRef.current = setTimeout(tick, 15000);
@@ -106,6 +113,7 @@ export function usePublicExportShare(params: { exportShareId: string }) {
     const shareUrl = useMemo(() => safeShareUrl(exportShareId), [exportShareId]);
 
     return {
+        album,
         videoUrl,
         thumbnailUrl,
         progress,

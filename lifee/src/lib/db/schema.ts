@@ -204,6 +204,7 @@ export const assets = pgTable(
 
         fileKey: text("file_key").notNull(),
         title: text("title"),
+        description: text("descrip"),
 
         // date du souvenir (pas dérivée de createdAt)
         month: integer("month").notNull(),
@@ -453,6 +454,7 @@ export const albumItems = pgTable(
 
 export const exportJobStatusEnum = pgEnum("export_job_status", [
     "queued",
+    "canceled",
     "rendering",
     "done",
     "error",
