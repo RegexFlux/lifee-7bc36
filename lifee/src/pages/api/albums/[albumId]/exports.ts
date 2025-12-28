@@ -1,16 +1,21 @@
 // pages/api/albums/[id]/exports.ts
 import type {NextApiRequest, NextApiResponse} from "next";
-import {and, desc, eq, inArray, not, sql} from "drizzle-orm";
+import {and, asc, desc, eq, inArray, sql} from "drizzle-orm";
 import {z} from "zod";
 
 import {apiHandler} from "@/lib/api/handler";
 import {ok, fail} from "@/lib/api/response";
 import {requireViewer} from "@/lib/auth/require";
 import {db} from "@/lib/db/index";
-import {albums, exportJobs} from "@/lib/db/schema";
+import {albumItems, albums, assets, exportJobItems, exportJobs, replicateGenerationJobs} from "@/lib/db/schema";
 import {computeAlbumGenerationState} from "@/lib/exports/albumGenerationState";
-import {ensureReplicateJobsForExport} from "@/lib/exports/ensureReplicateJobsForExport";
-import {notEqual} from "assert";
+import {getDemoModel, getKlingModel} from "@/lib/replicate/index";
+import {enqueueExportJob} from "@/lib/aws/enqueueExportJob";
+import {startReplicatePredictionForJob} from "@/lib/replicate/startReplicatePredictionForJob";
+
+
+const ACTIVE_EXPORT = ["queued", "rendering", "waiting_generations"] as const;
+const ACTIVE_REPL = ["queued", "starting", "processing"] as const;
 
 const zQuery = z.object({
     limit: z.coerce.number().int().min(1).max(20).default(5),
@@ -67,71 +72,127 @@ export default apiHandler({
         if (!a) return fail(res, 404, "Album not found");
 
         // ---- PRO gate (pseudo) ----
-        // Remplace par ton champ réel (viewer.user.plan / subscription / credits...)
-        // const isPro = (viewer.user as any)?.plan === "pro";
         const isPro = false;
-        // 1) Idempotence: export actif existant (par album)
-        // Non-pro: 1 export actif par album
-        // Pro: autorise plusieurs (mais garde une limite globale raisonnable)
-        const activeStatuses = ["queued", "rendering", "waiting_generations"] as const;
 
         if (!isPro) {
-            const albumRunningExport = (
+            const existing = (
                 await db
                     .select()
                     .from(exportJobs)
-                    .where(
-                        and(
-                            eq(exportJobs.albumId, albumId),
-                            eq(exportJobs.userId, viewer.user.id),
-                            not(eq(exportJobs.status, "canceled"))
-                        )
-                    )
+                    .where(and(eq(exportJobs.albumId, albumId), eq(exportJobs.userId, viewer.user.id), inArray(exportJobs.status, [...ACTIVE_EXPORT])))
                     .orderBy(desc(exportJobs.createdAt))
                     .limit(1)
             )[0];
-
-            if (albumRunningExport) return ok(res, {exportJob: albumRunningExport, mode: "existing"});
-
-            // Max 1 export actif par user (optionnel mais utile contre l'abus)
-            const userRunning = (
-                await db
-                    .select()
-                    .from(exportJobs)
-                    .where(and(eq(exportJobs.userId, viewer.user.id), inArray(exportJobs.status, [...activeStatuses])))
-                    .orderBy(desc(exportJobs.createdAt))
-                    .limit(1)
-            )[0];
-            if (userRunning) return ok(res, {exportJob: userRunning, mode: "existing"});
+            if (existing) return ok(res, {exportJob: existing, mode: "existing"});
         } else {
-            // PRO: limite soft (ex: max 3 exports actifs simultanés)
             const [{count}] = await db
                 .select({count: sql<number>`COUNT(*)`})
                 .from(exportJobs)
-                .where(and(eq(exportJobs.userId, viewer.user.id), inArray(exportJobs.status, [...activeStatuses])));
-            if (Number(count) >= 3) {
-                return fail(res, 429, "Too many concurrent exports (pro limit)");
-            }
+                .where(and(eq(exportJobs.userId, viewer.user.id), inArray(exportJobs.status, [...ACTIVE_EXPORT])));
+            if (Number(count) >= 3) return fail(res, 429, "Too many concurrent exports (pro limit)");
         }
 
-        // 2) Au moment de la demande d'export => créer/assurer les jobs Replicate
-        const model = "kwaivgi/kling-v2.5-turbo-pro"; // <-- mets ton modèle par défaut
-        await ensureReplicateJobsForExport({albumId, userId: viewer.user.id, model});
-
-        // 3) Calcul readiness
-        const genState = await computeAlbumGenerationState({albumId});
-
-        const [created] = await db
-            .insert(exportJobs)
-            .values({
-                albumId,
-                userId: viewer.user.id,
-                status: genState.ready ? "queued" : "waiting_generations",
-                progress: 0,
+        // Récup items album (ordonnés)
+        const albumRows = await db
+            .select({
+                albumItemId: albumItems.id,
+                position: albumItems.position,
+                assetId: assets.id,
+                type: assets.type,
             })
-            .returning();
+            .from(albumItems)
+            .innerJoin(assets, eq(assets.id, albumItems.assetId))
+            .where(eq(albumItems.albumId, albumId))
+            .orderBy(asc(albumItems.position));
 
-        return ok(res, {exportJob: created, mode: "created", generationState: genState}, 201);
+        if (!albumRows.length) return fail(res, 400, "Album has no items");
+
+        const model = isPro ? await getKlingModel() : await getDemoModel(); // tu as déjà ces helpers
+
+        const {exportJob, createdGenJobIds, statusAfter} = await db.transaction(async (tx) => {
+            const [created] = await tx
+                .insert(exportJobs)
+                .values({
+                    albumId,
+                    userId: viewer.user.id,
+                    status: "waiting_generations",
+                    progress: 0,
+                })
+                .returning();
+
+            // 1) Snapshot export_job_items
+            await tx.insert(exportJobItems).values(
+                albumRows.map((r) => ({
+                    exportJobId: created.id,
+                    position: r.position,
+                    albumItemId: r.albumItemId,
+                    sourceAssetId: r.assetId,
+                    resolvedAssetId: r.type === "video" ? r.assetId : null, // video = déjà "résolu"
+                    type: r.type,
+                }))
+            );
+
+            // 2) Créer replicate jobs pour les images (uniquement)
+            const createdIds: string[] = [];
+
+            for (const r of albumRows) {
+                if (r.type !== "image") continue;
+
+                // si déjà un job actif pour CET export + source asset, on ne recrée pas
+                const existing = (await tx
+                    .select({id: replicateGenerationJobs.id})
+                    .from(replicateGenerationJobs)
+                    .where(
+                        and(
+                            eq(replicateGenerationJobs.exportJobId, created.id),
+                            eq(replicateGenerationJobs.createdByAssetId, r.assetId),
+                            inArray(replicateGenerationJobs.status, [...ACTIVE_REPL]),
+                            eq(replicateGenerationJobs.model, model)
+                        )
+                    )
+                    .limit(1))[0];
+
+                if (existing) continue;
+
+                const [job] = await tx
+                    .insert(replicateGenerationJobs)
+                    .values({
+                        userId: viewer.user.id,
+                        exportJobId: created.id,
+                        albumItemId: r.albumItemId,
+                        createdByAssetId: r.assetId,
+                        model,
+                        status: "queued",
+                        // month/year : récupère via assets si besoin (non présent dans select)
+                        month: 1,
+                        year: 2025,
+                    })
+                    .returning({id: replicateGenerationJobs.id});
+
+                createdIds.push(job.id);
+            }
+
+            const statusAfter = createdIds.length ? "waiting_generations" : "queued";
+
+            await tx.update(exportJobs).set({
+                status: statusAfter,
+                updatedAt: new Date()
+            }).where(eq(exportJobs.id, created.id));
+
+            return {exportJob: created, createdGenJobIds: createdIds, statusAfter};
+        });
+
+        // 3) Déclencher réellement Replicate (hors transaction DB)
+        for (const genId of createdGenJobIds) {
+            await startReplicatePredictionForJob({generationId: genId, paid: isPro});
+        }
+
+        // 4) Push worker si ready
+        if (statusAfter === "queued") {
+            await enqueueExportJob(exportJob.id);
+        }
+
+        return ok(res, {exportJob, mode: "created", createdGenJobs: createdGenJobIds.length}, 201);
     },
 
     DELETE: async (req: NextApiRequest, res: NextApiResponse) => {

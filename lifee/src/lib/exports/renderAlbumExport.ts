@@ -2,11 +2,11 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
-import {asc, eq} from "drizzle-orm";
+import {asc, eq, sql} from "drizzle-orm";
 import {PutObjectCommand} from "@aws-sdk/client-s3";
 
 import {db} from "@/lib/db";
-import {albums, albumItems, assets, exportJobs, musics} from "@/lib/db/schema";
+import {albums, albumItems, assets, exportJobs, musics, exportJobItems} from "@/lib/db/schema";
 import {copyS3Object} from "@/lib/s3/copyObject";
 import {downloadToFile} from "@/lib/exports/downloadToFile";
 import {
@@ -18,6 +18,8 @@ import {
 } from "@/lib/exports/ffmpeg";
 import {presignGetObject} from "@/lib/s3/presignGet";
 import {S3_BUCKET_NAME, s3Client} from "@/lib/s3/client";
+import {Upload} from "@aws-sdk/lib-storage";
+import {createReadStream} from "node:fs";
 
 const WIDTH = 1080;
 const HEIGHT = 1920;
@@ -36,15 +38,23 @@ export async function renderAlbumExport(params: { exportJobId: string }) {
 
     const items = await db
         .select({
-            position: albumItems.position,
+            position: exportJobItems.position,
             assetId: assets.id,
             type: assets.type,
             fileKey: assets.fileKey,
         })
-        .from(albumItems)
-        .innerJoin(assets, eq(assets.id, albumItems.assetId))
-        .where(eq(albumItems.albumId, album.id))
-        .orderBy(asc(albumItems.position));
+        .from(exportJobItems)
+        .innerJoin(
+            assets,
+            // assets.id = COALESCE(resolved_asset_id, source_asset_id)
+            sql`${assets.id}
+            = COALESCE(
+            ${exportJobItems.resolvedAssetId},
+            ${exportJobItems.sourceAssetId}
+            )`
+        )
+        .where(eq(exportJobItems.exportJobId, job.id))
+        .orderBy(asc(exportJobItems.position));
 
     if (!items.length) throw new Error("Album has no items");
 
@@ -107,13 +117,15 @@ export async function renderAlbumExport(params: { exportJobId: string }) {
             }
 
             await db.update(exportJobs).set({progress: 90, updatedAt: new Date()}).where(eq(exportJobs.id, job.id));
-            const buf = fs.readFileSync(finalPath);
-            await s3Client.send(new PutObjectCommand({
-                Bucket: S3_BUCKET_NAME,
-                Key: finalKey,
-                Body: buf,
-                ContentType: "video/mp4"
-            }));
+            await new Upload({
+                client: s3Client,
+                params: {
+                    Bucket: S3_BUCKET_NAME,
+                    Key: finalKey,
+                    Body: createReadStream(finalPath),
+                    ContentType: "video/mp4",
+                },
+            }).done();
 
             await db.transaction(async (tx) => {
                 await tx.update(exportJobs).set({
@@ -203,13 +215,15 @@ export async function renderAlbumExport(params: { exportJobId: string }) {
         }
 
         const finalKey = `${exportKeyBase}.mp4`;
-        const buf = fs.readFileSync(finalPath);
-        await s3Client.send(new PutObjectCommand({
-            Bucket: S3_BUCKET_NAME,
-            Key: finalKey,
-            Body: buf,
-            ContentType: "video/mp4"
-        }));
+        await new Upload({
+            client: s3Client,
+            params: {
+                Bucket: S3_BUCKET_NAME,
+                Key: finalKey,
+                Body: createReadStream(finalPath),
+                ContentType: "video/mp4",
+            },
+        }).done();
 
         await db.transaction(async (tx) => {
             await tx.update(exportJobs).set({

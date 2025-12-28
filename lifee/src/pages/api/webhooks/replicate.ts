@@ -1,16 +1,18 @@
 // pages/api/webhooks/replicate.ts
 import crypto from "node:crypto";
 import type {NextApiRequest, NextApiResponse} from "next";
-import {and, eq} from "drizzle-orm";
+import {and, eq, sql} from "drizzle-orm";
 
 import {apiHandler} from "@/lib/api/handler";
 import {ok, fail} from "@/lib/api/response";
 import {db} from "@/lib/db";
-import {albumItems, assets, replicateGenerationJobs, webhookEvents} from "@/lib/db/schema";
+import {albumItems, assets, exportJobItems, exportJobs, replicateGenerationJobs, webhookEvents} from "@/lib/db/schema";
 import {putRemoteUrlToS3} from "@/lib/s3/putRemoteUrlToS3";
 import {verifyReplicateWebhook} from "@/lib/replicate/webhookVerify";
 import {logReplicateJobEvent} from "@/lib/replicate/jobEvents";
 import type {ReplicateJobStatus} from "@/lib/db/types";
+import {tryReleaseExportsForAlbum} from "@/lib/exports/tryReleaseExportsForAlbum";
+import {enqueueExportJob} from "@/lib/aws/enqueueExportJob";
 
 export const config = {api: {bodyParser: false}};
 
@@ -160,6 +162,8 @@ export default apiHandler({
         const videoKey = `lifee/users/${source.userId}/assets/video/${generationId}.mp4`;
         await putRemoteUrlToS3({key: videoKey, url: outUrl, contentType: "video/mp4"});
 
+        let updatedId: string | null = null;
+
 // Finalisation DB atomique
         await db.transaction(async (tx) => {
             // Re-check: si un autre process a déjà écrit resultAssetId, on stop
@@ -181,6 +185,45 @@ export default apiHandler({
                 resultAssetId: videoAsset.id,
                 updatedAt: new Date(),
             }).where(eq(replicateGenerationJobs.id, generationId));
+
+            if (job.exportJobId) {
+                // Marque l’item snapshot comme résolu (uniquement si encore sur sourceAssetId)
+                await tx.update(exportJobItems)
+                    .set({resolvedAssetId: videoAsset.id, updatedAt: new Date()})
+                    .where(and(
+                        eq(exportJobItems.exportJobId, job.exportJobId),
+                        eq(exportJobItems.sourceAssetId, source.id),
+                        sql`${exportJobItems.resolvedAssetId}
+                        IS NULL`
+                    ));
+
+                // Check readiness export
+                const [{pending}] = await tx.select({
+                    pending: sql<number>`COUNT(*) FILTER (WHERE
+                    ${replicateGenerationJobs.status}
+                    IN
+                    (
+                    'queued',
+                    'starting',
+                    'processing'
+                    )
+                    )`,
+                })
+                    .from(replicateGenerationJobs)
+                    .where(eq(replicateGenerationJobs.exportJobId, job.exportJobId));
+
+                if (Number(pending) === 0) {
+                    // passe export à queued
+                    const [updated] = await tx.update(exportJobs)
+                        .set({status: "queued", updatedAt: new Date()})
+                        .where(and(eq(exportJobs.id, job.exportJobId), eq(exportJobs.status, "waiting_generations")))
+                        .returning({id: exportJobs.id});
+                    if (updated?.id) {
+                        updatedId = updated.id;
+                    }
+
+                }
+            }
 
             await logReplicateJobEvent(tx, {
                 generationId,
@@ -207,8 +250,13 @@ export default apiHandler({
             }
         });
 
+
+        // IMPORTANT: enqueue SQS hors transaction DB (mais tu peux aussi le faire après la transaction)
+        if (updatedId) {
+            await enqueueExportJob(updatedId)
+        }
 // Après finalisation : si l'album est ready, release export(s)
-        if (fresh.albumItemId) {
+        else if (fresh.albumItemId) {
             const item = (await db.select({albumId: albumItems.albumId}).from(albumItems).where(eq(albumItems.id, fresh.albumItemId)).limit(1))[0];
             if (item?.albumId) {
                 await tryReleaseExportsForAlbum({albumId: item.albumId});

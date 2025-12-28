@@ -1,3 +1,4 @@
+// src/lib/replicate/index.ts
 import Replicate from "replicate";
 
 export const replicate = new Replicate({

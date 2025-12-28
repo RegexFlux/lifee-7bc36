@@ -15,7 +15,7 @@ import {
     creditPurchases,
     demoTrials,
     idempotencyKeys,
-    replicateGenerationJobs,
+    replicateGenerationJobs, creditPacks,
 } from "@/lib/db/schema";
 import {presignGetObject} from "@/lib/s3/presignGet";
 import {getClientIp, hashIp} from "@/lib/security/ip";
@@ -26,6 +26,7 @@ const localtunnel = require("localtunnel");
 
 import {match} from 'ts-pattern';
 import {getDemoModel, getKlingInput, getKlingModel, getWanInput} from "@/lib/replicate/index";
+import {CREDIT_PACK_TIERS} from "@/lib/shared/enums";
 
 const GEN_COST = 2;
 
@@ -38,13 +39,14 @@ const zCreate = z.object({
     albumItemId: z.string().uuid().optional(),
 });
 
-async function userIsPaid(userId: string) {
-    const paid = await db
-        .select({id: creditPurchases.id})
+async function userIsTier(userId: string): Promise<(typeof CREDIT_PACK_TIERS)[number] | 'demo'> {
+    const purchases = await db
+        .select({id: creditPurchases.id, tier: creditPacks.tier})
         .from(creditPurchases)
-        .where(and(eq(creditPurchases.userId, userId), eq(creditPurchases.status, "paid")))
-        .limit(1);
-    return Boolean(paid[0]);
+        .leftJoin(creditPacks, eq(creditPacks.id, creditPurchases.id))
+        .where(and(eq(creditPurchases.userId, userId), eq(creditPurchases.status, "paid")));
+    return purchases.some((purschase) => purschase.tier === 'creator') ?
+        'creator' : (purchases.some((purschase) => purschase.tier === 'standard') ? 'standard' : 'demo');
 }
 
 function coerceIdemKey(req: NextApiRequest) {
@@ -79,7 +81,8 @@ export default apiHandler({
             if (hit[0] && !hit[0].responseJson) return fail(res, 409, "Request in progress");
         }
 
-        const paid = await userIsPaid(viewer.user.id);
+        const userTier = await userIsTier(viewer.user.id);
+        const paid = userTier === 'standard' || userTier === 'creator';
 
         // Anti-abus demo IP / 30j
         if (!paid) {
