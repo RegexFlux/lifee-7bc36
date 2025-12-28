@@ -6,14 +6,14 @@ import {fetchJson} from "@/lib/http";
 import {GripVertical, Save, Loader2, Pencil} from "lucide-react";
 import {AssetEditModal} from "@/components/studio/organize/AssetEditModal";
 import {useT} from "@/lib/i18n/useT";
+import {AlbumItemDto} from "@/types/studioHelp";
 
 type AlbumResp = { album: { id: string; title: string; mode: "studio_help" | "studio_pro" } };
-type ItemsResp = { items: Array<{ id: string; albumId: string; assetId: string; position: number; asset: any }> };
 
 export function AlbumOrganizeScreen({albumId}: { albumId: string }) {
     const {t} = useT();
     const [album, setAlbum] = useState<AlbumResp["album"] | null>(null);
-    const [items, setItems] = useState<ItemsResp["items"]>([]);
+    const [items, setItems] = useState<AlbumItemDto[]>([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
@@ -25,7 +25,7 @@ export function AlbumOrganizeScreen({albumId}: { albumId: string }) {
         setLoading(true);
         try {
             const a = await fetchJson<AlbumResp>(`/api/albums/${encodeURIComponent(albumId)}`);
-            const it = await fetchJson<ItemsResp>(`/api/albums/${encodeURIComponent(albumId)}/items`);
+            const it = await fetchJson<{ items: AlbumItemDto[] }>(`/api/albums/${encodeURIComponent(albumId)}/items`);
             setAlbum(a.album);
             setItems(it.items);
         } finally {
@@ -118,7 +118,7 @@ export function AlbumOrganizeScreen({albumId}: { albumId: string }) {
 
                             <button
                                 data-tour="album-edit-item"
-                                onClick={() => setEditAssetId(it.assetId)}
+                                onClick={() => setEditAssetId(it.asset.id)}
                                 className="h-9 px-3 rounded-2xl border border-stone-200 bg-white hover:bg-stone-50 text-sm font-black inline-flex items-center gap-2"
                             >
                                 <Pencil size={16} className="text-rose-600"/>

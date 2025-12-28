@@ -6,10 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/asset/AssetThumb.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/asset/AssetThumb.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/help/organize/OrganizeAssetImportModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/help/organize/OrganizeAssetImportModal.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/studio/help/organize/OrganizeDndGrid.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/help/organize/OrganizeDndGrid.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/assets/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/api/assets/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/studio/albums/[id]/help/finalize.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/studio/albums/[id]/help/finalize.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/organize/AlbumOrganizeScreen.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/organize/AlbumOrganizeScreen.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/studio/welcome/WelcomeUploadCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/studio/welcome/WelcomeUploadCard.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,36 +34,36 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
-    "git-widget-placeholder": "refacto",
-    "js.debugger.nextJs.config.created.client": "true",
-    "js.debugger.nextJs.config.created.server": "true",
-    "jsx.switch.disabled": "true",
-    "last_opened_file_path": "/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/src/pages/api/share",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "npm.Next.js: server-side.executor": "Run",
-    "npm.worker:thumbs:watch.executor": "Debug",
-    "rearrange.code.on.save": "true",
-    "settings.editor.selected.configurable": "actions.on.save",
-    "ts.external.directory.path": "/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/node_modules/typescript/lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;refacto&quot;,
+    &quot;js.debugger.nextJs.config.created.client&quot;: &quot;true&quot;,
+    &quot;js.debugger.nextJs.config.created.server&quot;: &quot;true&quot;,
+    &quot;jsx.switch.disabled&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/src/pages/api/share&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;npm.Next.js: server-side.executor&quot;: &quot;Run&quot;,
+    &quot;npm.worker:thumbs:watch.executor&quot;: &quot;Debug&quot;,
+    &quot;rearrange.code.on.save&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;actions.on.save&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/thomas.tourrette/Documents/thomas.tourrette.demo/lifee/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "postgresql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/pages/api/share" />
@@ -130,7 +130,7 @@
       <workItem from="1766720088052" duration="81000" />
       <workItem from="1766720178142" duration="8745000" />
       <workItem from="1766729151093" duration="14040000" />
-      <workItem from="1766743582893" duration="31442000" />
+      <workItem from="1766743582893" duration="33489000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />

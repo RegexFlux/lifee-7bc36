@@ -21,6 +21,7 @@ import {toast} from "react-hot-toast";
 import {useAlbumExportLatest} from "@/hooks/useAlbumExportLatest";
 import OrganizeAssetImportModal from "@/components/studio/help/organize/OrganizeAssetImportModal";
 import {Asset} from "@/lib/db/types";
+import {uploadFilesToAssetsAndAttachToAlbum} from "@/components/studio/help/upload/uploadUtils";
 
 function monthLabelFR(month: number) {
     const d = new Date(Date.UTC(2024, Math.max(0, Math.min(11, month - 1)), 1));
@@ -51,6 +52,10 @@ async function patchAsset(assetId: string, body: PatchAssetBody) {
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(body),
     });
+}
+
+async function loadAlbumItems(albumId: string) {
+    return fetchJson<{ items: AlbumItemDto[] }>(`/api/albums/${encodeURIComponent(albumId)}/items`);
 }
 
 async function deleteAlbumItem(albumId: string, itemId: string) {
@@ -411,9 +416,10 @@ export function OrganizeDnDGrid(props: {
             const albumItems = await fetchJson<{
                 items: AlbumItemDto[]
             }>(`/api/albums/${encodeURIComponent(props.albumId)}/items`);
-            
+
             props.onChangeItems(albumItems.items);
             setImportAssetOpen(false)
+            toast.success("Fichiers chargés avec succès");
         } catch {
             toast.error(`Impossible d’importer certains assets`);
         }
@@ -426,6 +432,12 @@ export function OrganizeDnDGrid(props: {
                 onClose={() => setImportAssetOpen(false)}
                 onSave={importAssets}
                 alreadyImported={props.items.map((it) => it.asset.id)}
+                onUploadFiles={async (files) => {
+                    await uploadFilesToAssetsAndAttachToAlbum({albumId: props.albumId, files});
+                    const items = (await loadAlbumItems(props.albumId)).items;
+                    toast.success("Fichiers chargés avec succès");
+                    props.onChangeItems(items);
+                }}
             />
             <EditAssetSheet
                 open={editOpen}
