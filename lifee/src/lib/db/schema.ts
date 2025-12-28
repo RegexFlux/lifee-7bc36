@@ -300,6 +300,8 @@ export const replicateGenerationJobs = pgTable(
         month: integer("month").notNull(),
         year: integer("year").notNull(),
 
+        exportJobId: uuid("export_job_id").references(() => exportJobs.id, {onDelete: "set null"}),
+
         createdAt: timestamp("created_at", {withTimezone: true})
             .notNull()
             .defaultNow(),
@@ -310,6 +312,7 @@ export const replicateGenerationJobs = pgTable(
         createdByIdx: index("replicate_jobs_created_by_asset_idx").on(t.createdByAssetId),
         statusIdx: index("replicate_jobs_status_idx").on(t.status),
         createdIdx: index("replicate_jobs_created_idx").on(t.createdAt),
+        exportIdx: index("replicate_jobs_export_status_idx").on(t.exportJobId, t.status),
 
         // Si ReplicatePredictionId est un identifiant stable chez toi, tu peux activer l'unique :
         // predictionUidx: uniqueIndex("replicate_jobs_prediction_uidx").on(t.replicatePredictionId),
@@ -458,7 +461,41 @@ export const exportJobStatusEnum = pgEnum("export_job_status", [
     "rendering",
     "done",
     "error",
+    "waiting_generations"
 ]);
+
+// lib/db/schema.exports.ts (par ex)
+export const exportJobItems = pgTable(
+    "export_job_items",
+    {
+        id: uuid("id").primaryKey().defaultRandom(),
+
+        exportJobId: uuid("export_job_id")
+            .notNull()
+            .references(() => exportJobs.id, {onDelete: "cascade"}),
+
+        position: integer("position").notNull(),
+
+        albumItemId: uuid("album_item_id").references(() => albumItems.id, {onDelete: "set null"}),
+
+        sourceAssetId: uuid("source_asset_id")
+            .notNull()
+            .references(() => assets.id, {onDelete: "restrict"}),
+
+        resolvedAssetId: uuid("resolved_asset_id").references(() => assets.id, {onDelete: "set null"}),
+
+        type: text("type").notNull(), // "image" | "video"
+
+        createdAt: timestamp("created_at", {withTimezone: true}).notNull().defaultNow(),
+        updatedAt: timestamp("updated_at", {withTimezone: true}).notNull().defaultNow(),
+    },
+    (t) => ({
+        exportIdx: index("export_job_items_export_idx").on(t.exportJobId),
+        unresolvedIdx: index("export_job_items_unresolved_idx").on(t.exportJobId, t.resolvedAssetId),
+        exportPosUidx: uniqueIndex("export_job_items_export_pos_uidx").on(t.exportJobId, t.position),
+    })
+);
+
 
 export const exportJobs = pgTable(
     "export_jobs",

@@ -78,6 +78,10 @@ export default apiHandler({
         const job = (await db.select().from(replicateGenerationJobs).where(eq(replicateGenerationJobs.id, generationId)).limit(1))[0];
         if (!job) return ok(res, {status: "ok"});
 
+        if (job.status === "succeeded" && job.resultAssetId) {
+            return ok(res, {status: "ok"});
+        }
+
         if (TERMINAL.includes(job.status)) return ok(res, {status: "ok"});
 
         const nextStatus = coerceStatus(payload?.status) ?? job.status;
@@ -102,25 +106,40 @@ export default apiHandler({
 
         if (nextStatus !== "succeeded") return ok(res, {status: "ok"});
 
-        // succeeded => upload output + create asset video + replace album item
+// ✅ On arrive ici: Replicate dit "succeeded"
+// On ne marque PAS succeeded en DB tant que pas finalisé.
+
         const outUrl = pickOutputUrl(payload?.output);
         if (!outUrl) {
             await db.transaction(async (tx) => {
                 await tx.update(replicateGenerationJobs).set({
                     status: "failed",
-                    updatedAt: new Date()
+                    updatedAt: new Date(),
                 }).where(eq(replicateGenerationJobs.id, generationId));
                 await logReplicateJobEvent(tx, {
-                    generationId: generationId,
+                    generationId,
                     status: "error",
                     source: "replicate",
-                    message: "Missing output URL"
+                    message: "Missing output URL",
                 });
             });
             return ok(res, {status: "ok"});
         }
 
-        const source = (await db.select().from(assets).where(eq(assets.id, job.createdByAssetId)).limit(1))[0];
+// re-fetch job (au cas où)
+        const fresh = (await db.select().from(replicateGenerationJobs).where(eq(replicateGenerationJobs.id, generationId)).limit(1))[0];
+        if (!fresh) return ok(res, {status: "ok"});
+
+// Idempotence : déjà finalisé ?
+        if (fresh.status === "succeeded" && fresh.resultAssetId) {
+            return ok(res, {status: "ok"});
+        }
+
+// Optionnel (recommandé) : si tu ajoutes "finalizing" dans l'enum, tu peux verrouiller ici
+// await db.update(replicateGenerationJobs).set({ status: "finalizing" }).where(and(eq(...), inArray(status, ["starting","processing","queued"])))
+
+// Source asset
+        const source = (await db.select().from(assets).where(eq(assets.id, fresh.createdByAssetId)).limit(1))[0];
         if (!source) {
             await db.transaction(async (tx) => {
                 await tx.update(replicateGenerationJobs).set({
@@ -128,7 +147,7 @@ export default apiHandler({
                     updatedAt: new Date()
                 }).where(eq(replicateGenerationJobs.id, generationId));
                 await logReplicateJobEvent(tx, {
-                    generationId: generationId,
+                    generationId,
                     status: "error",
                     source: "server",
                     message: "Missing source asset"
@@ -137,10 +156,16 @@ export default apiHandler({
             return ok(res, {status: "ok"});
         }
 
+// Upload vidéo sur S3 (idempotent si key stable)
         const videoKey = `lifee/users/${source.userId}/assets/video/${generationId}.mp4`;
         await putRemoteUrlToS3({key: videoKey, url: outUrl, contentType: "video/mp4"});
 
+// Finalisation DB atomique
         await db.transaction(async (tx) => {
+            // Re-check: si un autre process a déjà écrit resultAssetId, on stop
+            const again = (await tx.select().from(replicateGenerationJobs).where(eq(replicateGenerationJobs.id, generationId)).limit(1))[0];
+            if (again?.status === "succeeded" && again.resultAssetId) return;
+
             const [videoAsset] = await tx.insert(assets).values({
                 userId: source.userId,
                 type: "video",
@@ -158,38 +183,39 @@ export default apiHandler({
             }).where(eq(replicateGenerationJobs.id, generationId));
 
             await logReplicateJobEvent(tx, {
-                generationId: generationId,
+                generationId,
                 status: "success",
                 source: "server",
                 message: `Video saved to S3 (assetId=${videoAsset.id})`,
             });
 
-            // ✅ remplacement ciblé (uniquement si l’item pointe encore l’image source)
-            if (job.albumItemId) {
-                const r = await tx
-                    .update(albumItems)
+            // Remplacement item uniquement si encore sur l'image source
+            if (again?.albumItemId) {
+                const r = await tx.update(albumItems)
                     .set({assetId: videoAsset.id})
-                    .where(and(eq(albumItems.id, job.albumItemId), eq(albumItems.assetId, source.id)))
+                    .where(and(eq(albumItems.id, again.albumItemId), eq(albumItems.assetId, source.id)))
                     .returning({id: albumItems.id});
 
-                if (r.length) {
-                    await logReplicateJobEvent(tx, {
-                        generationId: generationId,
-                        status: "info",
-                        source: "server",
-                        message: `Album item replaced (albumItemId=${job.albumItemId})`,
-                    });
-                } else {
-                    await logReplicateJobEvent(tx, {
-                        generationId: generationId,
-                        status: "warn",
-                        source: "server",
-                        message: `Album item not replaced (item changed meanwhile)`,
-                    });
-                }
+                await logReplicateJobEvent(tx, {
+                    generationId,
+                    status: r.length ? "info" : "warn",
+                    source: "server",
+                    message: r.length
+                        ? `Album item replaced (albumItemId=${again.albumItemId})`
+                        : `Album item not replaced (item changed meanwhile)`,
+                });
             }
         });
 
+// Après finalisation : si l'album est ready, release export(s)
+        if (fresh.albumItemId) {
+            const item = (await db.select({albumId: albumItems.albumId}).from(albumItems).where(eq(albumItems.id, fresh.albumItemId)).limit(1))[0];
+            if (item?.albumId) {
+                await tryReleaseExportsForAlbum({albumId: item.albumId});
+            }
+        }
+
         return ok(res, {status: "ok"});
+
     },
 });
