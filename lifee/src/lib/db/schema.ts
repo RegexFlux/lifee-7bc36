@@ -274,6 +274,9 @@ export const replicateGenerationJobs = pgTable(
             .notNull()
             .references(() => users.id, {onDelete: "cascade"}),
 
+        exportJobId: uuid("export_job_id"),
+            .references(() => exportJobs.id, {onDelete: "cascade"}),
+
         albumItemId: uuid("album_item_id")
             .references(() => albumItems.id, {onDelete: "cascade"}),
 
@@ -284,6 +287,11 @@ export const replicateGenerationJobs = pgTable(
         resultAssetId: uuid("result_asset_id").references(() => assets.id, {
             onDelete: "set null",
         }),
+
+        prompt: text("prompt"),
+        negativePrompt: text("negative_prompt"),
+        aspectRatio: text("aspect_ratio"),
+        duration: integer("duration"),
 
         model: text("model").notNull(),
 

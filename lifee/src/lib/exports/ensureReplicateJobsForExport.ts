@@ -79,7 +79,7 @@ export async function ensureReplicateJobsForExport(params: {
     // Déclencher Replicate maintenant (hors transaction DB)
     // Tu dois implémenter ce morceau avec ton client Replicate.
     for (const jobId of createdJobIds) {
-        await startReplicatePredictionForJob({generationId: jobId});
+        await startPredictionForJob({generationId: jobId});
     }
 
     return {
@@ -96,6 +96,6 @@ export async function ensureReplicateJobsForExport(params: {
  * - passer webhook URL = /api/webhooks/replicate?generationId=...
  * - update replicateGenerationJobs.replicatePredictionId + status="starting"
  */
-async function startReplicatePredictionForJob(_params: { generationId: string }) {
+async function startPredictionForJob(_params: { generationId: string }) {
     // TODO: intégrer ton code
 }

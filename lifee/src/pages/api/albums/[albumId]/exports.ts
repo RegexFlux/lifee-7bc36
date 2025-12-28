@@ -9,9 +9,9 @@ import {requireViewer} from "@/lib/auth/require";
 import {db} from "@/lib/db/index";
 import {albumItems, albums, assets, exportJobItems, exportJobs, replicateGenerationJobs} from "@/lib/db/schema";
 import {computeAlbumGenerationState} from "@/lib/exports/albumGenerationState";
-import {getDemoModel, getKlingModel} from "@/lib/replicate/index";
 import {enqueueExportJob} from "@/lib/aws/enqueueExportJob";
-import {startReplicatePredictionForJob} from "@/lib/replicate/startReplicatePredictionForJob";
+import {startPredictionForJob} from "@/lib/replicate/startPredictionForJob";
+import {getDemoVersionId, getKlingVersionId} from "@/lib/replicate/index";
 
 
 const ACTIVE_EXPORT = ["queued", "rendering", "waiting_generations"] as const;
@@ -107,7 +107,7 @@ export default apiHandler({
 
         if (!albumRows.length) return fail(res, 400, "Album has no items");
 
-        const model = isPro ? await getKlingModel() : await getDemoModel(); // tu as déjà ces helpers
+        const model = isPro ? await getKlingVersionId() : await getDemoVersionId(); // tu as déjà ces helpers
 
         const {exportJob, createdGenJobIds, statusAfter} = await db.transaction(async (tx) => {
             const [created] = await tx
@@ -184,7 +184,7 @@ export default apiHandler({
 
         // 3) Déclencher réellement Replicate (hors transaction DB)
         for (const genId of createdGenJobIds) {
-            await startReplicatePredictionForJob({generationId: genId, paid: isPro});
+            await startPredictionForJob({generationId: genId, paid: isPro});
         }
 
         // 4) Push worker si ready
