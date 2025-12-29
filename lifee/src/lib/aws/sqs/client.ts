@@ -8,7 +8,7 @@ function mustEnv(name: string) {
 
 // Si tu veux réutiliser exactement les mêmes creds que S3 (user IAM lifee-backend)
 export const sqsClient = new SQSClient({
-    region: mustEnv("SQS_REGION"),
+    region: mustEnv("S3_REGION"),
     credentials: {
         accessKeyId: mustEnv("S3_ACCESS_KEY_ID"),
         secretAccessKey: mustEnv("S3_SECRET_ACCESS_KEY"),
