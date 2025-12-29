@@ -100,6 +100,7 @@ export default function InteractiveDemo({onDownloadClick}: Props) {
                     onClose={resultModal.close}
                     onDownload={resultModal.download}
                     onGoToStudio={resultModal.goToStudio}
+                    shareUrl={demo.shareUrl}
                 />
             ) : null}
 

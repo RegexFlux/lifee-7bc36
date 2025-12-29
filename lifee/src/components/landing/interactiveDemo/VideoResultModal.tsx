@@ -9,6 +9,7 @@ import {useT} from "@/lib/i18n/useT";
 import {useViewer} from "@/lib/auth/useViewer";
 import {useAuthGate} from "@/hooks/useAuthGate";
 import {EmailSharePopover} from "@/components/EmailSharePopover";
+import {useRouter} from "next/router";
 
 export function VideoResultModal(props: Readonly<{
     generationId: string | null;
@@ -16,12 +17,15 @@ export function VideoResultModal(props: Readonly<{
     mounted: boolean;
     isMobile: boolean;
 
+    shareUrl?: string | null;
+
     videoUrl: string;
     onClose: () => void;
     onDownload: () => void;
     onGoToStudio: () => void;
 }>) {
     const {t} = useT();
+    const router = useRouter();
     const {isGuest, refresh} = useViewer();
     const {requireLinked} = useAuthGate();
 
@@ -80,10 +84,9 @@ export function VideoResultModal(props: Readonly<{
         }
     };
 
-    const exportNow = async () => {
-        const ok = await requireLinked("export");
-        if (!ok) return;
-        await props.onGoToStudio();
+    const goToSharePage = async () => {
+        if (!props.shareUrl) console.log('no route');
+        await router.push(props.shareUrl!);
     };
 
     return (
@@ -204,7 +207,7 @@ export function VideoResultModal(props: Readonly<{
                                             </button>
 
                                             <button
-                                                onClick={exportNow}
+                                                onClick={goToSharePage}
                                                 className="px-4 py-3 rounded-2xl border border-rose-200 bg-rose-50 text-rose-900 text-sm font-black hover:bg-rose-100 flex items-center justify-center gap-2"
                                             >
                                                 <ExternalLink size={18}/>
