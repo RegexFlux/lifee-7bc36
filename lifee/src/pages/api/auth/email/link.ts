@@ -1,5 +1,4 @@
 // pages/api/auth/email/link.ts
-import "server-only";
 
 
 import crypto from "crypto";

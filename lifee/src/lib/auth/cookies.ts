@@ -1,5 +1,5 @@
 // src/lib/auth/cookies.ts
-import "server-only";
+
 
 import type {NextApiRequest, NextApiResponse} from "next";
 import {serialize, parse} from "cookie";
