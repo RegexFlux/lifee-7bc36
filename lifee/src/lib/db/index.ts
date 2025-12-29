@@ -1,4 +1,3 @@
-// lib/db/index.ts
 import postgres from "postgres";
 import {drizzle} from "drizzle-orm/postgres-js";
 import * as schema from "./schema";
@@ -8,15 +7,20 @@ declare global {
     var __lifeeSql: postgres.Sql | undefined;
 }
 
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) throw new Error("Missing DATABASE_URL");
+
+const isProd = process.env.NODE_ENV === "production";
+
 const sql =
     global.__lifeeSql ??
-    postgres(process.env.DATABASE_URL as string, {
-        max: 5,
-        // ssl: "require", // si besoin selon ton provider
+    postgres(DATABASE_URL, {
+        max: isProd ? 2 : 5,                 // ✅ Lambda: limite
+        idle_timeout: 20,                    // ✅ évite connexions zombie
+        connect_timeout: 10,
+        ssl: isProd ? "require" : undefined, // ✅ Supabase
     });
 
-if (process.env.NODE_ENV !== "production") global.__lifeeSql = sql;
+if (!isProd) global.__lifeeSql = sql;
 
-const mergedSchema = {...schema};
-
-export const db = drizzle(sql, {schema: mergedSchema});
+export const db = drizzle(sql, {schema: {...schema}});

@@ -4,8 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile.worker
     environment:
-      AWS_REGION: ${AWS_REGION}
-      EXPORT_QUEUE_URL: ${EXPORT_QUEUE_URL}
+      LIFEE_AWS_REGIONS: ${LIFEE_AWS_REGIONS}
+      LIFEE_EXPORT_QUEUE_URL: ${LIFEE_EXPORT_QUEUE_URL}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}

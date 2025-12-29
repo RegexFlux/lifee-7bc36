@@ -20,6 +20,7 @@ import {presignGetObject} from "@/lib/s3/presignGet";
 import {S3_BUCKET_NAME, s3Client} from "@/lib/s3/client";
 import {Upload} from "@aws-sdk/lib-storage";
 import {createReadStream} from "node:fs";
+import {getS3SizeBytes} from "@/lib/s3/getS3SizeBytes";
 
 const WIDTH = 1080;
 const HEIGHT = 1920;
@@ -57,6 +58,37 @@ export async function renderAlbumExport(params: { exportJobId: string }) {
         .orderBy(asc(exportJobItems.position));
 
     if (!items.length) throw new Error("Album has no items");
+
+    const MAX_ITEMS = 120;
+    const MAX_TOTAL_INPUT_BYTES = 1_200_000_000; // ~1.2GB
+
+    if (items.length > MAX_ITEMS) {
+        await db.update(exportJobs).set({
+            status: "error",
+            errorMessage: `Too many items (max ${MAX_ITEMS})`,
+            updatedAt: new Date(),
+        }).where(eq(exportJobs.id, job.id));
+        throw new Error(`Too many items (max ${MAX_ITEMS})`);
+    }
+
+// Taille totale des inputs S3 (rapide, sans download)
+    let totalBytes = 0;
+    for (const it of items) {
+        totalBytes += await getS3SizeBytes(it.fileKey);
+        // Early break
+        if (totalBytes > MAX_TOTAL_INPUT_BYTES) break;
+    }
+
+    if (totalBytes > MAX_TOTAL_INPUT_BYTES) {
+        const msg = `Export too large: ${(totalBytes / 1e6).toFixed(0)}MB inputs (max ${(MAX_TOTAL_INPUT_BYTES / 1e6).toFixed(0)}MB).`;
+        await db.update(exportJobs).set({
+            status: "error",
+            errorMessage: msg,
+            updatedAt: new Date(),
+        }).where(eq(exportJobs.id, job.id));
+        throw new Error(msg);
+    }
+
 
     await db.update(exportJobs).set({progress: 10, updatedAt: new Date()}).where(eq(exportJobs.id, job.id));
     const exportKeyBase = `lifee/users/${job.userId}/exports/${job.id}`;

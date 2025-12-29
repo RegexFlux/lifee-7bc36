@@ -1,9 +1,17 @@
 // File: src/lib/exports/ffmpeg.ts
 import {spawn} from "child_process";
+import path from "path";
+
+function resolveBin(cmd: string) {
+    // Layer classique: /opt/bin/ffmpeg
+    const opt = path.join("/opt/bin", cmd);
+    return process.env.AWS_EXECUTION_ENV ? opt : cmd; // en Lambda => /opt/bin
+}
 
 export function runCmd(cmd: string, args: string[], opts?: { cwd?: string }) {
     return new Promise<{ code: number; stdout: string; stderr: string }>((resolve, reject) => {
-        const p = spawn(cmd, args, {stdio: ["ignore", "pipe", "pipe"], cwd: opts?.cwd});
+        const bin = resolveBin(cmd);
+        const p = spawn(bin, args, {stdio: ["ignore", "pipe", "pipe"], cwd: opts?.cwd});
         let stdout = "";
         let stderr = "";
         p.stdout.on("data", (d) => (stdout += d.toString()));

@@ -9,11 +9,11 @@ import {db} from "@/lib/db/index";
 import {exportJobs} from "@/lib/db/schema";
 import {renderAlbumExport} from "@/lib/exports/renderAlbumExport";
 
-const region = process.env.AWS_REGION;
-const queueUrl = process.env.EXPORT_QUEUE_URL;
+const region = process.env.LIFEE_AWS_REGIONS;
+const queueUrl = process.env.LIFEE_EXPORT_QUEUE_URL;
 
-if (!region) throw new Error("Missing AWS_REGION");
-if (!queueUrl) throw new Error("Missing EXPORT_QUEUE_URL");
+if (!region) throw new Error("Missing LIFEE_AWS_REGIONS");
+if (!queueUrl) throw new Error("Missing LIFEE_EXPORT_QUEUE_URL");
 
 const sqs = new SQSClient({region});
 

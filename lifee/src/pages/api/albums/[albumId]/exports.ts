@@ -17,6 +17,9 @@ import {getDemoVersionId, getKlingVersionId} from "@/lib/replicate/index";
 const ACTIVE_EXPORT = ["queued", "rendering", "waiting_generations"] as const;
 const ACTIVE_REPL = ["queued", "starting", "processing"] as const;
 
+const MAX_ITEMS = 120;
+const MAX_ESTIMATED_DURATION_SEC = 9 * 60; // 9 minutes, marge lambda 15m
+
 const zQuery = z.object({
     limit: z.coerce.number().int().min(1).max(20).default(5),
 });
@@ -107,6 +110,25 @@ export default apiHandler({
             .orderBy(asc(albumItems.position));
 
         if (!albumRows.length) return fail(res, 400, "Album has no items");
+
+        if (albumRows.length > MAX_ITEMS) {
+            return fail(res, 413, `Album too large (max ${MAX_ITEMS} items).`);
+        }
+
+        const IMAGE_SEC = 2.5;
+        const DEFAULT_VIDEO_SEC = 5;
+        const TRANSITION_SEC = 0.35;
+
+        let estimated = 0;
+        for (const r of albumRows) {
+            estimated += (r.type === "image") ? IMAGE_SEC : DEFAULT_VIDEO_SEC;
+        }
+// transitions font un overlap (xfade) => durée finale approx = sum - t*(n-1)
+        estimated = Math.max(0, estimated - TRANSITION_SEC * Math.max(0, albumRows.length - 1));
+
+        if (estimated > MAX_ESTIMATED_DURATION_SEC) {
+            return fail(res, 413, `Export too long (~${Math.round(estimated)}s). Reduce items or duration.`);
+        }
 
         const model = isPro ? await getKlingVersionId() : await getDemoVersionId(); // tu as déjà ces helpers
 
