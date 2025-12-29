@@ -303,6 +303,8 @@ export const replicateGenerationJobs = pgTable(
         replicateStatus: text("replicate_status"),
         replicateLog: text("replicate_log"),
 
+        replicateCheckedAt: timestamp("replicate_checked_at", {withTimezone: true}),
+
         // si tu veux filtrer / grouper par "souvenir"
         month: integer("month").notNull(),
         year: integer("year").notNull(),

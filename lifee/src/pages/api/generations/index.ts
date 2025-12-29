@@ -48,6 +48,7 @@ const zCreate = z.object({
 function webhookBase() {
     const base = process.env.PUBLIC_APP_URL;
     if (!base) throw new Error("Missing PUBLIC_APP_URL");
+    console.log('webhook base url', base)
     return base.replace(/\/$/, "");
 }
 

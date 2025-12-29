@@ -9,6 +9,7 @@ import {db} from "@/lib/db";
 import {assets, replicateGenerationJobEvents, replicateGenerationJobs} from "@/lib/db/schema";
 import {presignGetObject} from "@/lib/s3/presignGet";
 import {z} from 'zod';
+import {syncReplicatePredictionIfNeeded} from "@/lib/replicate/syncPrediction";
 
 export default apiHandler({
     GET: async (req: NextApiRequest, res: NextApiResponse) => {
@@ -22,6 +23,24 @@ export default apiHandler({
             .safeParse(req.query);
         if (!q.success) return fail(res, 400, "Invalid query", q.error.flatten());
 
+        const checkJob = (
+            await db
+                .select()
+                .from(replicateGenerationJobs)
+                .where(and(eq(replicateGenerationJobs.id, id), eq(replicateGenerationJobs.userId, viewer.user.id)))
+                .limit(1)
+        )[0];
+
+        if (!checkJob) return fail(res, 404, "Not found");
+
+
+// Fallback sync (throttlé)
+        await syncReplicatePredictionIfNeeded({
+            generationId: id,
+            userId: viewer.user.id,
+        });
+
+// Re-fetch job après sync (optionnel mais conseillé)
         const job = (
             await db
                 .select()
@@ -30,7 +49,6 @@ export default apiHandler({
                 .limit(1)
         )[0];
 
-        if (!job) return fail(res, 404, "Not found");
 
         const expiresInSec = 60 * 15;
 

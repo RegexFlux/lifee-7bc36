@@ -1,0 +1,1 @@
+ALTER TYPE "public"."job_event_level" ADD VALUE 'success';

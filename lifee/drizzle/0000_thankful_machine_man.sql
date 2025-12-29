@@ -7,7 +7,7 @@ CREATE TYPE "public"."credit_event_type" AS ENUM('purchase', 'spend', 'refund', 
 CREATE TYPE "public"."credit_pack_tier" AS ENUM('standard', 'creator');--> statement-breakpoint
 CREATE TYPE "public"."credit_purchase_status" AS ENUM('created', 'paid', 'failed', 'refunded');--> statement-breakpoint
 CREATE TYPE "public"."export_job_status" AS ENUM('queued', 'canceled', 'rendering', 'done', 'error', 'waiting_generations');--> statement-breakpoint
-CREATE TYPE "public"."job_event_level" AS ENUM('info', 'warn', 'error');--> statement-breakpoint
+CREATE TYPE "public"."job_event_level" AS ENUM('info', 'warn', 'error', 'success');--> statement-breakpoint
 CREATE TYPE "public"."job_event_source" AS ENUM('server', 'replicate');--> statement-breakpoint
 CREATE TYPE "public"."replicate_job_status" AS ENUM('uploading', 'queued', 'starting', 'processing', 'succeeded', 'finalizing', 'failed', 'canceled');--> statement-breakpoint
 CREATE TYPE "public"."user_type" AS ENUM('guest', 'normal');--> statement-breakpoint
