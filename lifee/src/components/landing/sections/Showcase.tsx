@@ -183,7 +183,7 @@ export default function ShowCase() {
                         <div
                             className={["relative w-72 h-96 rounded-2xl bg-black shadow-2xl shadow-rose-200/40 border-[6px] border-white overflow-hidden",
                                 "transition-transform duration-500 will-change-transform group-hover:scale-[1.03] cursor-pointer"].join(" ")}>
-                            <VideoPlayer videoUrl={"http://localhost:3000/examples/showcase/result.mp4"}/>
+                            <VideoPlayer videoUrl={"/examples/showcase/result.mp4"}/>
 
                             <div
                                 className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10"/>

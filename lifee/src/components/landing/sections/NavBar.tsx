@@ -8,7 +8,7 @@ type NavBarProps = {
 export default function NavBar({onLoginClick}: NavBarProps) {
     return (
         <nav className="relative px-6 py-6 max-w-7xl mx-auto flex justify-between items-center z-10">
-            <a className="flex items-center gap-3" href="http://localhost:3000">
+            <a className="flex items-center gap-3" href="/">
                 <div
                     className="w-10 h-10 bg-gradient-to-br from-amber-400 to-rose-400 rounded-lg flex items-center justify-center text-white shadow-lg shadow-rose-200">
                     <Heart size={20} fill="currentColor"/>
