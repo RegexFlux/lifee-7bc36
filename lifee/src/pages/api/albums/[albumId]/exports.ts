@@ -12,6 +12,7 @@ import {computeAlbumGenerationState} from "@/lib/exports/albumGenerationState";
 import {enqueueExportJob} from "@/lib/aws/enqueueExportJob";
 import {startPredictionForJob} from "@/lib/replicate/startPredictionForJob";
 import {getDemoVersionId, getKlingVersionId} from "@/lib/replicate/index";
+import {STSClient, GetCallerIdentityCommand} from "@aws-sdk/client-sts";
 
 
 const ACTIVE_EXPORT = ["queued", "rendering", "waiting_generations"] as const;
@@ -61,6 +62,11 @@ export default apiHandler({
     },
 
     POST: async (req: NextApiRequest, res: NextApiResponse) => {
+
+        const sts = new STSClient({region: "eu-north-1"});
+        console.log("caller", await sts.send(new GetCallerIdentityCommand({})));
+
+
         const viewer = await requireViewer(req, res);
         const albumId = getAlbumId(req);
         if (!albumId) return fail(res, 400, "Missing album id");
