@@ -9,7 +9,8 @@ declare global {
 
 const DATABASE_URL = process.env.DATABASE_URL;
 if (!DATABASE_URL) throw new Error("Missing DATABASE_URL");
-console.log("DB host:", DATABASE_URL);
+const u = new URL(DATABASE_URL);
+console.log("[DB] host:", u.hostname, "port:", u.port);
 
 
 const isProd = process.env.NODE_ENV === "production";

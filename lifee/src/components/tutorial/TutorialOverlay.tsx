@@ -313,6 +313,11 @@ export function TutorialOverlay({
     const [mode, setMode] = useState<Mode>(defaultMode);
     const [i, setI] = useState(0);
 
+    const openScrollRef = useRef<{ x: number; y: number } | null>(null);
+    const openFocusRef = useRef<Element | null>(null);
+    const openedOnceRef = useRef(false);
+
+
     const [uiSettling, setUiSettling] = useState(false);
     const settleTokenRef = useRef(0);
 
@@ -396,6 +401,19 @@ export function TutorialOverlay({
     }, [targets.union, targets.rects.length, anchorRect, multi]);
 
     const [pendingAutoOpen, setPendingAutoOpen] = useState(false);
+
+    useEffect(() => {
+        if (!open) {
+            openedOnceRef.current = false;
+            return;
+        }
+        if (openedOnceRef.current) return;
+        openedOnceRef.current = true;
+
+        openScrollRef.current = {x: window.scrollX, y: window.scrollY};
+        openFocusRef.current = document.activeElement;
+    }, [open]);
+
 
     useEffect(() => {
         setMounted(true);
@@ -522,7 +540,13 @@ export function TutorialOverlay({
 
         try {
             // if (!step?.avoidScrolling) {
-            el.scrollIntoView({block: "center", inline: "center", behavior: reduced ? "auto" : "smooth"});
+            const isLast = i === steps.length - 1;
+            el.scrollIntoView({
+                block: "center",
+                inline: "center",
+                behavior: reduced || isLast ? "auto" : "smooth",
+            });
+
             // }
         } catch {
             // ignore
@@ -557,12 +581,31 @@ export function TutorialOverlay({
 
     const closeTour = () => {
         setOpen(false);
+
         try {
             localStorage.setItem(storageKey, "1");
         } catch {
         }
+
+        // (Optionnel) remettre ton UI dans un état neutre
+        // ex: fermer sidebar, etc. -> à toi d’implémenter dans le parent
+        try {
+            onIndexChange?.(-1);
+        } catch {
+        }
+
+        // Restore scroll + focus au prochain frame (évite les jumps)
+        const snap = openScrollRef.current;
+        const focusEl = openFocusRef.current;
+
+        requestAnimationFrame(() => {
+            if (snap) window.scrollTo({left: snap.x, top: snap.y, behavior: "auto"});
+            if (focusEl instanceof HTMLElement) focusEl.focus?.();
+        });
+
         onClose?.();
     };
+
 
     const prev = () => requestStep(i - 1, 0);
     const next = () => requestStep(i + 1, 0);
