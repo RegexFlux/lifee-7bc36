@@ -6,8 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="39c0a09a-484a-4867-b241-c27f5edf1b3f" name="Changes" comment="add">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/sections/NavBar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/sections/NavBar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/landing/sections/Showcase.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing/sections/Showcase.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -129,7 +127,7 @@
       <workItem from="1766720178142" duration="8745000" />
       <workItem from="1766729151093" duration="14040000" />
       <workItem from="1766743582893" duration="33489000" />
-      <workItem from="1766931934077" duration="13166000" />
+      <workItem from="1766931934077" duration="13775000" />
     </task>
     <task id="LOCAL-00001" summary="add">
       <option name="closed" value="true" />
