@@ -14,3 +14,16 @@ export const sqsClient = new SQSClient({
         secretAccessKey: mustEnv("S3_SECRET_ACCESS_KEY"),
     },
 });
+
+
+import {STSClient, GetCallerIdentityCommand} from "@aws-sdk/client-sts";
+
+const sts = new STSClient({
+    region: process.env.S3_REGION,
+    credentials: {
+        accessKeyId: process.env.S3_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
+    },
+});
+
+console.log("caller-explicit", await sts.send(new GetCallerIdentityCommand({})));
