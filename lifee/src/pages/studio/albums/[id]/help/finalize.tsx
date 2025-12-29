@@ -87,7 +87,8 @@ export default function HelpFinalizePage({albumId}: InferGetServerSidePropsType<
         setBusyExport(true);
         try {
             // 1) create export job
-            const created = await fetchJson<ExportCreateResp>("/api/exports", {
+            // const created = await fetchJson<ExportCreateResp>("/api/exports", {
+            const created = await fetchJson<ExportCreateResp>(`/api/albums/${encodeURIComponent(albumId)}/exports`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({albumId}),
