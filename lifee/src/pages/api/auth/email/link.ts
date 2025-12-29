@@ -31,9 +31,7 @@ function codeHash(code: string) {
 
 // TODO: branche ton provider email
 async function sendMergeCodeEmail(email: string, code: string) {
-    if (process.env.APP_ENV !== "production") {
-        console.log("[Lifee] merge code for", email, "=>", code);
-    }
+    console.log("[Lifee] merge code for", email, "=>", code);
 }
 
 export default apiHandler({

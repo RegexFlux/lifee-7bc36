@@ -6,11 +6,10 @@ import {serialize, parse} from "cookie";
 import {LIFEe_SESSION_COOKIE, LIFEe_DEMO_COOKIE, SESSION_TTL_DAYS} from "./constants";
 
 function cookieBaseOptions() {
-    const isProd = process.env.APP_ENV === "production";
     const domain = process.env.COOKIE_DOMAIN || undefined;
     return {
         httpOnly: true,
-        secure: isProd,
+        secure: true,
         sameSite: "lax" as const,
         path: "/",
         domain,

@@ -31,9 +31,7 @@ function codeHash(code: string) {
 
 // TODO provider email
 async function sendCodeEmail(email: string, purpose: string, code: string) {
-    if (process.env.APP_ENV !== "production") {
-        console.log("[Lifee] code", purpose, "for", email, "=>", code);
-    }
+    console.log("[Lifee] code", purpose, "for", email, "=>", code);
 }
 
 export default apiHandler({
