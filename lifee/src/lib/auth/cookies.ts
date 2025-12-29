@@ -1,4 +1,6 @@
 // src/lib/auth/cookies.ts
+import "server-only";
+
 import type {NextApiRequest, NextApiResponse} from "next";
 import {serialize, parse} from "cookie";
 import {LIFEe_SESSION_COOKIE, LIFEe_DEMO_COOKIE, SESSION_TTL_DAYS} from "./constants";

@@ -1,4 +1,7 @@
 // pages/api/auth/email/link.ts
+import "server-only";
+
+
 import crypto from "crypto";
 import type {NextApiRequest, NextApiResponse} from "next";
 import {z} from "zod";

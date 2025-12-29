@@ -1,4 +1,6 @@
 // pages/api/auth/code/request.ts
+import "server-only";
+
 import type {NextApiRequest, NextApiResponse} from "next";
 import {z} from "zod";
 import {and, desc, eq, gt} from "drizzle-orm";
