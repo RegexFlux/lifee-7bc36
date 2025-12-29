@@ -8,6 +8,7 @@ import {requireViewer} from "@/lib/auth/require";
 import {db} from "@/lib/db";
 import {albumItems, albums, assets} from "@/lib/db/schema";
 import {presignGetObject} from "@/lib/s3/presignGet";
+import {getSignExpires} from "@/lib/s3/client";
 
 const zAdd = z.object({
     assetIds: z.array(z.string().uuid()).min(1).max(50),
@@ -55,7 +56,7 @@ export default apiHandler({
             .orderBy(asc(albumItems.position))
             .limit(500);
 
-        const expiresIn = Number(process.env.S3_SIGN_EXPIRES); // seconds
+        const expiresIn = getSignExpires();
         const items = await Promise.all(
             rows.map(async (r) => {
                 const thumbKey = r.thumbnailKey ?? r.fileKey;
