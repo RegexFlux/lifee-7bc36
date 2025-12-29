@@ -9,6 +9,7 @@ const sqs = new SQSClient({region});
 export async function enqueueExportJob(exportJobId: string) {
     const queueUrl = process.env.LIFEE_EXPORT_QUEUE_URL;
     if (!queueUrl) throw new Error("Missing LIFEE_EXPORT_QUEUE_URL");
+    console.log('sending', exportJobId);
 
     await sqs.send(
         new SendMessageCommand({
