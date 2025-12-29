@@ -1,5 +1,5 @@
 import {PutObjectCommand} from "@aws-sdk/client-s3";
-import {S3_BUCKET_NAME, s3Client} from "@/lib/s3/client";
+import {S3_BUCKET_NAME, s3Client} from "@/lib/aws/s3/client";
 
 export async function putObject(params: { key: string; body: Buffer; contentType: string }) {
     await s3Client.send(

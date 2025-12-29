@@ -7,7 +7,7 @@ import {ok, fail} from "@/lib/api/response";
 import {requireViewer} from "@/lib/auth/require";
 import {db} from "@/lib/db";
 import {assets, replicateGenerationJobEvents, replicateGenerationJobs} from "@/lib/db/schema";
-import {presignGetObject} from "@/lib/s3/presignGet";
+import {presignGetObject} from "@/lib/aws/s3/presignGet";
 import {z} from 'zod';
 import {syncReplicatePredictionIfNeeded} from "@/lib/replicate/syncPrediction";
 

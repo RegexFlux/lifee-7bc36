@@ -6,7 +6,7 @@ import {apiHandler} from "@/lib/api/handler";
 import {fail} from "@/lib/api/response";
 import {db} from "@/lib/db";
 import {generationShares, replicateGenerationJobs, assets} from "@/lib/db/schema";
-import {presignGetObject} from "@/lib/s3/presignGet";
+import {presignGetObject} from "@/lib/aws/s3/presignGet";
 
 export default apiHandler({
     GET: async (req: NextApiRequest, res: NextApiResponse) => {

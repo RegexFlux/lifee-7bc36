@@ -12,7 +12,7 @@ import {
     idempotencyKeys,
     replicateGenerationJobs,
 } from "@/lib/db/schema";
-import {presignGetObject} from "@/lib/s3/presignGet";
+import {presignGetObject} from "@/lib/aws/s3/presignGet";
 import {resolveReplicateVersion} from "@/lib/replicate/resolveVersion";
 import {logReplicateJobEvent} from "@/lib/replicate/jobEvents";
 import type {ReplicateJobStatus} from "@/lib/db/types";

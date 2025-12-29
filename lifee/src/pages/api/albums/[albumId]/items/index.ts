@@ -7,8 +7,8 @@ import {ok, fail} from "@/lib/api/response";
 import {requireViewer} from "@/lib/auth/require";
 import {db} from "@/lib/db";
 import {albumItems, albums, assets} from "@/lib/db/schema";
-import {presignGetObject} from "@/lib/s3/presignGet";
-import {getSignExpires} from "@/lib/s3/client";
+import {presignGetObject} from "@/lib/aws/s3/presignGet";
+import {getSignExpires} from "@/lib/aws/s3/client";
 
 const zAdd = z.object({
     assetIds: z.array(z.string().uuid()).min(1).max(50),

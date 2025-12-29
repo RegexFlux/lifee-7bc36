@@ -1,9 +1,6 @@
 // src/lib/aws/enqueueExportJob.ts
-import {SQSClient, SendMessageCommand} from "@aws-sdk/client-sqs";
-
-const region = process.env.LIFEE_AWS_REGIONS;
-if (!region) throw new Error("Missing LIFEE_AWS_REGIONS");
-const sqs = new SQSClient({region});
+import {SendMessageCommand} from "@aws-sdk/client-sqs";
+import {sqsClient} from "@/lib/aws/sqs/client";
 
 
 export async function enqueueExportJob(exportJobId: string) {
@@ -11,7 +8,7 @@ export async function enqueueExportJob(exportJobId: string) {
     if (!queueUrl) throw new Error("Missing LIFEE_EXPORT_QUEUE_URL");
     console.log('sending', exportJobId);
 
-    await sqs.send(
+    await sqsClient.send(
         new SendMessageCommand({
             QueueUrl: queueUrl,
             MessageBody: JSON.stringify({exportJobId}),

@@ -7,7 +7,7 @@ import {PutObjectCommand} from "@aws-sdk/client-s3";
 
 import {db} from "@/lib/db";
 import {albums, albumItems, assets, exportJobs, musics, exportJobItems} from "@/lib/db/schema";
-import {copyS3Object} from "@/lib/s3/copyObject";
+import {copyS3Object} from "@/lib/aws/copyObject";
 import {downloadToFile} from "@/lib/exports/downloadToFile";
 import {
     ffmpegNormalizeClip,
@@ -16,11 +16,11 @@ import {
     ffprobeDurationSec,
     ffmpegConcatWithTransitions,
 } from "@/lib/exports/ffmpeg";
-import {presignGetObject} from "@/lib/s3/presignGet";
-import {S3_BUCKET_NAME, s3Client} from "@/lib/s3/client";
+import {presignGetObject} from "@/lib/aws/s3/presignGet";
+import {S3_BUCKET_NAME, s3Client} from "@/lib/aws/s3/client";
 import {Upload} from "@aws-sdk/lib-storage";
 import {createReadStream} from "node:fs";
-import {getS3SizeBytes} from "@/lib/s3/getS3SizeBytes";
+import {getS3SizeBytes} from "@/lib/aws/s3/getS3SizeBytes";
 
 const WIDTH = 1080;
 const HEIGHT = 1920;

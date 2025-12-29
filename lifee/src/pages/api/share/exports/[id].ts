@@ -6,7 +6,7 @@ import {apiHandler} from "@/lib/api/handler";
 import {ok, fail} from "@/lib/api/response";
 import {db} from "@/lib/db";
 import {exportJobs, exportShares, albums, users, albumItems, assets} from "@/lib/db/schema";
-import {presignGetObject} from "@/lib/s3/presignGet";
+import {presignGetObject} from "@/lib/aws/s3/presignGet";
 import albumId from "@/pages/api/albums/[albumId]";
 import {AlbumDto, AlbumItemDto} from "@/types/studioHelp";
 import {AlbumItem} from "@/lib/db/types";

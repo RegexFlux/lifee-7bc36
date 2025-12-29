@@ -2,7 +2,7 @@
 import {eq} from "drizzle-orm";
 import {db} from "@/lib/db";
 import {assets, replicateGenerationJobs} from "@/lib/db/schema";
-import {presignGetObject} from "@/lib/s3/presignGet";
+import {presignGetObject} from "@/lib/aws/s3/presignGet";
 import {logReplicateJobEvent} from "@/lib/replicate/jobEvents";
 import {
     buildBestPrompt,

@@ -63,7 +63,7 @@ export default apiHandler({
 
     POST: async (req: NextApiRequest, res: NextApiResponse) => {
 
-        const sts = new STSClient({region: "eu-north-1"});
+        const sts = new STSClient({region: process.env.LIFEE_AWS_REGIONS});
         console.log("caller", await sts.send(new GetCallerIdentityCommand({})));
 
 

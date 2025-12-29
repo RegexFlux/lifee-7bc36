@@ -7,7 +7,7 @@ import {apiHandler} from "@/lib/api/handler";
 import {ok, fail} from "@/lib/api/response";
 import {db} from "@/lib/db/index";
 import {assets, generationShares, replicateGenerationJobs} from "@/lib/db/schema";
-import {presignGetObject} from "@/lib/s3/presignGet";
+import {presignGetObject} from "@/lib/aws/s3/presignGet";
 
 /**
  * i18n: on ne renvoie PLUS de strings FR "hardcodées".

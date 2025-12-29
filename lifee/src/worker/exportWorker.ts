@@ -1,7 +1,6 @@
 // src/worker/exportWorker.ts
 
 import {
-    SQSClient,
     ReceiveMessageCommand,
     DeleteMessageCommand,
     ChangeMessageVisibilityCommand
@@ -17,7 +16,7 @@ const queueUrl = process.env.LIFEE_EXPORT_QUEUE_URL;
 if (!region) throw new Error("Missing LIFEE_AWS_REGIONS");
 if (!queueUrl) throw new Error("Missing LIFEE_EXPORT_QUEUE_URL");
 
-const sqs = new SQSClient({region});
+import {sqsClient} from "@/lib/aws/sqs/client";
 
 const CONCURRENCY = Number(process.env.WORKER_CONCURRENCY ?? "1");
 const HEARTBEAT_SEC = Number(process.env.EXPORT_VISIBILITY_HEARTBEAT_SEC ?? "30");
@@ -53,7 +52,7 @@ async function processOneMessage(msg: { Body?: string; ReceiptHandle?: string })
     const exportJobId = (body.exportJobId as string | undefined)?.trim();
     if (!exportJobId) {
         // message invalide => on delete pour ne pas boucler
-        await sqs.send(new DeleteMessageCommand({QueueUrl: queueUrl!, ReceiptHandle: receipt}));
+        await sqsClient.send(new DeleteMessageCommand({QueueUrl: queueUrl!, ReceiptHandle: receipt}));
         return;
     }
 
@@ -61,7 +60,7 @@ async function processOneMessage(msg: { Body?: string; ReceiptHandle?: string })
     let hb: NodeJS.Timeout | null = null;
     hb = setInterval(async () => {
         try {
-            await sqs.send(new ChangeMessageVisibilityCommand({
+            await sqsClient.send(new ChangeMessageVisibilityCommand({
                 QueueUrl: queueUrl!,
                 ReceiptHandle: receipt,
                 VisibilityTimeout: Math.max(60, HEARTBEAT_SEC * 3),
@@ -74,14 +73,14 @@ async function processOneMessage(msg: { Body?: string; ReceiptHandle?: string })
         const claimed = await claimJob(exportJobId);
         if (!claimed) {
             // pas queued (déjà pris / done / error) => delete le message
-            await sqs.send(new DeleteMessageCommand({QueueUrl: queueUrl!, ReceiptHandle: receipt}));
+            await sqsClient.send(new DeleteMessageCommand({QueueUrl: queueUrl!, ReceiptHandle: receipt}));
             return;
         }
 
         await renderAlbumExport({exportJobId: claimed});
 
         // succès => delete message
-        await sqs.send(new DeleteMessageCommand({QueueUrl: queueUrl!, ReceiptHandle: receipt}));
+        await sqsClient.send(new DeleteMessageCommand({QueueUrl: queueUrl!, ReceiptHandle: receipt}));
     } catch (e: any) {
         await markError(exportJobId, e);
         // on NE delete PAS : SQS retry puis DLQ
@@ -93,7 +92,7 @@ async function processOneMessage(msg: { Body?: string; ReceiptHandle?: string })
 
 async function loop() {
     while (true) {
-        const r = await sqs.send(new ReceiveMessageCommand({
+        const r = await sqsClient.send(new ReceiveMessageCommand({
             QueueUrl: queueUrl!,
             MaxNumberOfMessages: Math.min(10, CONCURRENCY),
             WaitTimeSeconds: 20, // long polling

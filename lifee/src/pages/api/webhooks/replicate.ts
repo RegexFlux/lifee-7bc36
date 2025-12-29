@@ -7,7 +7,7 @@ import {apiHandler} from "@/lib/api/handler";
 import {ok, fail} from "@/lib/api/response";
 import {db} from "@/lib/db";
 import {albumItems, assets, exportJobItems, exportJobs, replicateGenerationJobs, webhookEvents} from "@/lib/db/schema";
-import {putRemoteUrlToS3} from "@/lib/s3/putRemoteUrlToS3";
+import {putRemoteUrlToS3} from "@/lib/aws/s3/putRemoteUrlToS3";
 import {verifyReplicateWebhook} from "@/lib/replicate/webhookVerify";
 import {logReplicateJobEvent} from "@/lib/replicate/jobEvents";
 import type {ReplicateJobStatus} from "@/lib/db/types";

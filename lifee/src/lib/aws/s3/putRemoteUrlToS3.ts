@@ -1,7 +1,7 @@
 // src/lib/s3/putRemoteUrlToS3.ts
 import {Readable} from "node:stream";
 import {PutObjectCommand} from "@aws-sdk/client-s3";
-import {s3Client, S3_BUCKET_NAME} from "@/lib/s3/client";
+import {s3Client, S3_BUCKET_NAME} from "@/lib/aws/s3/client";
 import {Upload} from "@aws-sdk/lib-storage";
 
 type PutRemoteUrlToS3Params = {

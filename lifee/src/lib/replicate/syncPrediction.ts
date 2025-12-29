@@ -3,7 +3,7 @@ import {db} from "@/lib/db";
 import {assets, replicateGenerationJobs} from "@/lib/db/schema";
 import {logReplicateJobEvent} from "@/lib/replicate/jobEvents";
 import type {ReplicateJobStatus} from "@/lib/db/types";
-import {putRemoteUrlToS3} from "@/lib/s3/putRemoteUrlToS3";
+import {putRemoteUrlToS3} from "@/lib/aws/s3/putRemoteUrlToS3";
 
 /**
  * Poll soft: pas plus d'une fois toutes les N ms, et "claim" DB pour éviter les doublons.

@@ -1,4 +1,4 @@
-import {S3_BUCKET_NAME, s3Client} from "@/lib/s3/client";
+import {S3_BUCKET_NAME, s3Client} from "@/lib/aws/s3/client";
 import {HeadObjectCommand} from "@aws-sdk/client-s3";
 
 export async function getS3SizeBytes(key: string) {

@@ -19,7 +19,7 @@ import {
     creditPacks,
     // ⚠️ adapte si ton champ s'appelle différemment
 } from "@/lib/db/schema";
-import {presignGetObject} from "@/lib/s3/presignGet";
+import {presignGetObject} from "@/lib/aws/s3/presignGet";
 import {getClientIp, hashIp} from "@/lib/security/ip";
 import {logReplicateJobEvent} from "@/lib/replicate/jobEvents";
 

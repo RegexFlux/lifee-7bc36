@@ -6,7 +6,7 @@ import {ok, fail} from "@/lib/api/response";
 import {db} from "@/lib/db";
 import {musics} from "@/lib/db/schema";
 import {requireViewer} from "@/lib/auth/require";
-import {presignGetObject} from "@/lib/s3/presignGet";
+import {presignGetObject} from "@/lib/aws/s3/presignGet";
 
 export default apiHandler({
     GET: async (req: NextApiRequest, res: NextApiResponse) => {

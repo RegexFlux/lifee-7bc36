@@ -7,7 +7,7 @@ function mustEnv(name: string) {
 }
 
 export const S3_BUCKET_NAME = mustEnv("S3_BUCKET_NAME");
-const region = process.env.S3_REGION || "us-east-1";
+const region = process.env.S3_REGION;
 const endpoint = process.env.S3_ENDPOINT;
 
 export function getSignExpires() {

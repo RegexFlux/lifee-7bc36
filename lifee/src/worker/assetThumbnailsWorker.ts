@@ -14,8 +14,8 @@ import {sql, and, eq, isNull} from "drizzle-orm";
 
 import {db} from "@/lib/db";
 import {assets, assetThumbnailJobs} from "@/lib/db/schema";
-import {presignGetObject} from "@/lib/s3/presignGet";
-import {presignPutObject} from "@/lib/s3/presignPut";
+import {presignGetObject} from "@/lib/aws/s3/presignGet";
+import {presignPutObject} from "@/lib/aws/s3/presignPut";
 
 type ClaimedJob = {
     id: string;
