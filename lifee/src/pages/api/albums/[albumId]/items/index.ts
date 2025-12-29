@@ -55,7 +55,7 @@ export default apiHandler({
             .orderBy(asc(albumItems.position))
             .limit(500);
 
-        const expiresIn = 60 * 15;
+        const expiresIn = Number(process.env.S3_SIGN_EXPIRES); // seconds
         const items = await Promise.all(
             rows.map(async (r) => {
                 const thumbKey = r.thumbnailKey ?? r.fileKey;

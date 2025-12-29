@@ -8,13 +8,17 @@ function mustEnv(name: string) {
 
 export const S3_BUCKET_NAME = mustEnv("S3_BUCKET_NAME");
 const region = process.env.S3_REGION || "us-east-1";
-const endpoint = process.env.S3_ENDPOINT; // ex: http://localhost:9000 (minio/localstack)
-export const signExpires = Number(process.env.S3_SIGN_EXPIRES || "900"); // seconds
+const endpoint = process.env.S3_ENDPOINT;
+
+export function getSignExpires() {
+    // IMPORTANT: valeur lue à l'exécution serveur, pas exportée comme const
+    return Number(process.env.S3_SIGN_EXPIRES ?? "600");
+}
 
 export const s3Client = new S3Client({
     region,
     endpoint,
-    forcePathStyle: !!endpoint, // nécessaire pour minio/localstack
+    forcePathStyle: !!endpoint,
     credentials: {
         accessKeyId: mustEnv("S3_ACCESS_KEY_ID"),
         secretAccessKey: mustEnv("S3_SECRET_ACCESS_KEY"),
