@@ -1,1 +1,0 @@
-ALTER TABLE "asset_thumbnail_jobs" ADD COLUMN "error_message" text;

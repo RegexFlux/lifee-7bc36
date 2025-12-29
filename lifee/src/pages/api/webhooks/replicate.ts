@@ -61,38 +61,44 @@ export default apiHandler({
         const payload = JSON.parse(rawBody);
 
         // idempotence
-        const exists = await db
-            .select({id: webhookEvents.id})
-            .from(webhookEvents)
-            .where(and(eq(webhookEvents.provider, "replicate"), eq(webhookEvents.eventId, eventId)))
-            .limit(1);
-        if (exists[0]) return ok(res, {status: "ok"});
+        // const exists = await db
+        //     .select({id: webhookEvents.id})
+        //     .from(webhookEvents)
+        //     .where(and(eq(webhookEvents.provider, "replicate"), eq(webhookEvents.eventId, eventId)))
+        //     .limit(1);
+        // if (exists[0]) return ok(res, {status: "ok"});
 
-        // store event first
-        await db.insert(webhookEvents).values({
-            id: crypto.randomUUID(),
-            provider: "replicate",
-            eventId,
-            payload,
-            relatedReplicateJobId: generationId,
-        });
+        try {
+            await db.insert(webhookEvents).values({
+                id: crypto.randomUUID(),
+                provider: "replicate",
+                eventId,
+                payload,
+                relatedReplicateJobId: generationId,
+                processingStatus: "processing",
+            });
+        } catch {
+            return ok(res, {status: "ok"});
+        }
+
 
         const job = (await db.select().from(replicateGenerationJobs).where(eq(replicateGenerationJobs.id, generationId)).limit(1))[0];
         if (!job) return ok(res, {status: "ok"});
 
-        if (job.status === "succeeded" && job.resultAssetId) {
-            return ok(res, {status: "ok"});
-        }
-
-        if (TERMINAL.includes(job.status)) return ok(res, {status: "ok"});
+        if (job.status === "failed" || job.status === "canceled") return ok(res, {status: "ok"});
+        if (job.status === "succeeded" && job.resultAssetId) return ok(res, {status: "ok"});
 
         const nextStatus = coerceStatus(payload?.status) ?? job.status;
         const predictionId = (payload?.id as string | undefined) ?? job.replicatePredictionId;
+        const writeStatus =
+            nextStatus === "succeeded"
+                ? "finalizing"
+                : nextStatus;
 
         // update job + log status
         await db.transaction(async (tx) => {
             await tx.update(replicateGenerationJobs).set({
-                status: nextStatus,
+                status: writeStatus,
                 replicatePredictionId: predictionId ?? null,
                 updatedAt: new Date(),
             }).where(eq(replicateGenerationJobs.id, generationId));
@@ -186,42 +192,67 @@ export default apiHandler({
                 updatedAt: new Date(),
             }).where(eq(replicateGenerationJobs.id, generationId));
 
-            if (job.exportJobId) {
-                // Marque l’item snapshot comme résolu (uniquement si encore sur sourceAssetId)
+            if (again?.exportJobId) {
+                // 1) Résout uniquement la ligne snapshot correspondant à CET item
                 await tx.update(exportJobItems)
                     .set({resolvedAssetId: videoAsset.id, updatedAt: new Date()})
                     .where(and(
-                        eq(exportJobItems.exportJobId, job.exportJobId),
+                        eq(exportJobItems.exportJobId, again.exportJobId),
+                        eq(exportJobItems.albumItemId, again.albumItemId!),          // ✅ clé
                         eq(exportJobItems.sourceAssetId, source.id),
                         sql`${exportJobItems.resolvedAssetId}
                         IS NULL`
                     ));
 
-                // Check readiness export
-                const [{pending}] = await tx.select({
+                // 2) Compte pending/failed sur CE export
+                const [{pending, failed}] = await tx.select({
                     pending: sql<number>`COUNT(*) FILTER (WHERE
                     ${replicateGenerationJobs.status}
                     IN
                     (
                     'queued',
                     'starting',
-                    'processing'
+                    'processing',
+                    'finalizing'
+                    )
+                    )`,
+                    failed: sql<number>`COUNT(*) FILTER (WHERE
+                    ${replicateGenerationJobs.status}
+                    IN
+                    (
+                    'failed',
+                    'canceled'
                     )
                     )`,
                 })
                     .from(replicateGenerationJobs)
-                    .where(eq(replicateGenerationJobs.exportJobId, job.exportJobId));
+                    .where(eq(replicateGenerationJobs.exportJobId, again.exportJobId));
 
-                if (Number(pending) === 0) {
-                    // passe export à queued
+                // 3) Compte unresolved snapshot
+                const [{unresolved}] = await tx.select({
+                    unresolved: sql<number>`COUNT(*) FILTER (WHERE
+                    ${exportJobItems.resolvedAssetId}
+                    IS
+                    NULL
+                    )`,
+                })
+                    .from(exportJobItems)
+                    .where(eq(exportJobItems.exportJobId, again.exportJobId));
+
+                if (Number(failed) > 0) {
+                    const [updated] = await tx.update(exportJobs)
+                        .set({status: "error", errorMessage: "One or more generations failed", updatedAt: new Date()})
+                        .where(and(eq(exportJobs.id, again.exportJobId), eq(exportJobs.status, "waiting_generations")))
+                        .returning({id: exportJobs.id});
+
+                    if (updated?.id) updatedId = updated.id; // (tu peux aussi ne pas enqueue en error)
+                } else if (Number(pending) === 0 && Number(unresolved) === 0) {
                     const [updated] = await tx.update(exportJobs)
                         .set({status: "queued", updatedAt: new Date()})
-                        .where(and(eq(exportJobs.id, job.exportJobId), eq(exportJobs.status, "waiting_generations")))
+                        .where(and(eq(exportJobs.id, again.exportJobId), eq(exportJobs.status, "waiting_generations")))
                         .returning({id: exportJobs.id});
-                    if (updated?.id) {
-                        updatedId = updated.id;
-                    }
 
+                    if (updated?.id) updatedId = updated.id;
                 }
             }
 
@@ -253,8 +284,10 @@ export default apiHandler({
 
         // IMPORTANT: enqueue SQS hors transaction DB (mais tu peux aussi le faire après la transaction)
         if (updatedId) {
-            await enqueueExportJob(updatedId)
+            const st = (await db.select({status: exportJobs.status}).from(exportJobs).where(eq(exportJobs.id, updatedId)).limit(1))[0]?.status;
+            if (st === "queued") await enqueueExportJob(updatedId);
         }
+
 // Après finalisation : si l'album est ready, release export(s)
         else if (fresh.albumItemId) {
             const item = (await db.select({albumId: albumItems.albumId}).from(albumItems).where(eq(albumItems.id, fresh.albumItemId)).limit(1))[0];
@@ -262,6 +295,12 @@ export default apiHandler({
                 await tryReleaseExportsForAlbum({albumId: item.albumId});
             }
         }
+
+        await db.update(webhookEvents).set({
+            processedAt: new Date(),
+            processingStatus: "processed",
+        }).where(and(eq(webhookEvents.provider, "replicate"), eq(webhookEvents.eventId, eventId)));
+
 
         return ok(res, {status: "ok"});
 

@@ -16,6 +16,7 @@ export const REPLICATE_JOB_STATUSES = [
     "starting",
     "processing",
     "succeeded",
+    "finalizing",
     "failed",
     "canceled",
 ] as const;
@@ -32,7 +33,7 @@ export const CREDIT_PACK_TIERS = ["standard", "creator"] as const;
 export const CREDIT_PURCHASE_STATUSES = ["created", "paid", "failed", "refunded"] as const;
 
 export const WEBHOOK_PROVIDERS = ["stripe", "replicate"] as const;
-export const WEBHOOK_PROCESSING_STATUSES = ["received", "processed", "failed"] as const;
+export const WEBHOOK_PROCESSING_STATUSES = ["received", "processed", "failed", "processing"] as const;
 
 export const ACCOUNT_LINK_STATUSES = ["pending", "completed", "cancelled"] as const;
 

@@ -15,17 +15,23 @@ import {
     creditPurchases,
     demoTrials,
     idempotencyKeys,
-    replicateGenerationJobs, creditPacks,
+    replicateGenerationJobs,
+    creditPacks,
+    // ⚠️ adapte si ton champ s'appelle différemment
 } from "@/lib/db/schema";
 import {presignGetObject} from "@/lib/s3/presignGet";
 import {getClientIp, hashIp} from "@/lib/security/ip";
-import {resolveReplicateVersion} from "@/lib/replicate/resolveVersion";
 import {logReplicateJobEvent} from "@/lib/replicate/jobEvents";
 
-const localtunnel = require("localtunnel");
-
-import {match} from 'ts-pattern';
-import {getDemoModel, getKlingInput, getKlingModel, getWanInput} from "@/lib/replicate/index";
+import {match} from "ts-pattern";
+import {
+    buildBestPrompt,
+    defaultNegativePrompt,
+    getDemoVersionId,
+    getKlingVersionId,
+    getKlingInput,
+    getWanInput,
+} from "@/lib/replicate/index";
 import {CREDIT_PACK_TIERS} from "@/lib/shared/enums";
 
 const GEN_COST = 2;
@@ -39,14 +45,25 @@ const zCreate = z.object({
     albumItemId: z.string().uuid().optional(),
 });
 
-async function userIsTier(userId: string): Promise<(typeof CREDIT_PACK_TIERS)[number] | 'demo'> {
+function webhookBase() {
+    const base = process.env.PUBLIC_APP_URL;
+    if (!base) throw new Error("Missing PUBLIC_APP_URL");
+    return base.replace(/\/$/, "");
+}
+
+// ⚠️ adapte le join si ton schema diffère (creditPurchases.creditPackId, etc.)
+async function userIsTier(userId: string): Promise<(typeof CREDIT_PACK_TIERS)[number] | "demo"> {
     const purchases = await db
         .select({id: creditPurchases.id, tier: creditPacks.tier})
         .from(creditPurchases)
-        .leftJoin(creditPacks, eq(creditPacks.id, creditPurchases.id))
+        .leftJoin(creditPacks, eq(creditPacks.id, creditPurchases.creditPackId))
         .where(and(eq(creditPurchases.userId, userId), eq(creditPurchases.status, "paid")));
-    return purchases.some((purschase) => purschase.tier === 'creator') ?
-        'creator' : (purchases.some((purschase) => purschase.tier === 'standard') ? 'standard' : 'demo');
+
+    return purchases.some((p) => p.tier === "creator")
+        ? "creator"
+        : purchases.some((p) => p.tier === "standard")
+            ? "standard"
+            : "demo";
 }
 
 function coerceIdemKey(req: NextApiRequest) {
@@ -55,6 +72,12 @@ function coerceIdemKey(req: NextApiRequest) {
     if (!key) return null;
     if (key.length < 8 || key.length > 120) return null;
     return key;
+}
+
+// helper: normalise drizzle execute return
+function firstRow<T = any>(r: any): T | null {
+    const rows = r?.rows ?? r;
+    return rows?.[0] ?? null;
 }
 
 export default apiHandler({
@@ -82,7 +105,7 @@ export default apiHandler({
         }
 
         const userTier = await userIsTier(viewer.user.id);
-        const paid = userTier === 'standard' || userTier === 'creator';
+        const paid = userTier === "standard" || userTier === "creator";
 
         // Anti-abus demo IP / 30j
         if (!paid) {
@@ -143,30 +166,40 @@ export default apiHandler({
         // start_image signé
         const startImageUrl = await presignGetObject({key: source.fileKey, expiresIn: 60 * 60 * 2});
 
-        const {model, input} = await match(paid)
+        // ✅ BEST PROMPT: default + assets.description (optional) + user prompt
+        const bestPrompt = buildBestPrompt({
+            description: source.description ?? null,
+            userPrompt: parsed.data.prompt ?? null,
+        });
+
+        const negative = parsed.data.negativePrompt ?? defaultNegativePrompt();
+        const duration = parsed.data.duration ?? 5;
+        const aspectRatio = parsed.data.aspectRatio ?? "9:16";
+
+        // ✅ Replicate version id + input
+        const {versionId, input} = await match(paid)
             .with(false, async () => ({
-                model: await getDemoModel(),
-                input: getWanInput(
-                    parsed.data.prompt,
+                versionId: await getDemoVersionId(),
+                input: getWanInput({
+                    prompt: bestPrompt,
                     startImageUrl,
-                    5,
-                    parsed.data.aspectRatio,
-                    parsed.data.negativePrompt
-                )
+                    duration,
+                    aspectRatio,
+                    negativePrompt: negative,
+                }),
             }))
             .with(true, async () => ({
-                model: await getKlingModel(),
-                input: getKlingInput(
-                    parsed.data.prompt,
+                versionId: await getKlingVersionId(),
+                input: getKlingInput({
+                    prompt: bestPrompt,
                     startImageUrl,
-                    5,
-                    parsed.data.aspectRatio,
-                    parsed.data.negativePrompt,
-                )
-            })).exhaustive();
-
-
-        const version = await resolveReplicateVersion(model);
+                    duration,
+                    aspectRatio,
+                    negativePrompt: negative,
+                    mode: userTier === "creator" ? "pro" : "standard",
+                }),
+            }))
+            .exhaustive();
 
         let generationId: string;
 
@@ -180,7 +213,7 @@ export default apiHandler({
                     });
                 }
 
-                // Débit crédits atomique
+                // Débit crédits atomique (⚠️ ne pas tester credits par truthy)
                 const r = await tx.execute(sql`
                     UPDATE "users"
                     SET "credits" = "credits" - ${GEN_COST}
@@ -188,9 +221,8 @@ export default apiHandler({
                       AND "credits" >= ${GEN_COST} RETURNING "credits"
                 `);
 
-                // @ts-ignore driver-dependent
-                const {credits} = r[0];
-                if (!credits) {
+                const row = firstRow<{ credits: number }>(r);
+                if (!row) {
                     const err: any = new Error("Not enough credits");
                     err.status = 402;
                     throw err;
@@ -200,7 +232,7 @@ export default apiHandler({
                     userId: viewer.user.id,
                     type: "spend",
                     delta: -GEN_COST,
-                    metadata: {reason: "replicate_video", model},
+                    metadata: {reason: "replicate_video", versionId},
                 });
 
                 const [job] = await tx
@@ -208,11 +240,15 @@ export default apiHandler({
                     .values({
                         userId: viewer.user.id,
                         createdByAssetId: source.id,
-                        albumItemId: parsed.data.albumItemId!,
-                        model,
+                        albumItemId: parsed.data.albumItemId ?? null,
+                        model: versionId,          // ✅ on stocke la version réellement utilisée
                         status: "queued",
                         year: source.year,
                         month: source.month,
+                        prompt: parsed.data.prompt ?? null,
+                        negativePrompt: parsed.data.negativePrompt ?? null,
+                        duration,
+                        aspectRatio,
                     })
                     .returning();
 
@@ -220,7 +256,7 @@ export default apiHandler({
                     generationId: job.id,
                     status: "info",
                     source: "server",
-                    message: `Job created (model=${model})`,
+                    message: `Job created (version=${versionId})`,
                 });
 
                 return job;
@@ -232,25 +268,21 @@ export default apiHandler({
             return fail(res, status, e?.message || "Create failed");
         }
 
-        // TODO REMOVE
-        const tunnel = await localtunnel({port: 3000});
-        const webhookUrl = `${tunnel.url}/api/webhooks/replicate?generationId=${generationId}`;
-        console.log('webhookUrl', webhookUrl);
-
-        const body = {
-            version,
-            input,
-            webhook: webhookUrl,
-            webhook_events_filter: ["completed"],
-        };
+        // ✅ webhook public stable (pas localtunnel)
+        const webhookUrl = `${webhookBase()}/api/webhooks/replicate?generationId=${generationId}`;
 
         const rr = await fetch("https://api.replicate.com/v1/predictions", {
             method: "POST",
             headers: {
-                Authorization: `Bearer ${process.env.REPLICATE_API_TOKEN}`,
+                Authorization: `Bearer ${process.env.REPLICATE_API_TOKEN}`, // :contentReference[oaicite:1]{index=1}
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(body),
+            body: JSON.stringify({
+                version: versionId,
+                input,
+                webhook: webhookUrl,
+                webhook_events_filter: ["completed"],
+            }),
         });
 
         const data = await rr.json().catch(() => ({}));
@@ -263,7 +295,7 @@ export default apiHandler({
                 }).where(eq(replicateGenerationJobs.id, generationId));
 
                 await logReplicateJobEvent(tx, {
-                    generationId: generationId,
+                    generationId,
                     status: "error",
                     source: "replicate",
                     message: `Create failed: ${data?.detail || "unknown"}`,

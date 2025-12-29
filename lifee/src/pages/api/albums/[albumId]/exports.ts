@@ -1,4 +1,4 @@
-// pages/api/albums/[id]/exports.ts
+// pages/api/albums/[albumId]/exports.ts
 import type {NextApiRequest, NextApiResponse} from "next";
 import {and, asc, desc, eq, inArray, sql} from "drizzle-orm";
 import {z} from "zod";
@@ -99,6 +99,7 @@ export default apiHandler({
                 position: albumItems.position,
                 assetId: assets.id,
                 type: assets.type,
+                asset: assets
             })
             .from(albumItems)
             .innerJoin(assets, eq(assets.id, albumItems.assetId))
@@ -164,8 +165,8 @@ export default apiHandler({
                         model,
                         status: "queued",
                         // month/year : récupère via assets si besoin (non présent dans select)
-                        month: 1,
-                        year: 2025,
+                        month: r.asset.month,
+                        year: r.asset.year,
                     })
                     .returning({id: replicateGenerationJobs.id});
 

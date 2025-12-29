@@ -274,9 +274,8 @@ export const replicateGenerationJobs = pgTable(
             .notNull()
             .references(() => users.id, {onDelete: "cascade"}),
 
-        exportJobId: uuid("export_job_id"),
-            .references(() => exportJobs.id, {onDelete: "cascade"}),
 
+        exportJobId: uuid("export_job_id").references(() => exportJobs.id, {onDelete: "set null"}),
         albumItemId: uuid("album_item_id")
             .references(() => albumItems.id, {onDelete: "cascade"}),
 
@@ -307,8 +306,6 @@ export const replicateGenerationJobs = pgTable(
         // si tu veux filtrer / grouper par "souvenir"
         month: integer("month").notNull(),
         year: integer("year").notNull(),
-
-        exportJobId: uuid("export_job_id").references(() => exportJobs.id, {onDelete: "set null"}),
 
         createdAt: timestamp("created_at", {withTimezone: true})
             .notNull()

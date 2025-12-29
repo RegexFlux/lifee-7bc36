@@ -1,0 +1,19 @@
+FROM node:20-bookworm
+
+# ffmpeg + ca certs
+RUN apt-get update && apt-get install -y ffmpeg ca-certificates && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+
+# si TS:
+RUN npm run build
+
+ENV NODE_ENV=production
+
+# adapte si ton build sort dans dist/
+CMD ["node", "dist/worker/exportWorker.js"]

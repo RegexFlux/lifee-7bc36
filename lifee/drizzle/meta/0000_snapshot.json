@@ -1,5 +1,5 @@
 {
-  "id": "a3970c07-a7ff-4825-9e9d-05161fbb8b4e",
+  "id": "2a3c61db-3764-4131-8196-d1d4e83330a4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -387,6 +387,194 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.asset_thumbnail_jobs": {
+      "name": "asset_thumbnail_jobs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "asset_id": {
+          "name": "asset_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "asset_thumbnail_job_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'queued'"
+        },
+        "attempts": {
+          "name": "attempts",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "error_message": {
+          "name": "error_message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_error": {
+          "name": "last_error",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "locked_at": {
+          "name": "locked_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "done_at": {
+          "name": "done_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "next_attempt_at": {
+          "name": "next_attempt_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "asset_thumbnail_jobs_asset_uidx": {
+          "name": "asset_thumbnail_jobs_asset_uidx",
+          "columns": [
+            {
+              "expression": "asset_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "asset_thumbnail_jobs_status_created_idx": {
+          "name": "asset_thumbnail_jobs_status_created_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "asset_thumbnail_jobs_user_created_idx": {
+          "name": "asset_thumbnail_jobs_user_created_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "asset_thumbnail_jobs_user_id_users_id_fk": {
+          "name": "asset_thumbnail_jobs_user_id_users_id_fk",
+          "tableFrom": "asset_thumbnail_jobs",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "asset_thumbnail_jobs_asset_id_assets_id_fk": {
+          "name": "asset_thumbnail_jobs_asset_id_assets_id_fk",
+          "tableFrom": "asset_thumbnail_jobs",
+          "tableTo": "assets",
+          "columnsFrom": [
+            "asset_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.assets": {
       "name": "assets",
       "schema": "",
@@ -425,6 +613,12 @@
         },
         "title": {
           "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "descrip": {
+          "name": "descrip",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -668,13 +862,13 @@
           "name": "ip",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "user_agent": {
           "name": "user_agent",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "expires_at": {
           "name": "expires_at",
@@ -1311,6 +1505,187 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.export_job_items": {
+      "name": "export_job_items",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "export_job_id": {
+          "name": "export_job_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "album_item_id": {
+          "name": "album_item_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_asset_id": {
+          "name": "source_asset_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "resolved_asset_id": {
+          "name": "resolved_asset_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "export_job_items_export_idx": {
+          "name": "export_job_items_export_idx",
+          "columns": [
+            {
+              "expression": "export_job_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "export_job_items_unresolved_idx": {
+          "name": "export_job_items_unresolved_idx",
+          "columns": [
+            {
+              "expression": "export_job_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "resolved_asset_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "export_job_items_export_pos_uidx": {
+          "name": "export_job_items_export_pos_uidx",
+          "columns": [
+            {
+              "expression": "export_job_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "position",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "export_job_items_export_job_id_export_jobs_id_fk": {
+          "name": "export_job_items_export_job_id_export_jobs_id_fk",
+          "tableFrom": "export_job_items",
+          "tableTo": "export_jobs",
+          "columnsFrom": [
+            "export_job_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "export_job_items_album_item_id_album_items_id_fk": {
+          "name": "export_job_items_album_item_id_album_items_id_fk",
+          "tableFrom": "export_job_items",
+          "tableTo": "album_items",
+          "columnsFrom": [
+            "album_item_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "export_job_items_source_asset_id_assets_id_fk": {
+          "name": "export_job_items_source_asset_id_assets_id_fk",
+          "tableFrom": "export_job_items",
+          "tableTo": "assets",
+          "columnsFrom": [
+            "source_asset_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "export_job_items_resolved_asset_id_assets_id_fk": {
+          "name": "export_job_items_resolved_asset_id_assets_id_fk",
+          "tableFrom": "export_job_items",
+          "tableTo": "assets",
+          "columnsFrom": [
+            "resolved_asset_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.export_jobs": {
       "name": "export_jobs",
       "schema": "",
@@ -1440,6 +1815,123 @@
           "tableTo": "albums",
           "columnsFrom": [
             "album_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.export_shares": {
+      "name": "export_shares",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "export_job_id": {
+          "name": "export_job_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "revoked_at": {
+          "name": "revoked_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "export_shares_export_job_idx": {
+          "name": "export_shares_export_job_idx",
+          "columns": [
+            {
+              "expression": "export_job_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "export_shares_user_idx": {
+          "name": "export_shares_user_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "export_shares_export_job_id_export_jobs_id_fk": {
+          "name": "export_shares_export_job_id_export_jobs_id_fk",
+          "tableFrom": "export_shares",
+          "tableTo": "export_jobs",
+          "columnsFrom": [
+            "export_job_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "export_shares_user_id_users_id_fk": {
+          "name": "export_shares_user_id_users_id_fk",
+          "tableFrom": "export_shares",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
           ],
           "columnsTo": [
             "id"
@@ -1995,6 +2487,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "export_job_id": {
+          "name": "export_job_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
         "album_item_id": {
           "name": "album_item_id",
           "type": "uuid",
@@ -2010,6 +2508,30 @@
         "result_asset_id": {
           "name": "result_asset_id",
           "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "prompt": {
+          "name": "prompt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "negative_prompt": {
+          "name": "negative_prompt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aspect_ratio": {
+          "name": "aspect_ratio",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "duration": {
+          "name": "duration",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
@@ -2151,6 +2673,27 @@
           "method": "btree",
           "with": {}
         },
+        "replicate_jobs_export_status_idx": {
+          "name": "replicate_jobs_export_status_idx",
+          "columns": [
+            {
+              "expression": "export_job_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "replicate_jobs_prediction_idx": {
           "name": "replicate_jobs_prediction_idx",
           "columns": [
@@ -2179,6 +2722,19 @@
             "id"
           ],
           "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "replicate_generation_jobs_export_job_id_export_jobs_id_fk": {
+          "name": "replicate_generation_jobs_export_job_id_export_jobs_id_fk",
+          "tableFrom": "replicate_generation_jobs",
+          "tableTo": "export_jobs",
+          "columnsFrom": [
+            "export_job_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
           "onUpdate": "no action"
         },
         "replicate_generation_jobs_album_item_id_album_items_id_fk": {
@@ -2619,6 +3175,17 @@
         "studio_help"
       ]
     },
+    "public.asset_thumbnail_job_status": {
+      "name": "asset_thumbnail_job_status",
+      "schema": "public",
+      "values": [
+        "queued",
+        "processing",
+        "done",
+        "error",
+        "skipped"
+      ]
+    },
     "public.asset_type": {
       "name": "asset_type",
       "schema": "public",
@@ -2670,9 +3237,11 @@
       "schema": "public",
       "values": [
         "queued",
+        "canceled",
         "rendering",
         "done",
-        "error"
+        "error",
+        "waiting_generations"
       ]
     },
     "public.job_event_level": {
@@ -2701,6 +3270,7 @@
         "starting",
         "processing",
         "succeeded",
+        "finalizing",
         "failed",
         "canceled"
       ]
@@ -2719,7 +3289,8 @@
       "values": [
         "received",
         "processed",
-        "failed"
+        "failed",
+        "processing"
       ]
     },
     "public.webhook_provider": {

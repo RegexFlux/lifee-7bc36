@@ -1,0 +1,21 @@
+services:
+  export-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    environment:
+      AWS_REGION: ${AWS_REGION}
+      EXPORT_QUEUE_URL: ${EXPORT_QUEUE_URL}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
+
+      DATABASE_URL: ${DATABASE_URL}
+
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME}
+      S3_REGION: ${S3_REGION}
+      S3_ENDPOINT: ${S3_ENDPOINT}
+
+      WORKER_CONCURRENCY: "1"
+      EXPORT_VISIBILITY_HEARTBEAT_SEC: "30"
+    restart: unless-stopped
