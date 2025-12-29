@@ -147,22 +147,22 @@ export async function syncReplicatePredictionIfNeeded(params: {
     // Seulement si non-terminal (ou succeeded mais pas finalisé, typiquement "finalizing")
     if (!NON_TERMINAL.includes(job.status) && job.status !== "succeeded") return {didSync: false};
 
-    const now = new Date();
-    const cutoff = new Date(now.getTime() - SYNC_MIN_INTERVAL_MS);
+    const now = new Date().toISOString();
+    const cutoff = new Date(Date.now() - SYNC_MIN_INTERVAL_MS).toISOString();
 
     // Claim atomique: si replicateCheckedAt récent, on ne fait rien
-    const claimed = await db
-        .update(replicateGenerationJobs)
-        .set({replicateCheckedAt: now})
-        .where(
-            and(
-                eq(replicateGenerationJobs.id, generationId),
-                eq(replicateGenerationJobs.userId, userId),
-                // claim si NULL ou trop vieux
-                sql`(${replicateGenerationJobs.replicateCheckedAt} IS NULL OR ${replicateGenerationJobs.replicateCheckedAt} < ${cutoff})`
-            )
-        )
-        .returning({id: replicateGenerationJobs.id});
+    const claimed = await db.execute(sql`
+        update "replicate_generation_jobs"
+        set "replicate_checked_at" = ${now}
+        where (
+                  "id" = ${generationId}
+                      and "user_id" = ${userId}
+                      and (
+                      "replicate_checked_at" is null
+                          or "replicate_checked_at" < ${cutoff}
+                      )
+                  ) returning "id"
+    `);
 
     if (!claimed.length) return {didSync: false}; // un autre appel a déjà sync récemment
 

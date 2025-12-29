@@ -1,0 +1,1 @@
+ALTER TABLE "replicate_generation_jobs" ADD COLUMN "replicate_checked_at" timestamp with time zone;
