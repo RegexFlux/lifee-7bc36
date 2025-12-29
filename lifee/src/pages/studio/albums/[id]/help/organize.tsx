@@ -85,6 +85,16 @@ export default function HelpOrganizePage({albumId}: InferGetServerSidePropsType<
                         </div>
                     </div>
                 </div>
+                <button
+                    type="button"
+                    onClick={() => router.push(`/studio/albums/${encodeURIComponent(albumId)}/help/finalize`)}
+                    className="rounded-2xl bg-stone-900 text-white px-4 py-2 text-sm font-black hover:bg-stone-800 transition inline-flex items-center gap-2"
+                    data-tour="go-finalize"
+                    disabled={busyAdd}
+                >
+                    {busyAdd ? t("studio.organize.adding") : t("studio.organize.next")}
+                    <ArrowRight size={16}/>
+                </button>
             </div>
         </StudioHelpShell>
     );
