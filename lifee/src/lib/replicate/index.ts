@@ -34,51 +34,113 @@ export async function getKlingVersionId() {
     return getLatestVersionId(PAID_MODEL_OWNER, PAID_MODEL);
 }
 
-export function defaultCinematicPrompt() {
-    // “best result” = stabilité identité + mouvement doux + ciné réaliste
+export function defaultCinematicPromptStrict() {
     return [
-        "Bring this photo to life as a cherished, warm memory.",
-        "Ultra subtle natural motion: gentle breathing, blinking, micro head movement, slight cloth/hair motion.",
-        "Slow steady camera push-in, cinematic realistic lighting, shallow depth of field, smooth motion.",
-        "Preserve identity and facial structure, skin tone, hairstyle, outfit, and original composition.",
-        "Keep background consistent, no jump cuts, no warping, no morphing, no glitches.",
+        // Intent
+        "Animate this exact photo as a real, authentic memory captured on camera.",
+        "Single continuous shot. Do not re-stage the scene. Do not beautify or modernize.",
+
+        // Identity lock
+        "Strictly preserve identity: same face shape, proportions, eyes, nose, mouth, hairline, hairstyle, skin tone, age, and expression style.",
+        "Preserve clothing details, accessories, and body proportions.",
+
+        // Motion (micro only)
+        "Motion must be minimal and natural: subtle breathing, natural blinking (rare), tiny head micro-movements, slight fabric/hair movement from a gentle breeze.",
+        "Keep all motion physically plausible and consistent with the original pose.",
+
+        // Camera
+        "Camera: very slow, stable push-in (or locked-off if needed). No shake. No fast zoom.",
+        "Depth of field consistent with the original photo; avoid exaggerated bokeh.",
+
+        // Look (authentic)
+        "Match the original photo’s color, contrast, grain, and imperfections.",
+        "Keep the same lighting direction and intensity. No dramatic re-lighting.",
+        "Do not upscale/restore faces aggressively; keep natural texture and original sharpness level.",
+
+        // Stability
+        "Background must remain perfectly stable: no warping, no bending lines, no drifting objects.",
+    ].join(" ");
+}
+
+export function defaultCinematicPromptSoft() {
+    return [
+        "Bring this photo to life as a warm, genuine memory—still realistic and faithful to the original.",
+        "Single continuous shot. Keep the original composition and camera viewpoint.",
+
+        "Preserve identity and facial structure exactly: no face redesign, no beautification, no age change.",
+        "Preserve skin tone, hairstyle, outfit, and all unique details.",
+
+        "Ultra subtle natural motion only: gentle breathing, occasional blinking, tiny head micro-movements, slight cloth/hair motion.",
+        "Very slow, steady camera push-in. Smooth motion. No shake. No jump cuts.",
+
+        "Lighting: match the original photo’s lighting and mood; keep it natural and consistent.",
+        "Color and texture: keep the original photo look (grain/softness). Avoid HDR or oversharpening.",
+        "Background must stay stable with zero distortions or morphing.",
     ].join(" ");
 }
 
 export function defaultNegativePrompt() {
     return [
-        "text, subtitles, watermark, logo",
-        "low quality, blurry, flicker, jitter, stutter",
-        "deformed face, extra fingers, extra limbs",
-        "duplicate person, morphing, identity change",
-        "camera shake, fast zoom, jump cut",
-        "weird artifacts, broken anatomy, unstable background",
+        // overlays
+        "text, subtitles, watermark, logo, timestamps, UI elements",
+
+        // quality / motion issues
+        "low quality, blurry, flicker, jitter, stutter, frame wobble, rolling distortions, temporal artifacts",
+        "jump cut, fast zoom, camera shake, sudden lighting changes",
+
+        // identity / anatomy
+        "identity change, face morphing, face swap, different person, duplicate person",
+        "deformed face, asymmetry drift, uncanny face, melted features, wrong teeth, extra fingers, extra limbs, broken anatomy",
+
+        // background stability
+        "warping background, bending lines, moving walls, swimming textures, shifting objects",
+
+        // anti-authentic / over-processing
+        "beauty filter, plastic skin, airbrushed skin, heavy makeup, face retouching, face restoration",
+        "HDR, over-sharpening, over-smoothing, high clarity, glossy skin, modern smartphone look",
     ].join(", ");
 }
 
 function cleanContext(desc?: string | null) {
     const s = (desc ?? "").trim().replace(/\s+/g, " ");
     if (!s) return null;
-    // limite pour éviter que le modèle parte trop loin
     return s.slice(0, 280);
 }
 
-export function buildBestPrompt(params: { description?: string | null; userPrompt?: string | null }) {
-    const ctx = cleanContext(params.description);
-    const user = (params.userPrompt ?? "").trim();
+function cleanUserPrompt(p?: string | null) {
+    const s = (p ?? "").trim().replace(/\s+/g, " ");
+    if (!s) return null;
+    // garde-fou: user prompt court, sinon ça override tout
+    return s.slice(0, 220);
+}
 
-    // ordre : user prompt (si fourni) -> contexte -> default
-    // garde-fou : contexte “influence mood” mais ne change pas la scène/personnes
+export function buildBestPrompt(params: {
+    description?: string | null;
+    userPrompt?: string | null;
+    mode?: "strict" | "soft";
+}) {
+    const ctx = cleanContext(params.description);
+    const user = cleanUserPrompt(params.userPrompt);
+
+    const base =
+        params.mode === "strict"
+            ? defaultCinematicPromptStrict()
+            : defaultCinematicPromptSoft();
+
     const parts = [
-        defaultCinematicPrompt(),
+        base,
         ctx
-            ? `Context (use only to guide mood/setting, do not change people/composition): ${ctx}`
+            ? `Context (mood only, do not change people/composition): ${ctx}`
             : null,
-        user ? `Additional direction: ${user}` : null,
+        user ? `User direction (must not conflict with constraints): ${user}` : null,
+
+        // HARD CONSTRAINTS LAST (important)
+        "HARD CONSTRAINTS: preserve identity exactly; keep original composition; no beautification; no face reconstruction; minimal micro-motion; stable background; single continuous shot; no jump cuts; no warping; match original photo texture/grain and lighting.",
     ].filter(Boolean);
 
     return parts.join(" ");
 }
+
 
 // ✅ inputs : correction negative_prompt + clés start_image/image
 export function getKlingInput(args: {
